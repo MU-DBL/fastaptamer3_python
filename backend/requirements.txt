@@ -1,3 +1,13 @@
 # requirements.txt
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
+# Core dependencies
+numpy>=1.24.0
+pandas>=2.0.0
+python-multipart==0.0.6
+
+# Bioinformatics
+biopython>=1.81
+
+# String processing
+regex>=2023.0.0
