@@ -15,12 +15,13 @@ class PreprocessInput(BaseModel):
     min_length: int = 0
     max_length: int = 100
     max_error: float = 0.005
+    output_format: str = "fasta"
 
 @router.post("/preprocess")
 async def preprocess(params: PreprocessInput):
     filepath = f"{UPLOAD_DIR}/{params.input_path}"
     base_name = os.path.splitext(os.path.basename(params.input_path))[0]
-    output_format='fasta'
+    output_format=params.output_format
     output_path=f"{UPLOAD_DIR}/{base_name}_preprocess.{output_format}"
 
     output_path = preprocess_service.run_preprocess(
