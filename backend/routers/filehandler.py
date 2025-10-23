@@ -13,13 +13,14 @@ UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 async def upload(file: UploadFile = File(...)):
 
     try:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         # Split filename and extension
         file_name = Path(file.filename).stem
         file_extension = Path(file.filename).suffix
         
-        new_filename = f"{file_name}_{timestamp}{file_extension}"
+        # new_filename = f"{file_name}_{timestamp}{file_extension}"
+        new_filename = f"{file_name}{file_extension}"
         file_path = UPLOAD_DIR / new_filename
 
         # Save the file
