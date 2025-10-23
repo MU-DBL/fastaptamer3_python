@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="form-section">
+    <h3 class="section-title">Choose data to count*:</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTQ or FASTA file'"
+      [showUploadNote]="true"
+      [uploadNotePath]="'#'"
+      [uploadSpeed]="200"
+      (fileSelected)="onFileSelected($event)"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
+    
+    <p>Sample data is available from <a href="#" class="link">here</a>.</p>
+
+    <h3 class="section-title">What value should be used to normalize read counts?</h3>
+    <mat-radio-group 
+      [(ngModel)]="normalizeValue"
+      class="radio-group">
+      <mat-radio-button value="1">1</mat-radio-button>
+      <mat-radio-button value="10">10</mat-radio-button>
+      <mat-radio-button value="100">100</mat-radio-button>
+      <mat-radio-button value="1000">1000</mat-radio-button>
+      <mat-radio-button value="10000">10000</mat-radio-button>
+      <mat-radio-button value="1e+05">1e+05</mat-radio-button>
+      <mat-radio-button value="1e+06">1e+06</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">Return reverse complement of sequences?</h3>
+    <mat-radio-group 
+      [(ngModel)]="returnReverseComplement"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">FASTA or CSV download?</h3>
+    <mat-radio-group 
+      [(ngModel)]="downloadFormat"
+      class="radio-group">
+      <mat-radio-button value="fasta">FASTA</mat-radio-button>
+      <mat-radio-button value="csv">CSV</mat-radio-button>
+    </mat-radio-group>
+
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        (click)="onStart()">
+        <mat-icon>play_arrow</mat-icon>
+        Start
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+  </div>
+</div>

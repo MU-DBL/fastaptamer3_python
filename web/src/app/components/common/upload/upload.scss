@@ -1,0 +1,94 @@
+.file-upload-wrapper {
+  width: 100%;
+}
+
+.file-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.browse-button {
+  background-color: #333 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 8px 24px !important;
+  min-width: 120px;
+  height: 40px;
+  text-transform: none !important;
+  font-size: 14px !important;
+}
+
+.browse-button:hover {
+  background-color: #555 !important;
+}
+
+.file-name {
+  color: #999;
+  font-size: 14px;
+  flex: 1;
+  transition: color 0.3s ease;
+}
+
+.file-name.file-selected {
+  color: #333;
+}
+
+/* Progress Bar Styles */
+.progress-container {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.progress-container ::ng-deep .mat-mdc-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__bar-inner {
+  border-color: #1976d2;
+}
+
+.progress-container ::ng-deep .mat-mdc-progress-bar.complete .mdc-linear-progress__bar-inner {
+  border-color: #4caf50;
+}
+
+.progress-text {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.progress-text.complete {
+  color: #4caf50;
+}
+
+.link {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .file-upload-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .browse-button {
+    width: 100%;
+  }
+}
+
+.notice {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #d32f2f;
+}

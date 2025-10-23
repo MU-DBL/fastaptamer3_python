@@ -37,3 +37,23 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* src/styles.css */
+
+/* Material Form Field Customization */
+.mat-mdc-form-field.full-width .mdc-text-field--outlined {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mat-mdc-form-field.full-width .mat-mdc-text-field-wrapper {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mat-mdc-form-field.full-width .mat-mdc-form-field-infix {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-height: auto !important;
+}
+

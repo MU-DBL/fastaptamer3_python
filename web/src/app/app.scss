@@ -1,4 +1,12 @@
 .scrollable-container {
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
 }
+
+.sticky-menu {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 100;
+}
+
