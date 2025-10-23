@@ -29,6 +29,7 @@ def save_sequences(seq_df, output_path, output_format='fasta'):
     else:
         raise ValueError(f"Unsupported output format: {output_format}. Choose from: 'fasta', 'fastq', 'csv'")
 
+<<<<<<< HEAD
 
 def parse_fasta(fasta_input):
     """
@@ -122,3 +123,24 @@ def parse_fasta(fasta_input):
     return fasta_df
 
 
+=======
+def parse_fasta_with_reads(fasta_file):
+    sequences = []
+    reads = []
+    
+    for record in SeqIO.parse(fasta_file, 'fasta'):
+        sequences.append(str(record.seq))
+        header = record.description
+        match = re.search(r';read=(\d+)', header)
+        if match:
+            count = int(match.group(1))
+        elif '-' in record.id:
+            parts = record.id.split('-')
+            count = int(parts[1])
+        else:
+            count = 1
+        
+        reads.append(count)
+    
+    return pd.DataFrame({'Sequence': sequences, 'Read': reads})
+>>>>>>> 9c78926 (add count and recount)
