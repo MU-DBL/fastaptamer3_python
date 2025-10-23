@@ -1,10 +1,13 @@
+import os
+from pathlib import Path
+from routers import preprocess
+from routers import filehandler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import test
 
 app = FastAPI(
-    title="My FastAPI Project",
-    description="A FastAPI project with organized routers",
+    title="Fastaptamer3",
+    description="Fastaptamer3",
     version="1.0.0"
 )
 
@@ -17,8 +20,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
+UPLOAD_DIR.mkdir(exist_ok=True)
+
 # Include routers
-app.include_router(test.router, prefix="/api/v1", tags=["test"])
+app.include_router(preprocess.router, prefix="/api/v1", tags=["preprocess"])
+app.include_router(filehandler.router, prefix="/api/v1", tags=["filehandler"])
 
 @app.get("/")
 async def root():
