@@ -1,11 +1,14 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
+import { ApiService } from '../../../shared/api.service';
 
 export interface FileUploadResult {
   file: File;
   fileName: string;
+  savedFileName?: string;
   uploadComplete: boolean;
+  error?: string;
 }
 
 @Component({
@@ -29,11 +32,15 @@ export class Upload {
   @Output() uploadComplete = new EventEmitter<FileUploadResult>();
   @Output() uploadProgress = new EventEmitter<number>();
 
+  private apiService = inject(ApiService);
+
   selectedFile: File | null = null;
   fileName: string = '';
+  savedFileName: string = '';
   isComplete: boolean = false;
   progress: number = 0;
   isUploading: boolean = false;
+  uploadError: string = '';
 
   ngOnInit(): void {
     this.fileName = this.placeholderText;
@@ -47,6 +54,7 @@ export class Upload {
       this.isComplete = false;
       this.progress = 0;
       this.isUploading = true;
+      this.uploadError = '';
 
       // Emit file selected event
       this.fileSelected.emit({
@@ -55,23 +63,45 @@ export class Upload {
         uploadComplete: false
       });
 
-      // Simulate upload process with progress
-      const interval = setInterval(() => {
-        this.progress += 10;
-        
-        if (this.progress >= 100) {
-          clearInterval(interval);
+      // Start visual progress simulation
+      const progressInterval = setInterval(() => {
+        if (this.progress < 90) {
+          this.progress += 10;
+          this.uploadProgress.emit(this.progress);
+        }
+      }, this.uploadSpeed);
+
+      // Upload file to backend
+      this.apiService.uploadFile(file).subscribe({
+        next: (response) => {
+          clearInterval(progressInterval);
+          this.progress = 100;
           this.isComplete = true;
           this.isUploading = false;
+          this.savedFileName = response.saved_filename;
           
           // Emit upload complete event
           this.uploadComplete.emit({
             file: file,
             fileName: file.name,
+            savedFileName: response.saved_filename,
             uploadComplete: true
           });
+        },
+        error: (error) => {
+          clearInterval(progressInterval);
+          this.isUploading = false;
+          this.progress = 0;
+          this.uploadError = error.error?.detail || 'Upload failed';
+          
+          this.uploadComplete.emit({
+            file: file,
+            fileName: file.name,
+            uploadComplete: false,
+            error: this.uploadError
+          });
         }
-      }, this.uploadSpeed);
+      });
     }
   }
 
@@ -83,9 +113,11 @@ export class Upload {
   resetUpload(): void {
     this.selectedFile = null;
     this.fileName = this.placeholderText;
+    this.savedFileName = '';
     this.isComplete = false;
     this.progress = 0;
     this.isUploading = false;
+    this.uploadError = '';
   }
 
   getUploadResult(): FileUploadResult | null {
@@ -95,7 +127,9 @@ export class Upload {
     return {
       file: this.selectedFile,
       fileName: this.fileName,
-      uploadComplete: this.isComplete
+      savedFileName: this.savedFileName,
+      uploadComplete: this.isComplete,
+      error: this.uploadError
     };
   }
 }

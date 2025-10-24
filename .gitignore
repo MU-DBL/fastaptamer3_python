@@ -20,3 +20,5 @@
 __pycache__/
 *.py[cod]
 *$py.class
+setup.ps1
+run.ps1

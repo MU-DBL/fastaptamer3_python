@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ApiService } from '../../../shared/api.service';
 
 @Component({
   selector: 'app-preprocess',
@@ -16,11 +17,16 @@ import { Component } from '@angular/core';
 })
 
 export class Preprocess {
+  private apiService = inject(ApiService);
+
   selectedFile: File | null = null;
+  savedFileName: string = '';
   fileName: string = 'FASTQ or FASTA file';
   downloadFormat: string = 'fasta';
   uploadComplete: boolean = false;
   isUploading: boolean = false;
+  isProcessing: boolean = false;
+  processedFileName: string = '';
 
   constant5Region: string = '';
   constant3Region: string = '';
@@ -32,25 +38,80 @@ export class Preprocess {
 
   onFileSelected(result: FileUploadResult): void {
     this.selectedFile = result.file;
+    this.processedFileName = '';
     console.log('File selected:', result.fileName);
   }
 
   onUploadComplete(result: FileUploadResult): void {
-    this.uploadComplete = true;
-    console.log('Upload complete:', result.fileName);
+    if (result.uploadComplete && result.savedFileName) {
+      this.uploadComplete = true;
+      this.savedFileName = result.savedFileName;
+      console.log('Upload complete:', result.savedFileName);
+    } else if (result.error) {
+      console.error('Upload failed:', result.error);
+    }
   }
 
   onStart(): void {
-    console.log('Starting with parameters:', {
-      constant5Region: this.constant5Region,
-      constant3Region: this.constant3Region,
-      sequenceLength: [this.sequenceLengthMin, this.sequenceLengthMax],
-      maxAllowedError: this.maxAllowedError
+    if (!this.uploadComplete || !this.savedFileName) {
+      console.warn('Please upload a file first!');
+      return;
+    }
+
+    this.isProcessing = true;
+    this.processedFileName = '';
+
+    const params = {
+      input_path: this.savedFileName,
+      const5p: this.constant5Region,
+      const3p: this.constant3Region,
+      min_length: this.sequenceLengthMin,
+      max_length: this.sequenceLengthMax,
+      max_error: this.maxAllowedError,
+      output_format: this.downloadFormat
+    };
+
+    console.log('Starting preprocessing with parameters:', params);
+
+    this.apiService.preprocess(params).subscribe({
+      next: (response) => {
+        this.isProcessing = false;
+        if (response.status === 'ok' && response.result) {
+          this.processedFileName = response.result;
+          console.log('Preprocessing complete:', response.result);
+        }
+      },
+      error: (error) => {
+        this.isProcessing = false;
+        const errorMsg = error.error?.detail || 'Preprocessing failed';
+        console.error('Preprocessing error:', errorMsg);
+      }
     });
   }
 
   onDownload(): void {
-    console.log('Download triggered');
+    if (!this.processedFileName) {
+      console.warn('No file available for download. Please run preprocessing first.');
+      return;
+    }
+
+    console.log('Downloading file:', this.processedFileName);
+
+    this.apiService.downloadFile(this.processedFileName).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = this.processedFileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        console.log('Download started');
+      },
+      error: (error) => {
+        const errorMsg = error.error?.detail || 'Download failed';
+        console.error('Download error:', errorMsg);
+      }
+    });
   }
 
   formatLabel(value: number): string {
