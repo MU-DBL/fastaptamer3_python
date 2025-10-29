@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ApiService } from '../../../shared/api.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-preprocess',
@@ -25,8 +26,10 @@ export class Preprocess {
   downloadFormat: string = 'fasta';
   uploadComplete: boolean = false;
   isUploading: boolean = false;
-  isProcessing: boolean = false;
-  processedFileName: string = '';
+  
+  // Use signals for reactive state
+  isProcessing = signal(false);
+  processedFileName = signal('');
 
   constant5Region: string = '';
   constant3Region: string = '';
@@ -38,7 +41,7 @@ export class Preprocess {
 
   onFileSelected(result: FileUploadResult): void {
     this.selectedFile = result.file;
-    this.processedFileName = '';
+    this.processedFileName.set('');
     console.log('File selected:', result.fileName);
   }
 
@@ -58,8 +61,8 @@ export class Preprocess {
       return;
     }
 
-    this.isProcessing = true;
-    this.processedFileName = '';
+    this.isProcessing.set(true);
+    this.processedFileName.set('');
 
     const params = {
       input_path: this.savedFileName,
@@ -73,16 +76,18 @@ export class Preprocess {
 
     console.log('Starting preprocessing with parameters:', params);
 
-    this.apiService.preprocess(params).subscribe({
+    this.apiService.preprocess(params).pipe(
+      finalize(() => {
+        this.isProcessing.set(false);
+      })
+    ).subscribe({
       next: (response) => {
-        this.isProcessing = false;
         if (response.status === 'ok' && response.result) {
-          this.processedFileName = response.result;
+          this.processedFileName.set(response.result);
           console.log('Preprocessing complete:', response.result);
         }
       },
       error: (error) => {
-        this.isProcessing = false;
         const errorMsg = error.error?.detail || 'Preprocessing failed';
         console.error('Preprocessing error:', errorMsg);
       }
@@ -90,19 +95,20 @@ export class Preprocess {
   }
 
   onDownload(): void {
-    if (!this.processedFileName) {
+    const filename = this.processedFileName();
+    if (!filename) {
       console.warn('No file available for download. Please run preprocessing first.');
       return;
     }
 
-    console.log('Downloading file:', this.processedFileName);
+    console.log('Downloading file:', filename);
 
-    this.apiService.downloadFile(this.processedFileName).subscribe({
+    this.apiService.downloadFile(filename).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = this.processedFileName;
+        link.download = filename;
         link.click();
         window.URL.revokeObjectURL(url);
         console.log('Download started');

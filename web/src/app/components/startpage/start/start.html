@@ -1,11 +1,200 @@
-<mat-tab-group style="width: 30%;">
-    <mat-tab label="Preprocess">
-        <app-preprocess></app-preprocess>
-    </mat-tab>
-    <mat-tab label="Count">
-        <app-count></app-count>
-    </mat-tab>
-    <mat-tab label="Recount">
-        <app-recount></app-recount>
-    </mat-tab>
-</mat-tab-group>
+<div class="start-page-container">
+    <div class="left-section">
+        <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+            <mat-tab label="Preprocess">
+                <app-preprocess></app-preprocess>
+            </mat-tab>
+            <mat-tab label="Count">
+                <app-count 
+                    (resultsReady)="onCountResultsReady($event)"
+                    (showReadsPerRankModal)="onShowReadsPerRankModal($event)"
+                    (showSeqLengthModal)="onShowSeqLengthModal($event)"
+                    (showAbundancePlotModal)="onShowAbundancePlotModal($event)">
+                </app-count>
+            </mat-tab>
+            <mat-tab label="Recount">
+                <app-recount></app-recount>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+    <div class="right-section" *ngIf="showResultsTable && tableData.length > 0">
+        <div class="table-container">
+            <div class="table-header">
+                <label class="entries-label">
+                    Show 
+                    <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="entries-select">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                    </select>
+                    entries
+                </label>
+                <div class="search-box">
+                    <label>Search: <input type="text" [(ngModel)]="searchText" (input)="onSearch()" class="search-input"></label>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table mat-table [dataSource]="paginatedData" class="results-table">
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>
+                        id
+                        <input type="text" [(ngModel)]="columnFilters.id" (input)="applyColumnFilter()" class="column-filter" placeholder="All">
+                    </th>
+                    <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+                </ng-container>
+
+                <!-- Rank Column -->
+                <ng-container matColumnDef="rank">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Rank
+                        <input type="text" [(ngModel)]="columnFilters.rank" (input)="applyColumnFilter()" class="column-filter" placeholder="All">
+                    </th>
+                    <td mat-cell *matCellDef="let row">{{ row.rank }}</td>
+                </ng-container>
+
+                <!-- Reads Column -->
+                <ng-container matColumnDef="reads">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Reads
+                        <input type="text" [(ngModel)]="columnFilters.reads" (input)="applyColumnFilter()" class="column-filter" placeholder="All">
+                    </th>
+                    <td mat-cell *matCellDef="let row">{{ row.reads }}</td>
+                </ng-container>
+
+                <!-- RPM Column -->
+                <ng-container matColumnDef="rpm">
+                    <th mat-header-cell *matHeaderCellDef>
+                        RPM
+                        <input type="text" [(ngModel)]="columnFilters.rpm" (input)="applyColumnFilter()" class="column-filter" placeholder="All">
+                    </th>
+                    <td mat-cell *matCellDef="let row">{{ row.rpm }}</td>
+                </ng-container>
+
+                <!-- Length Column -->
+                <ng-container matColumnDef="length">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Length
+                        <input type="text" [(ngModel)]="columnFilters.length" (input)="applyColumnFilter()" class="column-filter" placeholder="All">
+                    </th>
+                    <td mat-cell *matCellDef="let row">{{ row.length }}</td>
+                </ng-container>
+
+                <!-- Sequence Column -->
+                <ng-container matColumnDef="seqs">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Sequence
+                        <input type="text" [(ngModel)]="columnFilters.seqs" (input)="applyColumnFilter()" class="column-filter" placeholder="All">
+                    </th>
+                    <td mat-cell *matCellDef="let row" class="sequence-cell">{{ row.seqs }}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            </div>
+
+            <div class="table-footer">
+                <div class="showing-info">
+                    Showing {{ getShowingStart() }} to {{ getShowingEnd() }} of {{ filteredData.length }} entries
+                </div>
+                <div class="pagination">
+                    <button (click)="previousPage()" [disabled]="currentPage === 1" class="pagination-button">Previous</button>
+                    <button *ngFor="let page of getPageNumbers()" 
+                            (click)="goToPage(page)" 
+                            [class.active]="page === currentPage"
+                            class="pagination-button page-number">
+                        {{ page }}
+                    </button>
+                    <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Modals - Positioned in right-section for proper z-index layering -->
+        
+        <!-- Reads Per Rank Modal -->
+        @if (showReadsPerRankModal()) {
+          <div class="modal-overlay" (click)="closeReadsPerRankModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
+                <h2>{{ readsPerRankParams.title }}</h2>
+                <button mat-icon-button (click)="closeReadsPerRankModal()" class="close-button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="modal-body">
+                <app-reads-per-rank-chart
+                  [data]="readsPerRankData"
+                  [title]="readsPerRankParams.title"
+                  [xAxisLabel]="readsPerRankParams.xAxisLabel"
+                  [yAxisLabel]="readsPerRankParams.yAxisLabel"
+                  [lineColor]="readsPerRankParams.lineColor">
+                </app-reads-per-rank-chart>
+              </div>
+              <div class="modal-footer">
+                <button mat-raised-button (click)="closeReadsPerRankModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Sequence Length Histogram Modal -->
+        @if (showSeqLengthModal()) {
+          <div class="modal-overlay" (click)="closeSeqLengthModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
+                <h2>{{ seqLengthParams.title }}</h2>
+                <button mat-icon-button (click)="closeSeqLengthModal()" class="close-button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="modal-body">
+                <app-seq-length-histogram
+                  [data]="seqLengthData"
+                  [title]="seqLengthParams.title"
+                  [xAxisLabel]="seqLengthParams.xAxisLabel"
+                  [yAxis1Label]="seqLengthParams.yAxis1Label"
+                  [yAxis2Label]="seqLengthParams.yAxis2Label"
+                  [uniqueColor]="seqLengthParams.barFill"
+                  [totalColor]="seqLengthParams.barFill2">
+                </app-seq-length-histogram>
+              </div>
+              <div class="modal-footer">
+                <button mat-raised-button (click)="closeSeqLengthModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Abundance Plot Modal -->
+        @if (showAbundancePlotModal()) {
+          <div class="modal-overlay" (click)="closeAbundancePlotModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
+                <h2>{{ abundancePlotParams.title }}</h2>
+                <button mat-icon-button (click)="closeAbundancePlotModal()" class="close-button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="modal-body">
+                <app-abundance-plot
+                  [data]="abundancePlotData"
+                  [title]="abundancePlotParams.title"
+                  [xAxisLabel]="abundancePlotParams.xAxisLabel"
+                  [yAxisLabel]="abundancePlotParams.yAxisLabel"
+                  [colorLight]="abundancePlotParams.colorLight"
+                  [colorDark]="abundancePlotParams.colorDark">
+                </app-abundance-plot>
+              </div>
+              <div class="modal-footer">
+                <button mat-raised-button (click)="closeAbundancePlotModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        }
+    </div>
+</div>

@@ -66,18 +66,18 @@
         mat-raised-button 
         color="primary"
         class="start-button"
-        [disabled]="!uploadComplete || isProcessing"
+        [disabled]="!uploadComplete || isProcessing()"
         (click)="onStart()">
-        <mat-icon [class.spinning]="isProcessing">{{ isProcessing ? 'sync' : 'play_arrow' }}</mat-icon>
-        {{ isProcessing ? 'Processing...' : 'Start' }}
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
       <button 
         mat-raised-button 
         color="accent"
         class="download-button"
-        [class.download-ready]="processedFileName"
-        [disabled]="!processedFileName"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
         (click)="onDownload()">
         <mat-icon>download</mat-icon>
         Download
