@@ -32,6 +32,16 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/preprocess`, params);
   }
 
+  // Count
+  count(params: {
+    input_path: string;
+    reverseComplement: boolean;
+    scaling_factor: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/count`, params);
+  }
+
   // Download file
   downloadFile(filename: string): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/download/${filename}`, {

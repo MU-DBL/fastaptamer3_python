@@ -70,3 +70,13 @@ body {
   min-height: auto !important;
 }
 
+/* Ensure modals always appear on top of everything */
+.modal-overlay {
+  position: fixed !important;
+  z-index: 999999 !important;
+  isolation: isolate !important;
+}
+
+.modal-content {
+  z-index: 1000000 !important;
+}
