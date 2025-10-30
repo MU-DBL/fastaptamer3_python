@@ -218,12 +218,12 @@
   }
 
   // Column width adjustments
-  th:nth-child(1), td:nth-child(1) { width: 14%; } // id
+  th:nth-child(1), td:nth-child(1) { width: 19%; } // id
   th:nth-child(2), td:nth-child(2) { width: 8%; }  // Rank
   th:nth-child(3), td:nth-child(3) { width: 8%; }  // Reads
   th:nth-child(4), td:nth-child(4) { width: 8%; }  // RPM
   th:nth-child(5), td:nth-child(5) { width: 8%; }  // Length
-  th:nth-child(6), td:nth-child(6) { width: 54%; } // Sequence
+  th:nth-child(6), td:nth-child(6) { width: 49%; } // Sequence
 }
 
 .column-filter {

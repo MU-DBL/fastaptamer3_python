@@ -41,6 +41,9 @@ export class Upload {
   progress: number = 0;
   isUploading: boolean = false;
   uploadError: string = '';
+  
+  // Generate unique ID for each upload component instance
+  readonly uploadId: string = `fileUpload-${Math.random().toString(36).substr(2, 9)}`;
 
   ngOnInit(): void {
     this.fileName = this.placeholderText;
@@ -106,7 +109,7 @@ export class Upload {
   }
 
   triggerFileInput(): void {
-    const fileInput = document.getElementById('fileUploadInput') as HTMLInputElement;
+    const fileInput = document.getElementById(this.uploadId) as HTMLInputElement;
     fileInput?.click();
   }
 

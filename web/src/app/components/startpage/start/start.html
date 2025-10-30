@@ -13,7 +13,11 @@
                 </app-count>
             </mat-tab>
             <mat-tab label="Recount">
-                <app-recount></app-recount>
+                <app-recount
+                    (resultsReady)="onRecountResultsReady($event)"
+                    (showReadsPerRankModal)="onShowReadsPerRankModal($event)"
+                    (showSeqLengthModal)="onShowSeqLengthModal($event)">
+                </app-recount>
             </mat-tab>
         </mat-tab-group>
     </div>
