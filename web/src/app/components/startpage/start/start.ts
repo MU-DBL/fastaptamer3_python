@@ -217,6 +217,18 @@ export class Start {
     this.updatePagination();
   }
 
+  onRecountResultsReady(data: any[]): void {
+    const tabIndex = this.selectedTabIndex(); // Recount tab
+    this.ensureTabData(tabIndex);
+    const tabData = this.tabResults.get(tabIndex)!;
+    
+    tabData.tableData = data;
+    tabData.filteredData = [...data];
+    tabData.showResults = true;
+    
+    this.updatePagination();
+  }
+
   // Modal event handlers from count component
   onShowReadsPerRankModal(event: { data: any[], params: any }): void {
     this.readsPerRankData = event.data;

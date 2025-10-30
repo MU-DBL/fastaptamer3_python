@@ -42,6 +42,16 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/count`, params);
   }
 
+  // Recount
+  recount(params: {
+    input_path_1: string;
+    input_path_2: string;
+    scaling_factor: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/recount`, params);
+  }
+
   // Download file
   downloadFile(filename: string): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/download/${filename}`, {

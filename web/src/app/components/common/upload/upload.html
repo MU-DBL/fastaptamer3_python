@@ -9,7 +9,7 @@
     <span class="file-name" [class.file-selected]="selectedFile">{{ fileName }}</span>
     <input 
       type="file" 
-      id="fileUploadInput" 
+      [id]="uploadId" 
       (change)="onFileSelected($event)"
       [accept]="acceptedFileTypes"
       style="display: none;">
