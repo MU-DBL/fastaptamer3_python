@@ -11,3 +11,5 @@ biopython>=1.81
 
 # String processing
 regex>=2023.0.0
+cutadapt>=4.9,<5.0
+numba==0.59.0
