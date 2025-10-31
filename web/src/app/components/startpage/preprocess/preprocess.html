@@ -83,4 +83,39 @@
         Download
       </button>
     </div>
+    <!-- Progress Section -->
+@if (isProcessing() || logs.length > 0) {
+  <div class="progress-header">
+    <!-- If currentStage and currentMessage are regular properties (not signals) -->
+    <h3>{{ currentStage | titlecase }} - {{ currentMessage }}</h3>
+    
+    <!-- OR if they are signals, use () -->
+    <!-- <h3>{{ currentStage() | titlecase }} - {{ currentMessage() }}</h3> -->
+    
+    <button 
+      mat-raised-button 
+      color="accent"
+      class="cancel-button"
+      (click)="cancelProcessing()">
+      <mat-icon>cancel</mat-icon>
+      Cancel
+    </button>
+  </div>
+
+  <!-- Live Logs -->
+  <div class="logs-container" #logContainer>
+    @for (log of logs; track log.timestamp) {
+      <div class="log-entry" [class]="'log-' + log.stage">
+        <span class="log-icon">{{ getStageIcon(log.stage) }}</span>
+        <span class="log-time">{{ log.timestamp * 1000 | date:'HH:mm:ss' }}</span>
+        <span class="log-stage">[{{ log.stage | uppercase }}]</span>
+        <span class="log-message">{{ log.message }}</span>
+        @if (log.data) {
+          <span class="log-data">{{ log.data | json }}</span>
+        }
+      </div>
+    }
+  </div>
+}
+    
 </div>

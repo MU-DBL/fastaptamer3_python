@@ -5,6 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 ENV UPLOAD_DIR=files
+ENV PYTHONUNBUFFERED=1
 
 # Copy dependency file
 COPY requirements.txt .

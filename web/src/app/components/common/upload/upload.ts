@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
@@ -19,7 +19,7 @@ export interface FileUploadResult {
   templateUrl: './upload.html',
   styleUrl: './upload.scss'
 })
-export class Upload {
+export class Upload implements OnDestroy{
   @Input() acceptedFileTypes: string = '.fasta,.fastq,.fa,.fq';
   @Input() buttonText: string = 'Browse...';
   @Input() placeholderText: string = 'FASTQ or FASTA file';
@@ -44,14 +44,29 @@ export class Upload {
   
   // Generate unique ID for each upload component instance
   readonly uploadId: string = `fileUpload-${Math.random().toString(36).substr(2, 9)}`;
+  private progressInterval: any = null
 
   ngOnInit(): void {
     this.fileName = this.placeholderText;
   }
 
+  ngOnDestroy(): void {
+    // Clean up interval on component destroy
+    this.clearProgressInterval();
+  }
+
+  private clearProgressInterval(): void {
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = null;
+    }
+  }
+
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      this.clearProgressInterval();
+
       this.selectedFile = file;
       this.fileName = file.name;
       this.isComplete = false;
@@ -77,7 +92,7 @@ export class Upload {
       // Upload file to backend
       this.apiService.uploadFile(file).subscribe({
         next: (response) => {
-          clearInterval(progressInterval);
+          this.clearProgressInterval();
           this.progress = 100;
           this.isComplete = true;
           this.isUploading = false;
@@ -92,7 +107,7 @@ export class Upload {
           });
         },
         error: (error) => {
-          clearInterval(progressInterval);
+          this.clearProgressInterval();
           this.isUploading = false;
           this.progress = 0;
           this.uploadError = error.error?.detail || 'Upload failed';
@@ -114,6 +129,7 @@ export class Upload {
   }
 
   resetUpload(): void {
+    this.clearProgressInterval(); // Clear interval on reset
     this.selectedFile = null;
     this.fileName = this.placeholderText;
     this.savedFileName = '';
@@ -121,6 +137,10 @@ export class Upload {
     this.progress = 0;
     this.isUploading = false;
     this.uploadError = '';
+    const fileInput = document.getElementById(this.uploadId) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   getUploadResult(): FileUploadResult | null {
