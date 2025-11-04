@@ -31,7 +31,7 @@ async def cluster(params:ClusterInput):
     try:
 
         output_path = cluster_service.run_cluster_led(
-                inputpath=str(filepath),
+                input_path=str(filepath),
                 output_format=output_format,
                 output_path=str(output_path),
                 min_reads=params.min_reads,
