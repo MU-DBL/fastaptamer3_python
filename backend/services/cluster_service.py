@@ -4,18 +4,22 @@ import pandas as pd
 import re
 import Levenshtein
 import time
-from backend.services import file_service
-from file_service import parse_fasta
-from constants import ColumnName
+from services.file_service import parse_fasta,save_sequences
+from services.constants import ColumnName
 
-def run_cluster_led(file_path, min_reads=10, max_led=7, total_clusters=30, keep_nc=True, output_path=None, output_format='fasta'):
+def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep_nc=True, output_path=None, output_format='fasta'):
     
-    df = parse_fasta(file_path)
+    df = parse_fasta(input_path)
 
     # Filter by read count, initialize cluster-specific columns
     cluster_data = df.copy()
     cluster_data = cluster_data.sort_values(ColumnName.RPU, ascending=False)
     cluster_data = cluster_data[cluster_data[ColumnName.READS] >= min_reads].reset_index(drop=True)
+    if len(cluster_data) == 0:
+        print(f"WARNING: No sequences remain after filtering with min_reads={min_reads}")
+        print(f"Original data had {len(df)} sequences")
+        return None
+    
     cluster_data[ColumnName.CLUSTER] = pd.NA
     cluster_data[ColumnName.RANK_IN_CLUSTER] = pd.NA
     cluster_data[ColumnName.LED] = pd.NA
@@ -83,9 +87,9 @@ def run_cluster_led(file_path, min_reads=10, max_led=7, total_clusters=30, keep_
             cluster_data.loc[mask, ColumnName.LED] = row[ColumnName.LED]
         
         # Message with number of unique sequences in cluster
-        elapsed_time = time.time() - start_time
-        print(f"Finished cluster {cluster_number}: {len(seq_df)} unique sequences")
-        print(f"Elapsed time: {elapsed_time:.2f} seconds\n")
+        # elapsed_time = time.time() - start_time
+        # print(f"Finished cluster {cluster_number}: {len(seq_df)} unique sequences")
+        # print(f"Elapsed time: {elapsed_time:.2f} seconds\n")
         
         # Bump the cluster number
         cluster_number += 1
@@ -106,8 +110,8 @@ def run_cluster_led(file_path, min_reads=10, max_led=7, total_clusters=30, keep_
             
             # Compute LED between the cluster seed and every other sequence
             seed_sequence = cluster0.iloc[0][ColumnName.SEQUENCES]
-            cluster0[ColumnName.SEQUENCES] = cluster0[ColumnName.SEQUENCES].apply(lambda x: Levenshtein.distance(seed_sequence, x))
-        
+            cluster0[ColumnName.LED] = cluster0[ColumnName.SEQUENCES].apply(lambda x: Levenshtein.distance(seed_sequence, x))
+
         # Add cluster 0 back to main data
         cluster_data = pd.concat([cluster_data, cluster0], ignore_index=True)
     else:
@@ -128,7 +132,7 @@ def run_cluster_led(file_path, min_reads=10, max_led=7, total_clusters=30, keep_
     cols = [ColumnName.ID, ColumnName.RANK, ColumnName.READS,ColumnName.RPU,ColumnName.CLUSTER,ColumnName.RANK_IN_CLUSTER,ColumnName.SEQUENCES]
     cluster_data = cluster_data[cols]
 
-    file_service.save_sequences(cluster_data, output_path, output_format)
+    save_sequences(cluster_data, output_path, output_format)
     
     return output_path
     

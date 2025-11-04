@@ -3,7 +3,7 @@ import pandas as pd
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
-from constants import ColumnName
+from services.constants import ColumnName
 
 def save_sequences(seq_df, output_path, output_format='fasta'):
     if output_format in ['fastq', 'fasta']:
@@ -68,14 +68,15 @@ def parse_fasta(fasta_input):
         for part in parts:
             if '=' in part:
                 key, value = part.split('=', 1)
-                key = key.strip().lower()
+                key = key.strip()
                 value = value.strip()
                 
                 # Convert to appropriate type based on key
+                # print(key)
                 if key == ColumnName.RANK:
                     header_dict[ColumnName.RANK] = int(value)
                 elif key == ColumnName.READS:
-                    header_dict[ColumnName.READS:] = int(value)
+                    header_dict[ColumnName.READS] = int(value)
                 elif key == ColumnName.RPU:
                     header_dict[ColumnName.RPU] = float(value)
                 elif key == ColumnName.CLUSTER:
@@ -93,6 +94,7 @@ def parse_fasta(fasta_input):
     
     # Create DataFrame
     fasta_df = pd.DataFrame(data)
+    print(fasta_df.columns)
     
     # Ensure we have basic required columns
     if ColumnName.RANK not in fasta_df.columns:
@@ -114,6 +116,8 @@ def parse_fasta(fasta_input):
     
     column_order = base_cols + cluster_cols + [ColumnName.SEQUENCES]
     fasta_df = fasta_df[column_order]
+
+    print(fasta_df.loc[0])
     
     return fasta_df
 

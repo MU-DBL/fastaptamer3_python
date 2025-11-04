@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from services import file_service
 from services.file_service import parse_fasta
-from constants import ColumnName
+from services.constants import ColumnName
 
 def run_recount(input_path_1=None, input_path_2=None, output_path=None, output_format='fasta',scaling_factor=1e6):
 
