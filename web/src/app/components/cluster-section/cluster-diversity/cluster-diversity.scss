@@ -1,0 +1,283 @@
+@import '../../../shared/shared-styles.scss';
+
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+  align-items: center;
+
+  .start-button, .download-button {
+    min-width: 120px;
+    font-weight: 500;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .download-ready {
+    animation: pulse 2s infinite;
+  }
+}
+
+.section-divider {
+  margin: 32px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+.radio-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  mat-radio-button {
+    margin-right: 16px;
+  }
+}
+
+.customization-panel {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 16px 0;
+  
+  .input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    margin-top: 16px;
+    color: #555;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .color-picker-field {
+    margin: 16px 0;
+    
+    .color-input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// Plot buttons container for consistent alignment
+.plot-buttons {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+  align-items: center;
+
+  .start-button {
+    min-width: 140px;
+    font-weight: 500;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.note-text {
+  font-size: 12px;
+  color: #666;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+// Results table styling
+.results-section {
+  margin-top: 32px;
+}
+
+.table-container {
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.results-table {
+  width: 100%;
+  
+  .mat-mdc-header-cell {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .mat-mdc-cell {
+    padding: 12px 16px;
+  }
+  
+  .id-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    max-width: 200px;
+    word-break: break-all;
+  }
+  
+  .sequence-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    max-width: 300px;
+    word-break: break-all;
+  }
+}
+
+// Spinner animation
+@keyframes spinning {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: spinning 1s linear infinite;
+}
+
+// Pulse animation for download button
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+// Cluster selection UI styles
+.cluster-selection-container {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  
+  .selection-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    margin-right: 8px;
+  }
+  
+  .selected-clusters {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    
+    .selected-cluster-chip {
+      background: #1976d2;
+      color: white;
+      font-weight: 500;
+      
+      mat-icon {
+        color: white;
+        opacity: 0.8;
+        
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  
+  .available-clusters {
+    margin-bottom: 12px;
+    
+    .cluster-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      
+      .cluster-number-button {
+        min-width: 40px;
+        height: 36px;
+        background: #fff;
+        border: 2px solid #1976d2;
+        color: #1976d2;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        
+        &:hover:not(:disabled) {
+          background: #1976d2;
+          color: white;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(25, 118, 210, 0.3);
+        }
+        
+        &:disabled {
+          background: #f5f5f5;
+          border-color: #ccc;
+          color: #999;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  
+  .selection-info {
+    color: #666;
+    font-size: 12px;
+    text-align: right;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .radio-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .cluster-selection-container {
+    .cluster-buttons {
+      justify-content: center;
+    }
+  }
+}

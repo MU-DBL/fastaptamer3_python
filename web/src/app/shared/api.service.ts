@@ -157,4 +157,36 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/clusterled`, params);
   }
+
+  // Cluster Diversity
+  clusterDiversity(params: {
+    input_path: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/clusterdiversity`, params);
+  }
+
+  // K-mer Analysis
+  clusterKmerAnalysis(params: {
+    input_path: string;
+    selected_clusters: number[];
+    k_size: number;
+    method: 'pca' | 'umap';
+  }): Observable<{
+    status: 'ok' | 'error';
+    data?: any;
+    error?: string;
+  }> {
+    return this.http.post<{
+      status: 'ok' | 'error';
+      data?: any;
+      error?: string;
+    }>(`${this.baseUrl}/cluster-kmer-analysis`, params);
+  }
+
+  // Generic post method for custom endpoints
+  post(endpoint: string, body: any): Observable<any> {
+    const url = endpoint.startsWith('/api/') ? `${this.baseUrl.replace('/api/v1', '')}${endpoint}` : `${this.baseUrl}${endpoint}`;
+    return this.http.post(url, body);
+  }
 }
