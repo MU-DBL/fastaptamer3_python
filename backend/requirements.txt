@@ -16,4 +16,9 @@ regex>=2023.0.0
 cutadapt
 numba==0.59.0
 
+# K-mer analysis and dimensionality reduction
+scikit-learn>=1.3.0
+umap-learn>=0.5.0
+scipy>=1.10.0
+
 
