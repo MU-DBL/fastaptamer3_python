@@ -145,4 +145,16 @@ export class ApiService {
   deleteFile(filename: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/delete/${filename}`);
   }
+
+  // Cluster
+  clusterLed(params: {
+    input_path: string;
+    output_format: string;
+    min_reads: number;
+    max_led: number;
+    total_clusters: number;
+    keep_nc: boolean;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/clusterled`, params);
+  }
 }
