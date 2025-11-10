@@ -1,21 +1,21 @@
 <div class="container">
     <div class="form-section">
-        <h3 class="section-title">Choose data to preprocess *</h3>
-        <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'" [buttonText]="'Browse...'"
-            [placeholderText]="'FASTQ or FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+        <h3 class="section-title">Input data *</h3>
+        <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'"
+            [placeholderText]="'FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
             (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
         </app-upload>
     </div>
 
-        <div class="form-section">
+    <div class="form-section">
         <label class="section-label">Min. number of reads to cluster: 
-            <mat-icon class="info-icon" matTooltip="Minumn number of reads for sequences to be clustered.">help_outline</mat-icon>
+            <mat-icon class="info-icon" matTooltip="Min. number of reads for sequences to be clustered">help_outline</mat-icon>
         </label>
         <div class="slider-group">
             <div class="slider-header">
-                <span class="value-chip range-min">Min 0</span>
+                <span class="value-chip range-min">0</span>
                 <span class="value-chip">{{ number_reads_to_cluster }}</span>
-                <span class="value-chip range-max">Max 1000</span>
+                <span class="value-chip range-max">1000</span>
             </div>
             <div class="dual-range-container">
                 <mat-slider [min]="0" [max]="1000" [step]="5" discrete
@@ -26,18 +26,18 @@
         </div>
     </div>
 
-        <div class="form-section">
-        <label class="section-label">Max LED: 
-            <mat-icon class="info-icon" matTooltip="Max edit distance from seed sequences)">help_outline</mat-icon>
+    <div class="form-section">
+        <label class="section-label">Max. LED: 
+            <mat-icon class="info-icon" matTooltip="Max. edit distance from seed sequence">help_outline</mat-icon>
         </label>
         <div class="slider-group">
             <div class="slider-header">
-                <span class="value-chip range-min">Min 1</span>
+                <span class="value-chip range-min">1</span>
                 <span class="value-chip">{{ led }}</span>
-                <span class="value-chip range-max">Max 20</span>
+                <span class="value-chip range-max">20</span>
             </div>
             <div class="dual-range-container">
-                <mat-slider [min]="0.001" [max]="20" [step]="1" discrete
+                <mat-slider [min]="1" [max]="20" [step]="1" discrete
                     class="range-slider">
                     <input matSliderThumb [(ngModel)]="led">
                 </mat-slider>
@@ -46,17 +46,17 @@
     </div>
 
     <div class="form-section">
-        <label class="section-label">Max number of clusters to generate
-            <mat-icon class="info-icon" matTooltip="Total number of desired cluster ">help_outline</mat-icon>
+        <label class="section-label">Max. number of clusters to generate:
+            <mat-icon class="info-icon" matTooltip="Total number of desired clusters">help_outline</mat-icon>
         </label>
         <div class="slider-group">
             <div class="slider-header">
-                <span class="value-chip range-min">Min 5</span>
+                <span class="value-chip range-min">5</span>
                 <span class="value-chip">{{ number_of_cluster }}</span>
-                <span class="value-chip range-max">Max 1000</span>
+                <span class="value-chip range-max">1000</span>
             </div>
             <div class="dual-range-container">
-                <mat-slider [min]="0.001" [max]="1000" [step]="5" discrete
+                <mat-slider [min]="5" [max]="1000" [step]="5" discrete
                     class="range-slider">
                     <input matSliderThumb [(ngModel)]="number_of_cluster">
                 </mat-slider>
