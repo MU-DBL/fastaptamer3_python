@@ -1,11 +1,11 @@
-<div class="container">
-    <div class="form-section">
+<div class="section-container">
+    <div class="left-subsection">
         <h3 class="section-title">Input data:</h3>
         <app-upload [acceptedFileTypes]="'.fasta'" [buttonText]="'Browse...'"
             [placeholderText]="'Clustered FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
             (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
         </app-upload>
-    </div>
+
 
 
      <div class="action-buttons">
@@ -201,6 +201,4 @@
         </div>
 
       <p class="note-text">*Characters outside of [A,C,G,T,U] converted to 'X'.</p>
-
-
 </div>

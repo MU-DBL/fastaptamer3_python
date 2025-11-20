@@ -1,5 +1,5 @@
 .start-page-container {
-  display: flex;
+  // display: flex;
   gap: 20px;
   width: 100%;
   height: calc(100vh - 150px);
@@ -9,8 +9,8 @@
 }
 
 .left-section {
-  flex: 0 0 30%;
-  max-width: 30%;
+  // flex: 0 0 30%;
+  // max-width: 30%;
   overflow-y: auto;
   overflow-x: hidden;
   
@@ -27,7 +27,7 @@
 }
 
 .right-section {
-  flex: 1;
+  // flex: 1;
   background-color: white;
   padding: 20px;
   box-sizing: border-box;
@@ -217,12 +217,38 @@
 
   // Column width adjustments - Dynamic based on content type
   &.cluster-results {
-    // Cluster results columns: sequenceID, cluster, readCount, sequence
-    th:nth-child(1), td:nth-child(1) { width: 25%; }  // sequenceID (wider)
-    th:nth-child(2), td:nth-child(2) { width: 10%; }  // cluster (narrow)
-    th:nth-child(3), td:nth-child(3) { width: 12%; }  // readCount (narrow)
-    th:nth-child(4), td:nth-child(4) { width: 53%; }  // sequence (much wider)
+  // 1. Allow the table to scroll horizontally if it gets too wide
+  overflow-x: auto; 
+  width: 100%;
+
+  // 2. Define minimum widths for specific columns
+  .mat-column-sequenceID { flex: 0 0 150px; }
+  
+  .mat-column-cluster, 
+  .mat-column-rank,
+  .mat-column-rankInCluster,
+  .mat-column-led { 
+      flex: 0 0 80px; // Small number columns
+      justify-content: center; // Optional: center align numbers
   }
+
+  .mat-column-readCount, 
+  .mat-column-rpu { 
+      flex: 0 0 100px; 
+  }
+
+  // 3. The Sequence column (The big one)
+  .mat-column-sequence { 
+      // Don't set a fixed width, let it take remaining space
+      // OR set a large min-width if you want scrolling
+      min-width: 300px; 
+      
+      // Force single line (fixes your "huge row" issue)
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+}
   
   &.diversity-results {
     // Diversity results columns: cluster, totalSequences, totalReads, totalRPU, averageLED, SID, seedID, seedSequence

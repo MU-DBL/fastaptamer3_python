@@ -237,7 +237,9 @@ export class Start {
   }
 
   onShowSeqLengthModal(event: { data: any, params: any }): void {
+    console.log("3")
     this.seqLengthData = event.data;
+    console.log(this.seqLengthData)
     this.seqLengthParams = { ...this.seqLengthParams, ...event.params };
     this.showSeqLengthModal.set(true);
   }

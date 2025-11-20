@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { Start }from './components/startpage/start/start'
+import { Start }from './components/start-section/start/start'
 import { NotFound } from './components/not-found/not-found';
 import { Clusterpage } from './components/cluster-section/clusterpage/clusterpage';
 

@@ -1,5 +1,5 @@
-<div class="container">
-  <div class="form-section">
+<div class="section-container">
+  <div class="left-subsection">
     <h3 class="section-title">Choose 1st FASTA to recount:</h3>
     <app-upload
       [acceptedFileTypes]="'.fasta,.fa'"
@@ -188,5 +188,11 @@
         Sequence-length histogram
       </button>
     </div>
+  </div>
+  <div class="right-subsection">
+     <app-table 
+        [data]="tableData" 
+        [config]="tableConfig">
+      </app-table>
   </div>
 </div>

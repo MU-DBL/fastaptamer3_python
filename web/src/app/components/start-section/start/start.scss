@@ -1,5 +1,5 @@
 .start-page-container {
-  display: flex;
+  // display: flex;
   gap: 20px;
   width: 100%;
   height: calc(100vh - 150px);
@@ -9,8 +9,8 @@
 }
 
 .left-section {
-  flex: 0 0 30%;
-  max-width: 30%;
+  // flex: 0 0 30%;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   
@@ -27,7 +27,7 @@
 }
 
 .right-section {
-  flex: 1;
+  // flex: 1;
   background-color: white;
   padding: 20px;
   box-sizing: border-box;

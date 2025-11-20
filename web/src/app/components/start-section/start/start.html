@@ -1,0 +1,106 @@
+<div class="start-page-container">
+    <div class="left-section">
+        <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+            <mat-tab label="Preprocess">
+                <app-preprocess></app-preprocess>
+            </mat-tab>
+            <mat-tab label="Count">
+                <app-count 
+                    (resultsReady)="onCountResultsReady($event)"
+                    (showReadsPerRankModal)="onShowReadsPerRankModal($event)"
+                    (showSeqLengthModal)="onShowSeqLengthModal($event)"
+                    (showAbundancePlotModal)="onShowAbundancePlotModal($event)">
+                </app-count>
+            </mat-tab>
+            <mat-tab label="Recount">
+                <app-recount
+                    (resultsReady)="onRecountResultsReady($event)"
+                    (showReadsPerRankModal)="onShowReadsPerRankModal($event)"
+                    (showSeqLengthModal)="onShowSeqLengthModal($event)">
+                </app-recount>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    <div>
+        <!-- Reads Per Rank Modal -->
+        @if (showReadsPerRankModal()) {
+          <div class="modal-overlay" (click)="closeReadsPerRankModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
+                <h2>{{ readsPerRankParams.title }}</h2>
+                <button mat-icon-button (click)="closeReadsPerRankModal()" class="close-button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="modal-body">
+                <app-reads-per-rank-chart
+                  [data]="readsPerRankData"
+                  [title]="readsPerRankParams.title"
+                  [xAxisLabel]="readsPerRankParams.xAxisLabel"
+                  [yAxisLabel]="readsPerRankParams.yAxisLabel"
+                  [lineColor]="readsPerRankParams.lineColor">
+                </app-reads-per-rank-chart>
+              </div>
+              <div class="modal-footer">
+                <button mat-raised-button (click)="closeReadsPerRankModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Sequence Length Histogram Modal -->
+        @if (showSeqLengthModal()) {
+          <div class="modal-overlay" (click)="closeSeqLengthModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
+                <h2>{{ seqLengthParams.title }}</h2>
+                <button mat-icon-button (click)="closeSeqLengthModal()" class="close-button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="modal-body">
+                <app-seq-length-histogram
+                  [data]="seqLengthData"
+                  [title]="seqLengthParams.title"
+                  [xAxisLabel]="seqLengthParams.xAxisLabel"
+                  [yAxis1Label]="seqLengthParams.yAxis1Label"
+                  [yAxis2Label]="seqLengthParams.yAxis2Label"
+                  [uniqueColor]="seqLengthParams.barFill"
+                  [totalColor]="seqLengthParams.barFill2">
+                </app-seq-length-histogram>
+              </div>
+              <div class="modal-footer">
+                <button mat-raised-button (click)="closeSeqLengthModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Abundance Plot Modal -->
+        @if (showAbundancePlotModal()) {
+          <div class="modal-overlay" (click)="closeAbundancePlotModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
+                <h2>{{ abundancePlotParams.title }}</h2>
+                <button mat-icon-button (click)="closeAbundancePlotModal()" class="close-button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="modal-body">
+                <app-abundance-plot
+                  [data]="abundancePlotData"
+                  [title]="abundancePlotParams.title"
+                  [xAxisLabel]="abundancePlotParams.xAxisLabel"
+                  [yAxisLabel]="abundancePlotParams.yAxisLabel"
+                  [colorLight]="abundancePlotParams.colorLight"
+                  [colorDark]="abundancePlotParams.colorDark">
+                </app-abundance-plot>
+              </div>
+              <div class="modal-footer">
+                <button mat-raised-button (click)="closeAbundancePlotModal()">Close</button>
+              </div>
+            </div>
+          </div>
+        }
+    </div>
+</div>

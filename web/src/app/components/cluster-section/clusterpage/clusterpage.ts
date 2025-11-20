@@ -136,7 +136,14 @@ export class Clusterpage {
       averageLED: '',
       SID: '',
       seedID: '',
-      seedSequence: ''
+      seedSequence: '',
+      sequenceID: '',  
+      rank: '',           
+      readCount: '',      
+      rpu: '',            
+      rankInCluster: '',  
+      led: '',            
+      sequence: ''
     };
   }
 
@@ -250,12 +257,26 @@ export class Clusterpage {
     const tabData = this.tabResults.get(tabIndex)!;
     
     // Update columns for cluster data structure
-    tabData.displayedColumns = ['sequenceID', 'cluster', 'readCount', 'sequence'];
+    tabData.displayedColumns = [
+        'sequenceID', 
+        'cluster', 
+        'rankInCluster', 
+        'led', 
+        'readCount', 
+        'rank',      // Added
+        'rpu',       // Added
+        'sequence'
+    ];
+
     tabData.columnFilters = {
       sequenceID: '',
+      sequence: '',
       cluster: '',
       readCount: '',
-      sequence: ''
+      rank: '',          // New
+      rpu: '',           // New
+      rankInCluster: '', // New
+      led: ''            // New
     };
     
     tabData.tableData = data;

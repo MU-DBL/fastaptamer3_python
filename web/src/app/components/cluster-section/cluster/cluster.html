@@ -1,13 +1,11 @@
-<div class="container">
-    <div class="form-section">
-        <h3 class="section-title">Input data *</h3>
+<div class="section-container">
+    <div class="left-subsection">
+        <h3 class="section-title">Choose file to cluster *</h3>
         <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'"
-            [placeholderText]="'FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+            [placeholderText]="'FASTA count file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
             (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
         </app-upload>
-    </div>
-
-    <div class="form-section">
+ 
         <label class="section-label">Min. number of reads to cluster: 
             <mat-icon class="info-icon" matTooltip="Min. number of reads for sequences to be clustered">help_outline</mat-icon>
         </label>
@@ -24,9 +22,7 @@
                 </mat-slider>
             </div>
         </div>
-    </div>
 
-    <div class="form-section">
         <label class="section-label">Max. LED: 
             <mat-icon class="info-icon" matTooltip="Max. edit distance from seed sequence">help_outline</mat-icon>
         </label>
@@ -43,9 +39,7 @@
                 </mat-slider>
             </div>
         </div>
-    </div>
 
-    <div class="form-section">
         <label class="section-label">Max. number of clusters to generate:
             <mat-icon class="info-icon" matTooltip="Total number of desired clusters">help_outline</mat-icon>
         </label>
@@ -62,9 +56,7 @@
                 </mat-slider>
             </div>
         </div>
-    </div>
 
-    
     <h3 class="section-title">Keep non-clustered sequences?</h3>
     <mat-radio-group 
       [(ngModel)]="keepNonClusteredSequence"
@@ -103,4 +95,11 @@
         Download
       </button>
     </div>
+    </div>
+    <div class="right-subsection" >
+     <app-table 
+        [data]="clusterData" 
+        [config]="tableConfig">
+      </app-table>
+  </div>
 </div>

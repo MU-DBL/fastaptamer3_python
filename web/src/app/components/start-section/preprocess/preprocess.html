@@ -1,27 +1,26 @@
-<div class="container">
-    <div class="form-section">
+<div class="section-container">
+    <div class="left-subsection">
         <h3 class="section-title">Choose data to preprocess *</h3>
         <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'" [buttonText]="'Browse...'"
             [placeholderText]="'FASTQ or FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
             (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
         </app-upload>
-    </div>
 
-    <div class="form-section">
+
+
         <mat-label class="section-label">Constant 5' region: </mat-label>
         <mat-form-field appearance="outline" class="full-width">
             <input matInput [(ngModel)]="constant5Region" />
         </mat-form-field>
-    </div>
+ 
 
-    <div class="form-section">
+  
         <mat-label class="section-label">Constant 3' region: </mat-label>
         <mat-form-field appearance="outline" class="full-width">
             <input matInput [(ngModel)]="constant3Region" />
         </mat-form-field>
-    </div>
 
-    <div class="form-section">
+
         <label class="section-label">Sequence length range:
             <mat-icon class="info-icon" matTooltip="Define the minimum and maximum length for primer sequences">help_outline</mat-icon>
         </label>
@@ -40,9 +39,8 @@
                 </mat-slider>
             </div>
         </div>
-    </div>
 
-    <div class="form-section">
+
         <label class="section-label">Max allowed error for sequences: 
             <mat-icon class="info-icon" matTooltip="Maximum average base error per sequence (errors derived from Phred scores)">help_outline</mat-icon>
         </label>
@@ -59,7 +57,6 @@
                 </mat-slider>
             </div>
         </div>
-    </div>
 
    <div class="action-buttons">
       <button 

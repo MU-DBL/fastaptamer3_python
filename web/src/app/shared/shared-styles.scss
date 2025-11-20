@@ -325,6 +325,66 @@
   color: #4caf50;
 }
 
+.section-container {
+  display: flex;
+  gap: 24px; // Increased from 20px for better breathing room
+  width: 100%;
+  height: calc(100vh - 150px);
+  padding: 20px; // Added padding around the container
+  box-sizing: border-box;
+  position: relative;
+  background-color: #f5f5f5; // Subtle background to distinguish from subsections
+}
+
+.left-subsection {
+  flex: 0 0 30%;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Visual styling
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+  
+  ::ng-deep {
+    .mat-mdc-tab-body-content,
+    .container {
+      overflow: hidden;
+    }
+  }
+}
+
+// If you have a right subsection for the table
+.right-subsection {
+  flex: 1;
+  min-width: 0;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
 // Responsive design
 @media (max-width: 600px) {
   .container {

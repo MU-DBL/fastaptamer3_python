@@ -1,5 +1,5 @@
-<div class="container">
-  <div class="form-section">
+<div class="section-container">
+  <div class="left-subsection">
     <h3 class="section-title">Choose data to count*:</h3>
     <app-upload
       [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'"
@@ -239,5 +239,11 @@
         Abundance plot
       </button>
     </div>
+  </div>
+  <div class="right-subsection">
+     <app-table 
+        [data]="tableData" 
+        [config]="tableConfig">
+      </app-table>
   </div>
 </div>

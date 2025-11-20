@@ -6,57 +6,68 @@ import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Table, TableConfig } from '../../common/table/table';
 
 @Component({
-  selector: 'app-recount',
-  imports: [
-    CommonModule,
+  selector: 'app-count',
+  imports: [ 
+    CommonModule, 
     FormsModule,
     Upload,
-    ...MATERIAL_IMPORTS
-  ],
-  templateUrl: './recount.html',
-  styleUrl: './recount.scss'
+    Table,
+    ...MATERIAL_IMPORTS],
+  templateUrl: './count.html',
+  styleUrl: './count.scss'
 })
-export class Recount {
-  private apiService = inject(ApiService);
+export class Count {
 
+  tableConfig: TableConfig = {
+    columns: [
+      { key: 'id', label: 'id' },
+      { key: 'rank', label: 'Rank' },
+      { key: 'reads', label: 'Reads' },
+      { key: 'rpm', label: 'RPM' },
+      { key: 'length', label: 'Length' },
+      { key: 'seqs', label: 'Sequence' }
+    ],
+    initialPageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100]
+  };
+  
+  private apiService = inject(ApiService);
+  
   // Output events to emit to parent component
   resultsReady = output<any[]>();
   showReadsPerRankModal = output<{ data: any[], params: any }>();
   showSeqLengthModal = output<{ data: any, params: any }>();
+  showAbundancePlotModal = output<{ data: any[], params: any }>();
 
-  // File upload states for two FASTA files
-  selectedFile1: File | null = null;
-  savedFileName1: string = '';
-  uploadComplete1: boolean = false;
-
-  selectedFile2: File | null = null;
-  savedFileName2: string = '';
-  uploadComplete2: boolean = false;
-
-  // Form values
+  selectedFile: File | null = null;
+  savedFileName: string = '';
+  fileName: string = 'FASTQ or FASTA file';
   normalizeValue: string = '1e+06';
+  returnReverseComplement: string = 'no';
   downloadFormat: string = 'fasta';
-
-  // Use signals for reactive state
+  uploadComplete: boolean = false;
+  
+  // Use signals for reactive state that affects the template
   isProcessing = signal(false);
   processedFileName = signal('');
 
-  // Table data
-  private tableData: any[] = [];
+  // Table data (temporary storage before emitting to parent)
+  tableData: any[] = [];
 
   // Plot parameters
   minReadsToPlot: number = 10;
   maxRankToPlot: number = 100;
-
+  
   // Reads per Rank plot customization
   adjustReadsPerRank: string = 'no';
   rprXAxis: string = 'Ranks of unique sequences';
   rprYAxis: string = 'Total reads per unique sequence';
   rprTitle: string = 'Read count for each rank';
   rprLineColor: string = '#87CEEB';
-
+  
   // Sequence-length histogram customization
   adjustSeqLengthHistogram: string = 'no';
   histXAxis: string = 'Sequence length';
@@ -66,60 +77,49 @@ export class Recount {
   histBarOutline: string = '#000000';
   histBarFill: string = '#87CEEB';
   histBarFill2: string = '#FFA500';
-
+  
+  // Abundance plot customization
+  adjustAbundancePlot: string = 'no';
+  useSingleton: string = 'yes';
+  abundanceBreakpoints: string = '10,100,1000';
+  abundanceXAxis: string = 'No. Reads';
+  abundanceYAxis: string = 'Fraction of Population';
+  abundancePlotTitle: string = 'Binned sequence abundance';
+  abundanceBarOutline: string = '#000000';
+  abundanceBarFill: string = '#87CEEB';
+  abundanceColorLight: string = '#ADD8E6';
+  abundanceColorDark: string = '#FF6B6B';
+  
   // Statistics
   totalSequences = signal(0);
   uniqueSequences = signal(0);
+  elapsedTime = signal('0.00');
 
   // Helper method for slider label formatting
   formatLabel(value: number): string {
     return `${value}`;
   }
 
-  // File 1 upload handlers
-  onFile1Selected(result: FileUploadResult): void {
-    this.selectedFile1 = result.file;
+  onFileSelected(result: FileUploadResult): void {
+    this.selectedFile = result.file;
     this.processedFileName.set('');
     this.tableData = [];
-    console.log('File 1 selected:', result.fileName);
+    console.log('File selected:', result.fileName);
   }
 
-  onUpload1Complete(result: FileUploadResult): void {
+  onUploadComplete(result: FileUploadResult): void {
     if (result.uploadComplete && result.savedFileName) {
-      this.uploadComplete1 = true;
-      this.savedFileName1 = result.savedFileName;
-      console.log('Upload 1 complete:', result.savedFileName);
+      this.uploadComplete = true;
+      this.savedFileName = result.savedFileName;
+      console.log('Upload complete:', result.savedFileName);
     } else if (result.error) {
-      console.error('Upload 1 failed:', result.error);
-    }
-  }
-
-  // File 2 upload handlers
-  onFile2Selected(result: FileUploadResult): void {
-    this.selectedFile2 = result.file;
-    this.processedFileName.set('');
-    this.tableData = [];
-    console.log('File 2 selected:', result.fileName);
-  }
-
-  onUpload2Complete(result: FileUploadResult): void {
-    if (result.uploadComplete && result.savedFileName) {
-      this.uploadComplete2 = true;
-      this.savedFileName2 = result.savedFileName;
-      console.log('Upload 2 complete:', result.savedFileName);
-    } else if (result.error) {
-      console.error('Upload 2 failed:', result.error);
+      console.error('Upload failed:', result.error);
     }
   }
 
   onStart(): void {
-    if (!this.uploadComplete1 || !this.savedFileName1) {
-      console.warn('Please upload the first FASTA file!');
-      return;
-    }
-
-    if (!this.uploadComplete2 || !this.savedFileName2) {
-      console.warn('Please upload the second FASTA file!');
+    if (!this.uploadComplete || !this.savedFileName) {
+      console.warn('Please upload a file first!');
       return;
     }
 
@@ -128,24 +128,24 @@ export class Recount {
     this.tableData = [];
 
     const params = {
-      input_path_1: this.savedFileName1,
-      input_path_2: this.savedFileName2,
+      input_path: this.savedFileName,
+      reverseComplement: this.returnReverseComplement === 'yes',
       scaling_factor: parseFloat(this.normalizeValue),
       output_format: this.downloadFormat
     };
 
-    console.log('Starting recount with parameters:', params);
+    console.log('Starting count with parameters:', params);
 
     // Chain the operations using RxJS operators
-    this.apiService.recount(params).pipe(
+    this.apiService.count(params).pipe(
       tap(response => {
         if (response.status === 'ok' && response.result) {
           this.processedFileName.set(response.result);
-          console.log('Recount complete:', response.result);
+          console.log('Count complete:', response.result);
         }
       }),
       switchMap(response => {
-        // Automatically load results after successful recount
+        // Automatically load results after successful count
         if (response.status === 'ok' && response.result) {
           return this.apiService.downloadFile(response.result).pipe(
             tap(blob => this.parseFileBlob(blob, response.result))
@@ -154,8 +154,8 @@ export class Recount {
         return of(null);
       }),
       catchError(error => {
-        const errorMsg = error.error?.detail || 'Recount failed';
-        console.error('Recount error:', errorMsg);
+        const errorMsg = error.error?.detail || 'Count failed';
+        console.error('Count error:', errorMsg);
         return of(null);
       }),
       finalize(() => {
@@ -176,14 +176,14 @@ export class Recount {
   parseResultFile(content: string, filename: string): void {
     const isFasta = filename.endsWith('.fasta') || filename.endsWith('.fa');
     const isCsv = filename.endsWith('.csv');
-
+    
     this.tableData = [];
-
+    
     if (isCsv) {
       // Parse CSV
       const lines = content.split('\n').filter(line => line.trim());
       const headers = lines[0].split(',');
-
+      
       for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',');
         if (values.length >= 6) {
@@ -202,7 +202,7 @@ export class Recount {
       const lines = content.split('\n').filter(line => line.trim());
       let currentId = '';
       let currentSeq = '';
-
+      
       for (const line of lines) {
         if (line.startsWith('>')) {
           if (currentId && currentSeq) {
@@ -214,20 +214,21 @@ export class Recount {
           currentSeq += line.trim();
         }
       }
-
+      
       // Add the last entry
       if (currentId && currentSeq) {
         this.addFastaEntry(currentId, currentSeq);
       }
     }
-
+    
     // Update statistics
     this.uniqueSequences.set(this.tableData.length);
     const totalReads = this.tableData.reduce((sum, item) => sum + item.reads, 0);
     this.totalSequences.set(totalReads);
-
+    
     // Emit the parsed data to the parent component
-    this.resultsReady.emit(this.tableData);
+    // this.resultsReady.emit(this.tableData);
+    
   }
 
   addFastaEntry(id: string, sequence: string): void {
@@ -236,7 +237,7 @@ export class Recount {
     const rank = parts[0]?.split('=')[1] || '';
     const reads = parts[1]?.split('=')[1] || '';
     const rpm = parts[2]?.split('=')[1] || '';
-
+    
     this.tableData.push({
       id: id,
       rank: parseInt(rank),
@@ -250,7 +251,7 @@ export class Recount {
   onDownload(): void {
     const filename = this.processedFileName();
     if (!filename) {
-      console.warn('No file available for download. Please run recount first.');
+      console.warn('No file available for download. Please run count first.');
       return;
     }
 
@@ -276,63 +277,63 @@ export class Recount {
   // Plot methods - emit events to parent component
   openReadsPerRankPlot(): void {
     if (this.tableData.length === 0) {
-      alert('No data available for plotting. Please run the recount process first.');
+      alert('No data available for plotting. Please run the count process first.');
       return;
     }
-
+    
     // Validate slider values
     if (this.minReadsToPlot < 0) {
       alert('Minimum number of reads cannot be negative.');
       return;
     }
-
+    
     if (this.maxRankToPlot < this.minReadsToPlot) {
       alert('Maximum rank must be greater than or equal to minimum reads.');
       return;
     }
-
+    
     if (this.maxRankToPlot < 1) {
       alert('Maximum rank must be at least 1.');
       return;
     }
-
+    
     // Check if max rank exceeds available data
     const maxAvailableRank = Math.max(...this.tableData.map(item => item.rank));
     const data = this.getReadsPerRankData();
-
+    
     if (data.length === 0) {
       alert('No data points match the specified criteria. Please adjust the min reads or max rank values.');
       return;
     }
-
+    
     // Inform user if max rank was adjusted
     if (this.maxRankToPlot > maxAvailableRank) {
       console.info(`Max rank adjusted from ${this.maxRankToPlot} to ${maxAvailableRank} (maximum available rank)`);
     }
-
+    
     const params = {
       title: this.rprTitle,
       xAxisLabel: this.rprXAxis,
       yAxisLabel: this.rprYAxis,
       lineColor: this.rprLineColor
     };
-
+    
     this.showReadsPerRankModal.emit({ data, params });
   }
 
   openSeqLengthHistogram(): void {
     if (this.tableData.length === 0) {
-      alert('No data available for plotting. Please run the recount process first.');
+      alert('No data available for plotting. Please run the count process first.');
       return;
     }
-
+    
     const data = this.getSequenceLengthData();
-
+    
     if (data.unique.length === 0 && data.total.length === 0) {
       alert('No sequence length data available for plotting.');
       return;
     }
-
+    
     const params = {
       title: this.histTitle,
       xAxisLabel: this.histXAxis,
@@ -342,15 +343,53 @@ export class Recount {
       barFill: this.histBarFill,
       barFill2: this.histBarFill2
     };
-
     this.showSeqLengthModal.emit({ data, params });
+  }
+
+  openAbundancePlot(): void {
+    if (this.tableData.length === 0) {
+      alert('No data available for plotting. Please run the count process first.');
+      return;
+    }
+    
+    // Validate breakpoints
+    const breaks = this.abundanceBreakpoints.split(',').map(b => parseInt(b.trim())).filter(b => !isNaN(b));
+    
+    if (breaks.length === 0) {
+      alert('Invalid abundance breakpoints. Please enter comma-separated numbers (e.g., 10,100,1000).');
+      return;
+    }
+    
+    if (breaks.some(b => b <= 0)) {
+      alert('Abundance breakpoints must be positive numbers.');
+      return;
+    }
+    
+    const data = this.getAbundancePlotData();
+    
+    if (data.length === 0) {
+      alert('No abundance data available for plotting with the specified breakpoints.');
+      return;
+    }
+    
+    const params = {
+      title: this.abundancePlotTitle,
+      xAxisLabel: this.abundanceXAxis,
+      yAxisLabel: this.abundanceYAxis,
+      barOutline: this.abundanceBarOutline,
+      barFill: this.abundanceBarFill,
+      colorLight: this.abundanceColorLight,
+      colorDark: this.abundanceColorDark
+    };
+    
+    this.showAbundancePlotModal.emit({ data, params });
   }
 
   getReadsPerRankData(): any[] {
     // Get all data within the rank range, regardless of minReadsToPlot
     const maxAvailableRank = Math.max(...this.tableData.map(item => item.rank));
     const effectiveMaxRank = Math.min(this.maxRankToPlot, maxAvailableRank);
-
+    
     return this.tableData
       .filter(item => item.reads >= this.minReadsToPlot && item.rank <= effectiveMaxRank)
       .map(item => ({ rank: item.rank, reads: item.reads }))
@@ -370,5 +409,50 @@ export class Recount {
       unique: Object.keys(uniqueLengths).map(len => ({ length: parseInt(len), count: uniqueLengths[parseInt(len)] })),
       total: Object.keys(totalReadsByLength).map(len => ({ length: parseInt(len), count: totalReadsByLength[parseInt(len)] }))
     };
+  }
+
+  getAbundancePlotData(): any[] {
+    const breaks = this.abundanceBreakpoints.split(',').map(b => parseInt(b.trim())).filter(b => !isNaN(b)).sort((a, b) => a - b);
+    const useSingleton = this.useSingleton === 'yes';
+    
+    // Create bins
+    const bins: { [key: string]: { count: number, totalReads: number } } = {};
+    
+    this.tableData.forEach(item => {
+      let binLabel = '';
+      
+      if (useSingleton && item.reads === 1) {
+        binLabel = 'Singleton';
+      } else {
+        for (let i = 0; i < breaks.length; i++) {
+          if (i === 0 && item.reads < breaks[i]) {
+            binLabel = `1 < Reads < ${breaks[i]}`;
+            break;
+          } else if (i > 0 && item.reads >= breaks[i - 1] && item.reads < breaks[i]) {
+            binLabel = `${breaks[i - 1]} ≤ Reads < ${breaks[i]}`;
+            break;
+          } else if (i === breaks.length - 1 && item.reads >= breaks[i]) {
+            binLabel = `${breaks[i]} ≤ Reads`;
+            break;
+          }
+        }
+      }
+      
+      if (binLabel) {
+        if (!bins[binLabel]) {
+          bins[binLabel] = { count: 0, totalReads: 0 };
+        }
+        bins[binLabel].count++;
+        bins[binLabel].totalReads += item.reads;
+      }
+    });
+    
+    const totalReads = Object.values(bins).reduce((sum, bin) => sum + bin.totalReads, 0);
+    
+    return Object.keys(bins).map(label => ({
+      bin: label,
+      fraction: bins[label].totalReads / totalReads,
+      uniqueCount: bins[label].count
+    }));
   }
 }

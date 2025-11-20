@@ -1,4 +1,4 @@
-import { Component, inject, signal, output } from '@angular/core';
+import { Component, inject, signal, output, ChangeDetectorRef } from '@angular/core';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Table ,TableConfig} from '../../common/table/table';
 
 export interface ClusterResultsEvent {
   data: any[];
@@ -18,14 +19,34 @@ export interface ClusterResultsEvent {
     CommonModule,
     FormsModule,
     Upload,
+    Table,
     ...MATERIAL_IMPORTS],
   templateUrl: './cluster.html',
   styleUrl: './cluster.scss',
 })
+
 export class Cluster {
+
+    private cdr = inject(ChangeDetectorRef);
     private apiService = inject(ApiService);
 
-    // Output event for results ready
+    tableConfig: TableConfig = {
+        columns: [
+          { key: 'sequenceID', label: 'ID', width:"150px"},               
+          { key: 'cluster', label: 'Cluster', exect_match:true },  
+          { key: 'rankInCluster', label: 'Rank In Cluster', exect_match:true}, 
+          { key: 'led', label: 'LED' },          
+          { key: 'readCount', label: 'Reads' },             
+          { key: 'rank', label: 'Rank' },                   
+          { key: 'rpu', label: 'RPU' },                     
+          { key: 'sequence', label: 'Sequence' }                         
+        ],
+        initialPageSize: 10,
+        pageSizeOptions: [10, 25, 50, 100]
+      };
+
+    clusterData: any[] = [];
+
     resultsReady = output<ClusterResultsEvent>();
 
     downloadFormat: string = 'fasta';
@@ -119,6 +140,7 @@ export class Cluster {
     }
 
     parseClusterFile(blob: Blob, filename: string): void {
+      this.clusterData = []
       const reader = new FileReader();
       reader.onload = (e: any) => {
         const text = e.target.result;
@@ -127,56 +149,58 @@ export class Cluster {
       reader.readAsText(blob);
     }
 
-    parseResultFile(content: string, filename: string): void {
-      const isCsv = filename.endsWith('.csv');
-      const clusterData: any[] = [];
-      
-      if (isCsv) {
-        // Parse CSV content (similar to diversity component but for cluster results)
-        const lines = content.split('\n').filter(line => line.trim());
-        if (lines.length > 1) {
-          const headers = lines[0].split(',');
-          
-          for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',');
-            if (values.length >= 4) {
-              const rowData = {
-                sequenceID: values[0] || '',
-                cluster: parseInt(values[1]) || 0,
-                readCount: parseInt(values[2]) || 0,
-                sequence: values[3] || '',
-                // Add additional fields if they exist
-                ...(values.length > 4 && { additionalData: values.slice(4) })
-              };
-              clusterData.push(rowData);
-            }
+  parseResultFile(content: string, filename: string): void {
+  // 1. Create a temporary local array
+    const newData: any[] = []; 
+
+    const isCsv = filename.endsWith('.csv');
+
+    if (isCsv) {
+      const lines = content.split('\n').filter(line => line.trim());
+      if (lines.length > 1) {
+        // Skip header (i=1)
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',');
+          if (values.length >= 4) {
+            const rowData = {
+              sequenceID: values[0] || '',
+              cluster: parseInt(values[1]) || 0,
+              readCount: parseInt(values[2]) || 0,
+              sequence: values[3] || '',
+              ...(values.length > 4 && { additionalData: values.slice(4) })
+            };
+            // 2. Push to temporary array
+            newData.push(rowData); 
           }
         }
-      } else if (filename.endsWith('.fasta') || filename.endsWith('.fa')) {
-        // Parse FASTA content
-        const fastaEntries = this.parseFasta(content);
-        fastaEntries.forEach((entry, index) => {
-          // Extract cluster information from header if available
-          const clusterMatch = entry.header.match(/Cluster[_\s]*(\d+)/i);
-          const readCountMatch = entry.header.match(/reads[_\s]*(\d+)/i);
-          
-          clusterData.push({
-            sequenceID: entry.header,
-            cluster: clusterMatch ? parseInt(clusterMatch[1]) : index + 1,
-            readCount: readCountMatch ? parseInt(readCountMatch[1]) : 1,
-            sequence: entry.sequence
-          });
-        });
       }
-
-      // Emit results to parent component for display in right section
-      this.resultsReady.emit({
-        data: clusterData,
-        inputFile: this.savedFileName
-      });
+    } else if (filename.endsWith('.fasta') || filename.endsWith('.fa')) {
+      const fastaEntries = this.parseFasta(content);
       
-      console.log('Parsed cluster data:', clusterData.length, 'sequences');
-    }
+      fastaEntries.forEach((entry) => {
+        const getParam = (key: string, isFloat = false) => {
+          const regex = new RegExp(`${key}[=_\\s]*([0-9.]+)`, 'i');
+          const match = entry.header.match(regex);
+          return (match && match[1]) ? (isFloat ? parseFloat(match[1]) : parseInt(match[1])) : 0;
+        };
+
+        // 2. Push to temporary array
+        newData.push({
+          sequenceID: entry.header,
+          sequence: entry.sequence,
+          rank: getParam('Rank'),
+          readCount: getParam('Reads'),
+          rpu: getParam('RPU', true),
+          cluster: getParam('Cluster'),
+          rankInCluster: getParam('RankInCluster'),
+          led: getParam('LED')
+        });
+      });
+      }
+      // console.log(newData)
+    this.clusterData = newData; 
+    this.cdr.detectChanges();
+  }
 
     private parseFasta(content: string): { header: string; sequence: string }[] {
       const entries: { header: string; sequence: string }[] = [];
