@@ -13,7 +13,7 @@ python-Levenshtein==0.27.3
 
 # String processing
 regex>=2023.0.0
-cutadapt
+cutadapt==4.1
 numba==0.59.0
 
 # K-mer analysis and dimensionality reduction

@@ -1,31 +1,20 @@
 <div class="section-container">
-    <div class="left-subsection">
-        <h3 class="section-title">Input data:</h3>
-        <app-upload [acceptedFileTypes]="'.fasta'" [buttonText]="'Browse...'"
-            [placeholderText]="'Clustered FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
-            (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
-        </app-upload>
+  <div class="left-subsection">
+    <h3 class="section-title">Input data:</h3>
+    <app-upload [acceptedFileTypes]="'.fasta'" [buttonText]="'Browse...'" [placeholderText]="'Clustered FASTA file'"
+      [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
 
-
-
-     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="!uploadComplete || isProcessing()"
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" class="start-button" [disabled]="!uploadComplete || isProcessing()"
         (click)="onStart()">
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
-      <button 
-        mat-raised-button 
-        color="accent"
-        class="download-button"
-        [class.download-ready]="processedFileName()"
-        [disabled]="!processedFileName()"
-        (click)="onDownload()">
+      <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
         Download
       </button>
@@ -33,172 +22,167 @@
 
     <hr class="section-divider">
 
-      <!-- Sequence Length Histogram Section -->
-      <h3 class="section-title">Adjust default plots of cluster metadata?</h3>
-      <mat-radio-group [(ngModel)]="adjustClusterMetadata" [disabled]="!processedFileName()" class="radio-group">
-        <mat-radio-button value="yes">Yes</mat-radio-button>
-        <mat-radio-button value="no">No</mat-radio-button>
-      </mat-radio-group>
+    <!-- Sequence Length Histogram Section -->
+    <h3 class="section-title">Adjust default plots of cluster metadata?</h3>
+    <mat-radio-group [(ngModel)]="adjustClusterMetadata" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
 
-     @if (adjustClusterMetadata === "yes") {
-        <div class="customization-panel">
-            <label class="input-label">X-axis - represents clusters.</label>
-            <mat-form-field appearance="outline" class="full-width">
-            <textarea matInput [(ngModel)]="clusterMetaXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
-            </mat-form-field>
-            
-            <label class="input-label">Y-axis 1 - represents unique sequence count.</label>
-            <mat-form-field appearance="outline" class="full-width">
-            <textarea matInput [(ngModel)]="clusterMetaYAxis1" rows="2" [disabled]="!processedFileName()"></textarea>
-            </mat-form-field>
+    @if (adjustClusterMetadata === "yes") {
+    <div class="customization-panel">
+      <label class="input-label">X-axis - represents clusters.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="clusterMetaXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
 
-            <div class="color-picker-field">
-            <label class="input-label">Color for unique sequence count.</label>
-            <input type="color" [(ngModel)]="clusterMetaColor1" [disabled]="!processedFileName()" class="color-input">
-            </div>
-            
-            <label class="input-label">Y-axis 2 - represents total sequence count.</label>
-            <mat-form-field appearance="outline" class="full-width">
-            <textarea matInput [(ngModel)]="clusterMetaYAxis2" rows="2" [disabled]="!processedFileName()"></textarea>
-            </mat-form-field>
-            
-            <div class="color-picker-field">
-            <label class="input-label">Color for total sequence count.</label>
-            <input type="color" [(ngModel)]="clusterMetaColor2" [disabled]="!processedFileName()" class="color-input">
-            </div>
+      <label class="input-label">Y-axis 1 - represents unique sequence count.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="clusterMetaYAxis1" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
 
-            <label class="input-label">Y-axis 3 - represents average LED.</label>
-            <mat-form-field appearance="outline" class="full-width">
-            <textarea matInput [(ngModel)]="clusterMetaYAxis3" rows="2" [disabled]="!processedFileName()"></textarea>
-            </mat-form-field>
+      <div class="color-picker-field">
+        <label class="input-label">Color for unique sequence count.</label>
+        <input type="color" [(ngModel)]="clusterMetaColor1" [disabled]="!processedFileName()" class="color-input">
+      </div>
 
-            <div class="color-picker-field">
-            <label class="input-label">Color for average LED.</label>
-            <input type="color" [(ngModel)]="clusterMetaColor3" [disabled]="!processedFileName()" class="color-input">
-            </div>
+      <label class="input-label">Y-axis 2 - represents total sequence count.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="clusterMetaYAxis2" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
 
-            <label class="input-label">Plot title.</label>
-            <mat-form-field appearance="outline" class="full-width">
-            <textarea matInput [(ngModel)]="clusterMetaPlotTitle" rows="2" [disabled]="!processedFileName()"></textarea>
-            </mat-form-field>
-        </div>
-        }
+      <div class="color-picker-field">
+        <label class="input-label">Color for total sequence count.</label>
+        <input type="color" [(ngModel)]="clusterMetaColor2" [disabled]="!processedFileName()" class="color-input">
+      </div>
+
+      <label class="input-label">Y-axis 3 - represents average LED.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="clusterMetaYAxis3" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
+
+      <div class="color-picker-field">
+        <label class="input-label">Color for average LED.</label>
+        <input type="color" [(ngModel)]="clusterMetaColor3" [disabled]="!processedFileName()" class="color-input">
+      </div>
+
+      <label class="input-label">Plot title.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="clusterMetaPlotTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
+    </div>
+    }
 
     <div class="plot-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="!processedFileName()"
+      <button mat-raised-button color="primary" class="start-button" [disabled]="!processedFileName()"
         (click)="clusterMetaPlot()">
         <mat-icon>bar_chart</mat-icon>
         Cluster Metaplots
       </button>
     </div>
 
-      <hr class="section-divider">
+    <hr class="section-divider">
 
     <h3 class="section-title">k-mer size for plot:</h3>
-      <mat-radio-group [(ngModel)]="kmerSize" [disabled]="!processedFileName()" class="radio-group">
-        <mat-radio-button value="3">3</mat-radio-button>
-        <mat-radio-button value="4">4</mat-radio-button>
-        <mat-radio-button value="5">5</mat-radio-button>
-      </mat-radio-group>
+    <mat-radio-group [(ngModel)]="kmerSize" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-button value="3">3</mat-radio-button>
+      <mat-radio-button value="4">4</mat-radio-button>
+      <mat-radio-button value="5">5</mat-radio-button>
+    </mat-radio-group>
 
-      <h3 class="section-title">Plot which clusters?</h3>
-      <div class="cluster-selection-container">
-        <div class="selected-clusters" *ngIf="selectedClusters.length > 0">
-          <span class="selection-label">Selected:</span>
-          @for (cluster of selectedClusters; track cluster) {
-            <mat-chip class="selected-cluster-chip" (removed)="removeSelectedCluster(cluster)" [removable]="!isProcessing()">
-              {{ cluster }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+    <h3 class="section-title">Plot which clusters?</h3>
+    <div class="cluster-selection-container">
+      <div class="selected-clusters" *ngIf="selectedClusters().length > 0">
+        <span class="selection-label">Selected:</span>
+        @for (cluster of selectedClusters(); track cluster) {
+        <mat-chip class="selected-cluster-chip" (removed)="removeSelectedCluster(cluster)" [highlighted]="true"> {{
+          cluster }}
+          <button matChipRemove [disabled]="isProcessing()">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+        }
+      </div>
+
+      <div class="available-clusters" *ngIf="availableClusters().length > 0">
+        <span class="selection-label">Available:</span>
+        <div class="cluster-buttons">
+          @for (cluster of availableClusters(); track cluster) {
+          <button mat-raised-button class="cluster-number-button" [disabled]="!processedFileName()"
+            (click)="addSelectedCluster(cluster)">
+            {{ cluster }}
+          </button>
           }
-        </div>
-        
-        <div class="available-clusters" *ngIf="getAvailableClustersForSelection().length > 0">
-          <span class="selection-label">Available:</span>
-          <div class="cluster-buttons">
-            @for (cluster of getAvailableClustersForSelection(); track cluster) {
-              <button 
-                mat-raised-button 
-                class="cluster-number-button"
-                [disabled]="!processedFileName()"
-                (click)="addSelectedCluster(cluster)">
-                {{ cluster }}
-              </button>
-            }
-          </div>
-        </div>
-        
-        <div class="selection-info">
-          <small>Select clusters for k-mer analysis ({{ selectedClusters.length }} selected)</small>
         </div>
       </div>
 
-     <h3 class="section-title">Plot type:</h3>
-      <mat-radio-group [(ngModel)]="plotType" [disabled]="!processedFileName()" class="radio-group">
-        <mat-radio-button value="PCA">PCA</mat-radio-button>
-        <mat-radio-button value="UMAP">UMAP</mat-radio-button>
-      </mat-radio-group>
+      <div class="selection-info">
+        <small>Select clusters for k-mer analysis ({{ selectedClusters().length }} selected)</small>
+      </div>
+    </div>
 
-      <h3 class="section-title">Adjust default k-mer plot?</h3>
-      <mat-radio-group [(ngModel)]="adjustKmerPlot" [disabled]="!processedFileName()" class="radio-group">
-        <mat-radio-button value="yes">Yes</mat-radio-button>
-        <mat-radio-button value="no">No</mat-radio-button>
-      </mat-radio-group>
-        @if (adjustKmerPlot === "yes") {
-            <div class="customization-panel">
-                <label class="input-label">X-axis - 1st dim. of PCA or UMAP.</label>
-                <mat-form-field appearance="outline" class="full-width">
-                <textarea matInput [(ngModel)]="kmerPlotXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
-                </mat-form-field>
-                
-                <label class="input-label">Y-axis - 2nd dim. of PCA or UMAP.</label>
-                <mat-form-field appearance="outline" class="full-width">
-                <textarea matInput [(ngModel)]="kmerPlotYAxis" rows="2" [disabled]="!processedFileName()"></textarea>
-                </mat-form-field>
+    <h3 class="section-title">Plot type:</h3>
+    <mat-radio-group [(ngModel)]="plotType" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-button value="PCA">PCA</mat-radio-button>
+      <mat-radio-button value="UMAP">UMAP</mat-radio-button>
+    </mat-radio-group>
 
-                <label class="input-label">Legend title - represents clusters.</label>
-                <mat-form-field appearance="outline" class="full-width">
-                <textarea matInput [(ngModel)]="kmerPlotLegendTitle" rows="2" [disabled]="!processedFileName()"></textarea>
-                </mat-form-field>
-                
-                <label class="input-label">Plot title.</label>
-                <mat-form-field appearance="outline" class="full-width">
-                <textarea matInput [(ngModel)]="kmerPlotTitle" rows="2" [disabled]="!processedFileName()"></textarea>
-                </mat-form-field>
+    <h3 class="section-title">Adjust default k-mer plot?</h3>
+    <mat-radio-group [(ngModel)]="adjustKmerPlot" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+    @if (adjustKmerPlot === "yes") {
+    <div class="customization-panel">
+      <label class="input-label">X-axis - 1st dim. of PCA or UMAP.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="kmerPlotXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
 
-                <div class="form-section">
-                  <label class="input-label">Color palette.</label>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Palette</mat-label>
-                    <mat-select [(ngModel)]="kmerPlotColorPalette" [disabled]="!processedFileName()">
-                      <mat-option value="Accent">Accent</mat-option>
-                      <mat-option value="Dark2">Dark2</mat-option>
-                      <mat-option value="Paired">Paired</mat-option>
-                      <mat-option value="Pastel1">Pastel1</mat-option>
-                      <mat-option value="Pastel2">Pastel2</mat-option>
-                      <mat-option value="Set1">Set1</mat-option>
-                      <mat-option value="Set2">Set2</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-            </div>
-        }
+      <label class="input-label">Y-axis - 2nd dim. of PCA or UMAP.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="kmerPlotYAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
 
-        <div class="plot-buttons">
-          <button 
-            mat-raised-button 
-            color="primary"
-            class="start-button"
-            [disabled]="!processedFileName() || selectedClusters.length === 0"
-            (click)="kmerPlot()">
-            <mat-icon>scatter_plot</mat-icon>
-            {{ selectedClusters.length === 0 ? 'Select clusters first' : 'k-mer plot' }}
-          </button>
-        </div>
+      <label class="input-label">Legend title - represents clusters.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="kmerPlotLegendTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
 
-      <p class="note-text">*Characters outside of [A,C,G,T,U] converted to 'X'.</p>
+      <label class="input-label">Plot title.</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea matInput [(ngModel)]="kmerPlotTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+      </mat-form-field>
+
+      <div class="form-section">
+        <label class="input-label">Color palette.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Palette</mat-label>
+          <mat-select [(ngModel)]="kmerPlotColorPalette" [disabled]="!processedFileName()">
+            <mat-option value="Accent">Accent</mat-option>
+            <mat-option value="Dark2">Dark2</mat-option>
+            <mat-option value="Paired">Paired</mat-option>
+            <mat-option value="Pastel1">Pastel1</mat-option>
+            <mat-option value="Pastel2">Pastel2</mat-option>
+            <mat-option value="Set1">Set1</mat-option>
+            <mat-option value="Set2">Set2</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    }
+    <div class="plot-buttons">
+      <button mat-raised-button color="primary" class="start-button"
+        [disabled]="!processedFileName() || selectedClusters().length === 0" (click)="kmerPlot()">
+        <mat-icon>scatter_plot</mat-icon>
+        {{ selectedClusters().length === 0 ? 'Select clusters first' : 'k-mer plot' }}
+      </button>
+    </div>
+
+    <p class="note-text">*Characters outside of [A,C,G,T,U] converted to 'X'.</p>
+  </div>
+  <div class="right-subsection">
+    <app-table [data]="diversityData" [config]="tableConfig">
+    </app-table>
+  </div>
 </div>

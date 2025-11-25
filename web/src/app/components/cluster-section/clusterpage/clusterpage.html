@@ -1,62 +1,26 @@
 <div class="start-page-container">
-    <div class="left-section">
-        <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
-            <mat-tab label="Cluster">
-            <app-cluster 
-              (resultsReady)="onClusterResultsReady($event)">
-            </app-cluster>
-            </mat-tab>
-            <mat-tab label="Diversity">
-            <app-cluster-diversity 
-              (showMetaplotModal)="openMetaplotModal($event)"
-              (showKmerPlotModal)="openKmerPlotModal($event)"
-              (resultsReady)="onDiversityResultsReady($event)">
-            </app-cluster-diversity>
-            </mat-tab>
-            <mat-tab label="MAS">
-            <app-cluster-msa></app-cluster-msa>
-            </mat-tab>
-            <mat-tab label="PHMM">
-            <app-cluster-phmm></app-cluster-phmm>
-            </mat-tab>
-            <mat-tab label="Recluster">
-               
-            </mat-tab>
-            <mat-tab label="Position Enrichment">
-            </mat-tab>
-        </mat-tab-group>
-    </div>
-
-<!-- Cluster Metaplot Modal -->
-@if (showMetaplotModalFlag) {
-  <div class="modal-overlay" (click)="closeMetaplotModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h2>{{ metaplotParams?.plot_title || 'Cluster Metaplots' }}</h2>
-        <button mat-icon-button (click)="closeMetaplotModal()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="metaplot-container" class="plot-container"></div>
-      </div>
-    </div>
+  <div class="left-section">
+    <mat-tab-group>
+      <mat-tab label="Cluster">
+        <app-cluster></app-cluster>
+      </mat-tab>
+      
+      <mat-tab label="Diversity">
+        <app-cluster-diversity></app-cluster-diversity>
+      </mat-tab>
+      
+      <mat-tab label="MSA">
+        <app-cluster-msa></app-cluster-msa>
+      </mat-tab>
+      <mat-tab label="PHMM">
+        <app-cluster-phmm></app-cluster-phmm>
+      </mat-tab>
+      <mat-tab label="Recluster">
+        <app-recluster></app-recluster>
+      </mat-tab>
+      <mat-tab label="Position Enrichment">
+        <app-position-enrichment></app-position-enrichment>
+      </mat-tab>
+    </mat-tab-group>
   </div>
-}
-
-<!-- K-mer Plot Modal -->
-@if (showKmerPlotModalFlag) {
-  <div class="modal-overlay" (click)="closeKmerPlotModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h2>{{ kmerPlotParams?.plot_title || 'K-mer Plot' }}</h2>
-        <button mat-icon-button (click)="closeKmerPlotModal()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="kmerplot-container" class="plot-container"></div>
-      </div>
-    </div>
-  </div>
-}
+</div>

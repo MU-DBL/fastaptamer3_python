@@ -1,0 +1,15 @@
+@if (isOpen) {
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ getPlotTitle() }}</h2>
+      <button mat-icon-button (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div #plotContainer class="plot-container"></div>
+    </div>
+  </div>
+</div>
+}

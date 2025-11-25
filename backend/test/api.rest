@@ -1,0 +1,42 @@
+# GET http://localhost:5001
+
+# cluster MSA
+# POST http://localhost:5001/api/v1/clustermsa
+
+# {
+#     "input_path": "sample100_count_cluster.fasta",
+#     "output_format": "fasta",
+#     "seq_type": "dna",
+#     "cluster_selected": 1
+# }
+
+# cluster MSA entropy and mutual information
+# POST http://localhost:5001/api/v1/cluster-msa-entropy
+
+# {
+#   "input_path": "sample100_count_cluster_cluster1_msa.fasta"
+# }
+
+# POST http://localhost:5001/api/v1/cluster-msa-mutinfo
+
+# {
+#   "input_path": "sample100_count_cluster_cluster1_msa.fasta"
+# }
+
+# POST http://localhost:5001/api/v1/cluster-phmm-simulate
+
+# {
+#     "input_path": "sample100_count_cluster_cluster1_msa.fasta",
+#     "num_sequences": 10,
+#     "sequence_length": 70,
+#     "output_format_phmm": str = "txt"
+#     "output_format_simulation": str = "fasta"
+#     "pseudocount_method": "laplace"
+# }
+
+
+POST http://localhost:5001/api/v1/cluster-list
+
+{
+  "input_path": "sample100_count_cluster.fasta"
+}

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from routers import cluster_msa,cluster_phmm, cluster_list
 from routers import preprocess,count,recount,filehandler,progress, cluster, cluster_diversity
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,6 +31,9 @@ app.include_router(filehandler.router, prefix="/api/v1", tags=["filehandler"])
 app.include_router(progress.router, prefix="/api/v1", tags=["progress"])
 app.include_router(cluster.router, prefix="/api/v1", tags=["cluster"])
 app.include_router(cluster_diversity.router, prefix="/api/v1", tags=["cluster_diversity"])
+app.include_router(cluster_msa.router, prefix="/api/v1", tags=["cluster_msa"])
+app.include_router(cluster_phmm.router, prefix="/api/v1", tags=["cluster_phmm"])
+app.include_router(cluster_list.router, prefix="/api/v1", tags=["cluster_list"])
 
 @app.get("/")
 async def root():

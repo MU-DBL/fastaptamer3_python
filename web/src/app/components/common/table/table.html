@@ -23,7 +23,7 @@
             *ngIf="isColumnFilterable(column.key)"
             type="text" 
             [(ngModel)]="columnFilters[column.key]" 
-            (input)="applyColumnFilter(column.exect_match ?? false)" 
+            (input)="applyColumnFilter(column.exact_match ?? false)" 
             class="column-filter" 
             placeholder="All">
         </th>

@@ -1,4 +1,6 @@
+from pathlib import Path
 import re
+from typing import Any
 import pandas as pd
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
@@ -31,22 +33,6 @@ def save_sequences(seq_df, output_path, output_format='fasta'):
 
 
 def parse_fasta(fasta_input):
-    """
-    Read and format FASTA file into a pandas DataFrame.
-    Parses headers in format: 
-    - Basic: >rank=1;read=1000;RPU=0.5
-    - Clustered: >rank=1;read=1000;RPU=0.5;cluster=1;rankInCluster=1;LED=0
-    
-    Parameters:
-    -----------
-    fasta_input : str
-        Path to the FASTA file
-        
-    Returns:
-    --------
-    pandas.DataFrame
-        Formatted DataFrame with sequences and metadata
-    """
     
     # Lists to store parsed data
     data = []
@@ -116,9 +102,19 @@ def parse_fasta(fasta_input):
     
     column_order = base_cols + cluster_cols + [ColumnName.SEQUENCES]
     fasta_df = fasta_df[column_order]
-
-    print(fasta_df.loc[0])
     
     return fasta_df
+
+
+def read_file(filepath: Path) -> pd.DataFrame:
+    if filepath.suffix.lower() == '.csv':
+        df = pd.read_csv(filepath)
+    elif filepath.suffix.lower() == '.fasta':
+        df = parse_fasta(filepath)
+    
+    if df.empty:
+        raise ValueError("file is empty")
+    
+    return df
 
 

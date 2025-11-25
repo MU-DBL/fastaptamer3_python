@@ -17,6 +17,8 @@ import {
 } from '../../../shared/kmer-analysis.types';
 import { DiversityResultsEvent } from '../cluster-diversity/cluster-diversity';
 import { ClusterResultsEvent } from '../cluster/cluster';
+import { Recluster } from '../recluster/recluster';
+import { PositionEnrichment } from '../position-enrichment/position-enrichment';
 
 @Component({
   selector: 'app-clusterpage',
@@ -27,6 +29,8 @@ import { ClusterResultsEvent } from '../cluster/cluster';
     ClusterDiversity,
     ClusterMsa,
     ClusterPhmm,
+    Recluster,
+    PositionEnrichment,
     ...MATERIAL_IMPORTS
 ],
   templateUrl: './clusterpage.html',

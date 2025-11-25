@@ -1,1 +1,149 @@
-<p>cluster-msa works!</p>
+<div class="section-container">
+    <div class="left-subsection">
+        <div>
+            <h3 class="section-title">Clustered FASTA file:</h3>
+            <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
+                [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+                (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
+            </app-upload>
+            <!-- <button mat-raised-button class="get-clusters-button" (click)="onGetClusters()">
+                Get clusters
+            </button> -->
+
+            <h3 class="section-title">Perform MSA for which cluster?</h3>
+            <mat-form-field appearance="outline" style="width: 98%;">
+                <mat-select [(ngModel)]="selectedCluster" class="cluster-select">
+                    <mat-option *ngFor="let cluster of availableClusters" [value]="cluster">
+                        {{ cluster }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+            <h3 class="section-title">Type of sequences?</h3>
+            <mat-radio-group [(ngModel)]="sequenceType" class="radio-group">
+                <mat-radio-button value="nucleotide">Nucleotide</mat-radio-button>
+                <mat-radio-button value="aminoacid">AminoAcid</mat-radio-button>
+            </mat-radio-group>
+
+            <h3 class="section-title">FASTA or CSV download?</h3>
+            <mat-radio-group [(ngModel)]="msaDownloadFormat" class="radio-group">
+                <mat-radio-button value="fasta">FASTA</mat-radio-button>
+                <mat-radio-button value="csv">CSV</mat-radio-button>
+            </mat-radio-group>
+
+            <div class="action-buttons">
+                <button mat-raised-button color="primary" class="start-button"
+                    [disabled]="!uploadComplete || isProcessing()" (click)="onMSAStart()">
+                    <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+                    {{ isProcessing() ? 'Processing...' : 'Start' }}
+                </button>
+
+                <button mat-raised-button color="accent" class="download-button"
+                    [class.download-ready]="processedFileName()" [disabled]="!processedFileName()"
+                    (click)="onMSADownload()">
+                    <mat-icon>download</mat-icon>
+                    Download
+                </button>
+            </div>
+        </div>
+        <hr class="section-divider">
+        <div>
+            <h3 class="section-title">Adjust default entropy plot?</h3>
+            <mat-radio-group [(ngModel)]="adjustEntropyPlot" [disabled]="!uploadComplete" class="radio-group">
+                <mat-radio-button value="yes">Yes</mat-radio-button>
+                <mat-radio-button value="no">No</mat-radio-button>
+            </mat-radio-group>
+
+            <div *ngIf="adjustEntropyPlot === 'yes'" class="customization-panel">
+                <label class="input-label">X-axis - represents position in MSA.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="entropyXAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <label class="input-label">Y-axis - represents entropy in nats.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="entropyYAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <label class="input-label">Legend title - represents nats (a unit of entropy).</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="entropyLegendTitle" rows="2"
+                        [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <label class="input-label">Plot title.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="entropyPlotTitle" rows="2" [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <div class="color-picker-field">
+                    <label class="input-label">Color for bar outline.</label>
+                    <input type="color" [(ngModel)]="entropyBarOutlineColor" [disabled]="!uploadComplete"
+                        class="color-input">
+                </div>
+
+                <div class="color-picker-field">
+                    <label class="input-label">Color for bar fill.</label>
+                    <input type="color" [(ngModel)]="entropyBarFillColor" [disabled]="!uploadComplete"
+                        class="color-input">
+                </div>
+            </div>
+
+            <button mat-raised-button class="plot-button" [disabled]="!uploadComplete || isProcessing()"
+                (click)="onEntropyPlot()">
+                <mat-icon [class.spinning]="isProcessing()">play_arrow</mat-icon>
+                MSA entropy
+            </button>
+        </div>
+        <hr class="section-divider">
+        <div>
+            <h3 class="section-title">Adjust default mutual information plot?</h3>
+            <mat-radio-group [(ngModel)]="adjustMIPlot" [disabled]="!uploadComplete" class="radio-group">
+                <mat-radio-button value="yes">Yes</mat-radio-button>
+                <mat-radio-button value="no">No</mat-radio-button>
+            </mat-radio-group>
+
+            <div *ngIf="adjustMIPlot === 'yes'" class="customization-panel">
+                <label class="input-label">X-axis - represents position in MSA.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="miXAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <label class="input-label">Y-axis - represents position in MSA.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="miYAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <label class="input-label">Legend title - mutual information (MI).</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="miLegendTitle" rows="2" [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <label class="input-label">Plot title.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="miPlotTitle" rows="2" [disabled]="!uploadComplete"></textarea>
+                </mat-form-field>
+
+                <label class="input-label">Fill palette.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-select [(ngModel)]="miFillPalette" [disabled]="!uploadComplete">
+                        <mat-option *ngFor="let palette of availablePalettes" [value]="palette">
+                            {{ palette }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <button mat-raised-button class="plot-button" [disabled]="!uploadComplete || isProcessing()"
+                (click)="onMIPlot()">
+                <mat-icon [class.spinning]="isProcessing()">play_arrow</mat-icon>
+                MSA mutual information
+            </button>
+        </div>
+    </div>
+    <div class="right-subsection">
+        <app-table [data]="clusterData" [config]="tableConfig">
+        </app-table>
+    </div>
+</div>

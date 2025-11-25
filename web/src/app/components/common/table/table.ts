@@ -7,7 +7,7 @@ export interface ColumnDefinition {
   key: string;
   label: string;
   width?: string;
-  exect_match?:boolean;
+  exact_match?:boolean;
   filterable?: boolean;
 }
 
@@ -155,7 +155,7 @@ export class Table implements OnInit, OnChanges {
     this.applyFilters(isExactMatch);
   }
 
-  applyFilters(exect_match: boolean): void {
+  applyFilters(exact_match: boolean): void {
     this.filteredData = this.data.filter(row => {
       // Global search
       const matchesSearch = !this.searchText || 
@@ -172,7 +172,7 @@ export class Table implements OnInit, OnChanges {
         const filterText = String(filterValue).toLowerCase();
 
         // --- LOGIC CHANGE HERE ---
-        if (exect_match) {
+        if (exact_match) {
            return cellValue === filterText; 
         } else {
            // Partial match (standard behavior)

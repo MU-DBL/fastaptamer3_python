@@ -1,21 +1,25 @@
 # Use official lightweight Python image
-FROM python:3.10-slim
+FROM --platform=linux/amd64 python:3.10-slim
 
 # Prevent prompts; speed up pip
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    # Prefer binary wheels; if none exist, fail instead of trying to build
-    PIP_ONLY_BINARY=:all:
+    PIP_DISABLE_PIP_VERSION_CHECK=1 
 
-# OS build/runtime libs needed if any sdist slips through
+# OS build/runtime libs needed
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential python3-dev \
+    build-essential \
+    python3-dev \
     zlib1g-dev libbz2-dev liblzma-dev libffi-dev \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade core build tools so wheel resolution works
-RUN pip install --upgrade pip setuptools wheel Cython
+# Install MUSCLE5
+RUN wget https://github.com/rcedgar/muscle/releases/download/v5.1/muscle5.1.linux_intel64 -O /usr/local/bin/muscle \
+    && chmod +x /usr/local/bin/muscle
+
+# Upgrade core build tools
+RUN pip install --upgrade pip setuptools wheel "Cython<3.0"
 
 # Set working directory
 WORKDIR /app
@@ -23,7 +27,7 @@ WORKDIR /app
 # Copy dependency file first for better caching
 COPY requirements.txt .
 
-# Install dependencies (cutadapt will use manylinux wheel)
+# Install dependencies
 RUN pip install -r requirements.txt
 
 # Copy app source code

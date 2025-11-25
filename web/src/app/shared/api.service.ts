@@ -189,4 +189,48 @@ export class ApiService {
     const url = endpoint.startsWith('/api/') ? `${this.baseUrl.replace('/api/v1', '')}${endpoint}` : `${this.baseUrl}${endpoint}`;
     return this.http.post(url, body);
   }
+
+
+  // POST /clustermsa
+  clusterMsa(params: {
+    input_path: string;
+    output_format: string;
+    seq_type: string;
+    cluster_selected: number;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/clustermsa`, params);
+  }
+
+  // POST /cluster-msa-entropy
+  clusterMsaEntropy(params: {
+    input_path: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/cluster-msa-entropy`, params);
+  }
+
+  // POST /cluster-msa-mutinfo
+  clusterMsaMutInfo(params: {
+    input_path: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/cluster-msa-mutinfo`, params);
+  }
+
+  // POST /cluster-phmm-simulate
+  clusterPhmmSimulate(params: {
+    input_path: string;
+    num_sequences: number;
+    sequence_length: number;
+    output_format_phmm: string;
+    output_format_simulation: string;
+    pseudocount_method: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/cluster-phmm-simulate`, params);
+  }
+
+  getClusterList(params: { input_path: string }): Observable<any>  {
+    return this.http.post(`${this.baseUrl}/cluster-list`, params);
+  }
 }
+
+
+
