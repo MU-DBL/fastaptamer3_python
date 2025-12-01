@@ -35,8 +35,35 @@
 # }
 
 
-POST http://localhost:5001/api/v1/cluster-list
+# POST http://localhost:5001/api/v1/cluster-list
 
-{
-  "input_path": "sample100_count_cluster.fasta"
-}
+# {
+#   "input_path": "sample100_count_cluster.fasta"
+# }
+
+
+# POST http://localhost:5001/api/v1/recluster
+
+# {
+#   "fadf1_cluster_path": "test_count_cluster.fasta",
+#   "fadf2_cluster_path": "test_count_cluster.fasta",
+#   "led_threshold": 11,
+#   "output_format": "csv"
+# }
+
+
+# POST http://localhost:5001/api/v1/recluster-led-matrix
+
+# {
+#   "fadf1_cluster_path": "sample100_count_cluster.fasta",
+#   "fadf2_cluster_path": "sample100_count_cluster.fasta"
+# }
+
+# POST http://localhost:5001/api/v1/position-enrichment
+
+# {
+#   "fadf_recluster_path": "reclustered_led_11.csv",
+#   "cluster_selection":1,
+#   "seq_type":"dna",
+#   "output_format": "csv"
+# }

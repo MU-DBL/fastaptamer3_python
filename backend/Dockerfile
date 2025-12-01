@@ -4,7 +4,8 @@ FROM --platform=linux/amd64 python:3.10-slim
 # Prevent prompts; speed up pip
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONUNBUFFERED=1
 
 # OS build/runtime libs needed
 RUN apt-get update && apt-get install -y --no-install-recommends \
