@@ -32,7 +32,18 @@ export class PlotModal implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit(): void {
-    // ✅ SINGLE subscription that waits for BOTH conditions
+    // Listen to modal open/close state changes
+    this.plotModalService.isOpen$
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged()
+      )
+      .subscribe(isOpen => {
+        this.isOpen = isOpen;
+        this.cdr.detectChanges();
+      });
+
+    // Listen to plot config changes and create plot when both open and config available
     combineLatest([
       this.plotModalService.isOpen$,
       this.plotModalService.plotConfig$
@@ -45,9 +56,7 @@ export class PlotModal implements AfterViewInit, OnDestroy {
         filter(([isOpen, config]) => isOpen && config !== null)
       )
       .subscribe(([isOpen, config]) => {
-        this.isOpen = isOpen;
         this.plotConfig = config;
-        this.cdr.detectChanges();
         
         // ✅ Create plot outside Angular zone
         this.ngZone.runOutsideAngular(() => {
@@ -75,6 +84,7 @@ export class PlotModal implements AfterViewInit, OnDestroy {
   }
 
   close(): void {
+    // Cleanup plot resources
     if (isPlatformBrowser(this.platformId)) {
         window.removeEventListener('resize', this.handleResize);
     }
@@ -86,8 +96,8 @@ export class PlotModal implements AfterViewInit, OnDestroy {
       }
     }
     
+    // Let the service handle the state change
     this.plotModalService.close();
-    this.isOpen = false;
   }
 
   private async createPlot(): Promise<void> {

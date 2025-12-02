@@ -26,9 +26,8 @@ export class PlotModalService {
 
   close(): void {
     this.isOpenSubject.next(false);
-    setTimeout(() => {
-      this.plotConfigSubject.next(null);
-    }, 300);
+    // Remove delayed cleanup to fix double-click issue
+    this.plotConfigSubject.next(null);
   }
 
   isOpen(): boolean {
