@@ -1,0 +1,365 @@
+.start-page-container {
+  // display: flex;
+  gap: 20px;
+  width: 100%;
+  height: calc(100vh - 150px);
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.left-section {
+  // flex: 0 0 30%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Ensure no overflow from child components
+  ::ng-deep {
+    .mat-mdc-tab-body-content {
+      overflow: hidden !important;
+    }
+    
+    .container {
+      overflow: hidden !important;
+    }
+  }
+}
+
+.right-section {
+  // flex: 1;
+  background-color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  position: relative;
+}
+
+// Modal styles - positioned within right-section for proper layering
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1000 !important;
+  overflow-y: auto !important;
+}
+
+.modal-content {
+  background-color: white !important;
+  border-radius: 8px !important;
+  width: 90% !important;
+  max-width: 1000px !important;
+  max-height: 95vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  position: relative !important;
+  margin: 10px auto !important;
+  z-index: 1001 !important;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .close-button {
+    color: #666;
+  }
+}
+
+.modal-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  .placeholder-text {
+    text-align: center;
+    color: #999;
+    font-size: 16px;
+    padding: 40px 20px;
+  }
+  
+  // Chart container should use full width
+  app-reads-per-rank-chart,
+  app-seq-length-histogram,
+  app-abundance-plot {
+    width: 100%;
+    display: block;
+  }
+}
+
+.modal-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: flex-end;
+  
+  button {
+    background-color: #333 !important;
+    color: white !important;
+    font-weight: 500 !important;
+    padding: 8px 24px !important;
+  }
+}
+
+.table-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.entries-label {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.entries-select {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.search-box {
+  font-size: 14px;
+  color: #333;
+}
+
+.search-input {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-left: 5px;
+  width: 200px;
+}
+
+// Scrollable table wrapper
+.table-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+  
+  th {
+    background-color: #f5f5f5;
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+
+  tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  tr:nth-child(even):hover {
+    background-color: #f5f5f5;
+  }
+
+  // Column width adjustments
+  th:nth-child(1), td:nth-child(1) { width: 19%; } // id
+  th:nth-child(2), td:nth-child(2) { width: 8%; }  // Rank
+  th:nth-child(3), td:nth-child(3) { width: 8%; }  // Reads
+  th:nth-child(4), td:nth-child(4) { width: 8%; }  // RPM
+  th:nth-child(5), td:nth-child(5) { width: 8%; }  // Length
+  th:nth-child(6), td:nth-child(6) { width: 49%; } // Sequence
+}
+
+.column-filter {
+  display: block;
+  width: 100%;
+  padding: 4px 6px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 12px;
+  box-sizing: border-box;
+  background-color: white;
+
+  &::placeholder {
+    color: #999;
+    font-style: italic;
+  }
+}
+
+.sequence-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  word-break: break-all;
+  color: #2c5aa0;
+  white-space: normal;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.showing-info {
+  font-size: 13px;
+  color: #666;
+}
+
+.pagination {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.pagination-button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: #f0f0f0;
+    border-color: #999;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &.active {
+    background-color: #1976d2;
+    color: white;
+    border-color: #1976d2;
+  }
+
+  &.page-number {
+    min-width: 35px;
+    text-align: center;
+  }
+}
+
+// Responsive design
+@media (max-width: 1200px) {
+  .start-page-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .left-section {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  .right-section {
+    flex: 1;
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 600px) {
+  .start-page-container {
+    padding: 10px;
+  }
+
+  .right-section {
+    padding: 10px;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .table-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .results-table {
+    font-size: 11px;
+    
+    th, td {
+      padding: 6px 4px;
+    }
+  }
+
+  .sequence-cell {
+    font-size: 10px;
+    max-width: 200px;
+  }
+}

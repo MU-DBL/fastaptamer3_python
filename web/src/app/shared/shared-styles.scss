@@ -1,0 +1,432 @@
+// Shared styles for all startpage components (preprocess, count, recount, etc.)
+
+// Container and layout
+.container {
+  max-width: 100%;
+  width: 90%;
+  margin: 0 auto;
+  padding: 15px 20px;
+  font-family: 'Roboto', Arial, sans-serif;
+  background-color: #f5f5f5;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.form-section {
+  margin-bottom: 5px;
+  padding: 0 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.full-width {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+// Material form field overrides
+::ng-deep .mat-mdc-form-field.full-width .mdc-text-field--outlined {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+// Section titles and labels
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.section-title:first-child {
+  margin-top: 0;
+}
+
+.section-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+// Links
+.link {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+// Radio groups
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.radio-group ::ng-deep .mat-mdc-radio-button {
+  margin-right: 10px;
+}
+
+.radio-group ::ng-deep .mdc-radio {
+  padding: 0;
+}
+
+.radio-group ::ng-deep .mat-mdc-radio-button .mdc-label {
+  padding-left: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+// Slider components
+.slider-group {
+  padding: 8px 0;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.slider-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.value-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  padding: 4px 12px;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.value-chip.range-max,
+.value-chip.range-min {
+  margin-left: auto;
+  background-color: #757575;
+}
+
+.value-chip.range-min {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.dual-range-container {
+  margin: 0 8px;
+  padding: 0 12px;
+  max-width: calc(100% - 16px);
+  overflow: visible;
+  position: relative;
+}
+
+.range-slider {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+::ng-deep .range-slider .mdc-slider__track {
+  height: 4px;
+}
+
+::ng-deep .range-slider .mdc-slider__thumb-knob {
+  width: 15px;
+  height: 15px;
+  border-width: 2px;
+  background-color: #1976d2;
+  border-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+::ng-deep .range-slider .mdc-slider__value-indicator-container {
+  display: none !important;
+}
+
+::ng-deep .range-slider .mdc-slider__thumb {
+  overflow: visible;
+}
+
+::ng-deep .min-slider .mdc-slider__track--active {
+  background-color: #1976d2;
+}
+
+// Info icon
+.info-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: rgba(0, 0, 0, 0.54);
+  cursor: help;
+  vertical-align: middle;
+}
+
+.info-icon:hover {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+// Action buttons
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.start-button {
+  background-color: #333 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 10px 32px !important;
+  height: 42px;
+  text-transform: none !important;
+  font-size: 14px !important;
+  border-radius: 4px 0 0 4px !important;
+  min-width: 100px;
+}
+
+.start-button:hover:not(:disabled) {
+  background-color: #555 !important;
+}
+
+.download-button {
+  background-color: #333 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 10px 24px !important;
+  height: 42px;
+  text-transform: none !important;
+  font-size: 14px !important;
+  border-radius: 0 4px 4px 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+.download-button.download-ready {
+  background-color: #1976d2 !important;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.download-button.download-ready:hover {
+  background-color: #1565c0 !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.6);
+}
+
+.download-icon {
+  font-size: 16px;
+}
+
+// Animations
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(25, 118, 210, 0.7);
+  }
+}
+
+// File upload section
+.file-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.browse-button {
+  background-color: #333 !important;
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 8px 24px !important;
+  min-width: 120px;
+  height: 40px;
+  text-transform: none !important;
+  font-size: 14px !important;
+}
+
+.browse-button:hover {
+  background-color: #555 !important;
+}
+
+.file-name {
+  color: #999;
+  font-size: 14px;
+  flex: 1;
+}
+
+.upload-note {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  margin: 10px 0 20px 0;
+}
+
+// Progress bar
+.progress-container {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.progress-container ::ng-deep .mat-mdc-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.progress-container ::ng-deep .mdc-linear-progress__bar-inner {
+  border-color: #1976d2;
+}
+
+.progress-container ::ng-deep .mat-mdc-progress-bar.complete .mdc-linear-progress__bar-inner {
+  border-color: #1976d2;
+}
+
+.progress-text {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.progress-text.complete {
+  color: #4caf50;
+}
+
+.section-container {
+  display: flex;
+  gap: 24px; // Increased from 20px for better breathing room
+  width: 100%;
+  height: calc(100vh - 150px);
+  padding: 20px; // Added padding around the container
+  box-sizing: border-box;
+  position: relative;
+  background-color: #f5f5f5; // Subtle background to distinguish from subsections
+}
+
+.left-subsection {
+  flex: 0 0 30%;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  // Visual styling
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+  
+  ::ng-deep {
+    .mat-mdc-tab-body-content,
+    .container {
+      overflow: hidden;
+    }
+  }
+}
+
+// If you have a right subsection for the table
+.right-subsection {
+  flex: 1;
+  min-width: 0;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .container {
+    width: 95%;
+    padding: 10px 15px;
+  }
+
+  .form-section {
+    padding: 0 5px;
+  }
+
+  .file-upload-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .browse-button {
+    width: 100%;
+  }
+
+  .radio-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .start-button,
+  .download-button {
+    border-radius: 4px !important;
+    width: 100%;
+  }
+
+  .slider-header {
+    gap: 4px;
+  }
+
+  .value-chip {
+    min-width: 40px;
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+}

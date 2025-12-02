@@ -35,5 +35,50 @@ body {
 }
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* src/styles.css */
+
+/* Material Form Field Customization */
+.mat-mdc-form-field.full-width .mdc-text-field--outlined {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mat-mdc-form-field.full-width .mat-mdc-text-field-wrapper {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mat-mdc-form-field.full-width .mat-mdc-form-field-infix {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-height: auto !important;
+}
+
+/* Ensure modals always appear on top of everything */
+.modal-overlay {
+  position: fixed !important;
+  z-index: 999999 !important;
+  isolation: isolate !important;
+}
+
+.modal-content {
+  z-index: 1000000 !important;
+}
+
+

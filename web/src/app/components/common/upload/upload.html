@@ -1,0 +1,35 @@
+<div class="file-upload-wrapper">
+  <div class="file-upload-section">
+    <button 
+      mat-raised-button 
+      [class]="buttonClass"
+      (click)="triggerFileInput()">
+      {{ buttonText }}
+    </button>
+    <span class="file-name" [class.file-selected]="selectedFile">{{ fileName }}</span>
+    <input 
+      type="file" 
+      [id]="uploadId" 
+      (change)="onFileSelected($event)"
+      [accept]="acceptedFileTypes"
+      style="display: none;">
+  </div>
+
+  <!-- Upload Progress Bar -->
+  @if (isUploading || isComplete) {
+    <div class="progress-container">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progress"
+        [class.complete]="isComplete">
+      </mat-progress-bar>
+      <span class="progress-text" [class.complete]="isComplete">
+        {{ isComplete ? 'Upload complete' : 'Uploading... ' + progress + '%' }}
+      </span>
+    </div>
+  }
+
+  <p class="notice">
+    *Do not start until loading bar shows 'Upload complete'.<br>
+  </p>
+</div>

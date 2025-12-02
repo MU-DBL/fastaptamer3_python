@@ -1,0 +1,69 @@
+# GET http://localhost:5001
+
+# cluster MSA
+# POST http://localhost:5001/api/v1/clustermsa
+
+# {
+#     "input_path": "sample100_count_cluster.fasta",
+#     "output_format": "fasta",
+#     "seq_type": "dna",
+#     "cluster_selected": 1
+# }
+
+# cluster MSA entropy and mutual information
+# POST http://localhost:5001/api/v1/cluster-msa-entropy
+
+# {
+#   "input_path": "sample100_count_cluster_cluster1_msa.fasta"
+# }
+
+# POST http://localhost:5001/api/v1/cluster-msa-mutinfo
+
+# {
+#   "input_path": "sample100_count_cluster_cluster1_msa.fasta"
+# }
+
+# POST http://localhost:5001/api/v1/cluster-phmm-simulate
+
+# {
+#     "input_path": "sample100_count_cluster_cluster1_msa.fasta",
+#     "num_sequences": 10,
+#     "sequence_length": 70,
+#     "output_format_phmm": str = "txt"
+#     "output_format_simulation": str = "fasta"
+#     "pseudocount_method": "laplace"
+# }
+
+
+# POST http://localhost:5001/api/v1/cluster-list
+
+# {
+#   "input_path": "sample100_count_cluster.fasta"
+# }
+
+
+# POST http://localhost:5001/api/v1/recluster
+
+# {
+#   "fadf1_cluster_path": "test_count_cluster.fasta",
+#   "fadf2_cluster_path": "test_count_cluster.fasta",
+#   "led_threshold": 11,
+#   "output_format": "csv"
+# }
+
+
+# POST http://localhost:5001/api/v1/recluster-led-matrix
+
+# {
+#   "fadf1_cluster_path": "sample100_count_cluster.fasta",
+#   "fadf2_cluster_path": "sample100_count_cluster.fasta"
+# }
+
+# POST http://localhost:5001/api/v1/position-enrichment
+
+# {
+#   "fadf_recluster_path": "reclustered_led_11.csv",
+#   "cluster_selection":1,
+#   "seq_type":"dna",
+#   "output_format": "csv"
+# }

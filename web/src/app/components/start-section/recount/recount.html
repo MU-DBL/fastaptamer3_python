@@ -1,0 +1,198 @@
+<div class="section-container">
+  <div class="left-subsection">
+    <h3 class="section-title">Choose 1st FASTA to recount:</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA files'"
+      [showUploadNote]="false"
+      [uploadSpeed]="200"
+      (fileSelected)="onFile1Selected($event)"
+      (uploadComplete)="onUpload1Complete($event)">
+    </app-upload>
+
+    <h3 class="section-title">Choose 2nd FASTA to recount:</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA files'"
+      [showUploadNote]="false"
+      [uploadSpeed]="200"
+      (fileSelected)="onFile2Selected($event)"
+      (uploadComplete)="onUpload2Complete($event)">
+    </app-upload>
+
+    <h3 class="section-title">What value should be used to normalize read counts?</h3>
+    <mat-radio-group 
+      [(ngModel)]="normalizeValue"
+      class="radio-group">
+      <mat-radio-button value="1">1</mat-radio-button>
+      <mat-radio-button value="10">10</mat-radio-button>
+      <mat-radio-button value="100">100</mat-radio-button>
+      <mat-radio-button value="1000">1000</mat-radio-button>
+      <mat-radio-button value="10000">10000</mat-radio-button>
+      <mat-radio-button value="1e+05">1e+05</mat-radio-button>
+      <mat-radio-button value="1e+06">1e+06</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">FASTA or CSV download?</h3>
+    <mat-radio-group 
+      [(ngModel)]="downloadFormat"
+      class="radio-group">
+      <mat-radio-button value="fasta">FASTA</mat-radio-button>
+      <mat-radio-button value="csv">CSV</mat-radio-button>
+    </mat-radio-group>
+
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="!uploadComplete1 || !uploadComplete2 || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+
+    <!-- Statistics Display -->
+    <div *ngIf="totalSequences() > 0" class="stats-display">
+      <p><strong>Total sequences:</strong> {{ totalSequences() }}</p>
+      <p><strong>Unique sequences:</strong> {{ uniqueSequences() }}</p>
+    </div>
+
+    <!-- Plotting Section - Always visible but disabled until processing completes -->
+    <div class="plotting-section">
+      <hr class="section-divider">
+      
+      <!-- Min Reads Slider -->
+      <div class="slider-container">
+        <label class="section-label">Min. number of reads to plot:</label>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="value-chip range-min">0</span>
+            <span class="value-chip">{{ minReadsToPlot }}</span>
+            <span class="value-chip range-max">1,000</span>
+          </div>
+          <div class="dual-range-container">
+            <mat-slider [min]="0" [max]="1000" [step]="10" [disabled]="!processedFileName()" discrete class="range-slider">
+              <input matSliderThumb [(ngModel)]="minReadsToPlot">
+            </mat-slider>
+          </div>
+        </div>
+      </div>
+
+      <!-- Max Rank Slider -->
+      <div class="slider-container">
+        <label class="section-label">Max. rank to plot:</label>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="value-chip range-min">10</span>
+            <span class="value-chip">{{ maxRankToPlot }}</span>
+            <span class="value-chip range-max">1,000</span>
+          </div>
+          <div class="dual-range-container">
+            <mat-slider [min]="10" [max]="1000" [step]="10" [disabled]="!processedFileName()" discrete class="range-slider">
+              <input matSliderThumb [(ngModel)]="maxRankToPlot">
+            </mat-slider>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reads per Rank Section -->
+      <h3 class="section-title">Adjust default reads-per-rank plot?</h3>
+      <mat-radio-group [(ngModel)]="adjustReadsPerRank" [disabled]="!processedFileName()" class="radio-group">
+        <mat-radio-button value="yes">Yes</mat-radio-button>
+        <mat-radio-button value="no">No</mat-radio-button>
+      </mat-radio-group>
+
+      <div *ngIf="adjustReadsPerRank === 'yes'" class="customization-panel">
+        <label class="input-label">X-axis - represents sequence rank.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput [(ngModel)]="rprXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+        </mat-form-field>
+        
+        <label class="input-label">Y-axis - represents sequence abundance.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput [(ngModel)]="rprYAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+        </mat-form-field>
+        
+        <label class="input-label">Plot title.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput [(ngModel)]="rprTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+        </mat-form-field>
+        
+        <div class="color-picker-field">
+          <label class="input-label">Color for plot line</label>
+          <input type="color" [(ngModel)]="rprLineColor" [disabled]="!processedFileName()" class="color-input">
+        </div>
+      </div>
+
+      <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="openReadsPerRankPlot()">
+        Reads per rank
+      </button>
+
+      <hr class="section-divider">
+
+      <!-- Sequence Length Histogram Section -->
+      <h3 class="section-title">Adjust default sequence-length histogram?</h3>
+      <mat-radio-group [(ngModel)]="adjustSeqLengthHistogram" [disabled]="!processedFileName()" class="radio-group">
+        <mat-radio-button value="yes">Yes</mat-radio-button>
+        <mat-radio-button value="no">No</mat-radio-button>
+      </mat-radio-group>
+
+      <div *ngIf="adjustSeqLengthHistogram === 'yes'" class="customization-panel">
+        <label class="input-label">X-axis label - sequence length.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput [(ngModel)]="histXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+        </mat-form-field>
+        
+        <label class="input-label">Y-axis 1 label - number of unique sequences.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput [(ngModel)]="histYAxis1" rows="2" [disabled]="!processedFileName()"></textarea>
+        </mat-form-field>
+        
+        <label class="input-label">Y-axis 2 label - total reads.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput [(ngModel)]="histYAxis2" rows="2" [disabled]="!processedFileName()"></textarea>
+        </mat-form-field>
+        
+        <label class="input-label">Plot title.</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea matInput [(ngModel)]="histTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+        </mat-form-field>
+        
+        <div class="color-picker-field">
+          <label class="input-label">Color for unique sequences bars (top chart)</label>
+          <input type="color" [(ngModel)]="histBarFill" [disabled]="!processedFileName()" class="color-input">
+        </div>
+        
+        <div class="color-picker-field">
+          <label class="input-label">Color for total reads bars (bottom chart)</label>
+          <input type="color" [(ngModel)]="histBarFill2" [disabled]="!processedFileName()" class="color-input">
+        </div>
+      </div>
+
+      <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="openSeqLengthHistogram()">
+        Sequence-length histogram
+      </button>
+    </div>
+  </div>
+  <div class="right-subsection">
+     <app-table 
+        [data]="tableData" 
+        [config]="tableConfig">
+      </app-table>
+  </div>
+</div>

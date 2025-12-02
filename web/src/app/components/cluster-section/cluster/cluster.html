@@ -1,0 +1,105 @@
+<div class="section-container">
+    <div class="left-subsection">
+        <h3 class="section-title">Choose file to cluster *</h3>
+        <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'"
+            [placeholderText]="'FASTA count file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+            (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
+        </app-upload>
+ 
+        <label class="section-label">Min. number of reads to cluster: 
+            <mat-icon class="info-icon" matTooltip="Min. number of reads for sequences to be clustered">help_outline</mat-icon>
+        </label>
+        <div class="slider-group">
+            <div class="slider-header">
+                <span class="value-chip range-min">0</span>
+                <span class="value-chip">{{ number_reads_to_cluster }}</span>
+                <span class="value-chip range-max">1000</span>
+            </div>
+            <div class="dual-range-container">
+                <mat-slider [min]="0" [max]="1000" [step]="5" discrete
+                    class="range-slider">
+                    <input matSliderThumb [(ngModel)]="number_reads_to_cluster">
+                </mat-slider>
+            </div>
+        </div>
+
+        <label class="section-label">Max. LED: 
+            <mat-icon class="info-icon" matTooltip="Max. edit distance from seed sequence">help_outline</mat-icon>
+        </label>
+        <div class="slider-group">
+            <div class="slider-header">
+                <span class="value-chip range-min">1</span>
+                <span class="value-chip">{{ led }}</span>
+                <span class="value-chip range-max">20</span>
+            </div>
+            <div class="dual-range-container">
+                <mat-slider [min]="1" [max]="20" [step]="1" discrete
+                    class="range-slider">
+                    <input matSliderThumb [(ngModel)]="led">
+                </mat-slider>
+            </div>
+        </div>
+
+        <label class="section-label">Max. number of clusters to generate:
+            <mat-icon class="info-icon" matTooltip="Total number of desired clusters">help_outline</mat-icon>
+        </label>
+        <div class="slider-group">
+            <div class="slider-header">
+                <span class="value-chip range-min">5</span>
+                <span class="value-chip">{{ number_of_cluster }}</span>
+                <span class="value-chip range-max">1000</span>
+            </div>
+            <div class="dual-range-container">
+                <mat-slider [min]="5" [max]="1000" [step]="5" discrete
+                    class="range-slider">
+                    <input matSliderThumb [(ngModel)]="number_of_cluster">
+                </mat-slider>
+            </div>
+        </div>
+
+    <h3 class="section-title">Keep non-clustered sequences?</h3>
+    <mat-radio-group 
+      [(ngModel)]="keepNonClusteredSequence"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">FASTA or CSV download?</h3>
+    <mat-radio-group 
+      [(ngModel)]="downloadFormat"
+      class="radio-group">
+      <mat-radio-button value="fasta">FASTA</mat-radio-button>
+      <mat-radio-button value="csv">CSV</mat-radio-button>
+    </mat-radio-group>
+
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="!uploadComplete || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+    </div>
+    <div class="right-subsection" >
+     <app-table 
+        [data]="clusterData" 
+        [config]="tableConfig">
+      </app-table>
+  </div>
+</div>

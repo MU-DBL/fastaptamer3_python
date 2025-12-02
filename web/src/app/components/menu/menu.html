@@ -1,1 +1,13 @@
-<p>menu works!</p>
+<nav class="navbar">
+  <div class="navbar-brand">
+    FASTAptameR 3.0
+  </div>
+  <ul class="navbar-menu">
+    <li *ngFor="let item of menuItems" 
+        class="navbar-item" 
+        [class.active]="isActive(item.label)"
+        (click)="navigateTo(item)">
+      {{ item.label }}
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,60 @@
+<div class="section-container">
+    <div class="left-subsection">
+        <h3 class="section-title">Cluster MSA fasta file:</h3>
+        <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'MSA FASTA file'"
+            [showUploadNote]="false" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
+            (uploadComplete)="onUploadComplete($event)">
+        </app-upload>
+
+        <label class="section-label">Simulate how many sequences?</label>
+        <div class="slider-group">
+            <div class="slider-header">
+                <span class="value-chip range-min">10</span>
+                <span class="value-chip">{{ numSequences }}</span>
+                <span class="value-chip range-max">1,000</span>
+            </div>
+            <div class="dual-range-container">
+                <mat-slider [min]="10" [max]="1000" [step]="1" discrete class="range-slider">
+                    <input matSliderThumb [(ngModel)]="numSequences">
+                </mat-slider>
+            </div>
+        </div>
+
+        <label class="section-label">Length of simulated sequence (including gaps):</label>
+        <div class="slider-group">
+            <div class="slider-header">
+                <span class="value-chip range-min">10</span>
+                <span class="value-chip">{{ sequenceLength }}</span>
+                <span class="value-chip range-max">200</span>
+            </div>
+            <div class="dual-range-container">
+                <mat-slider [min]="10" [max]="200" [step]="1" discrete class="range-slider">
+                    <input matSliderThumb [(ngModel)]="sequenceLength">
+                </mat-slider>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button mat-raised-button color="primary" class="start-button"
+                [disabled]="!uploadComplete || isProcessing()" (click)="onStart()">
+                <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+                {{ isProcessing() ? 'Processing...' : 'Start' }}
+            </button>
+        </div>
+        <div class="action-buttons">
+            <button mat-raised-button color="accent" class="download-button"
+                [class.download-ready]="phmmResultFile()" [disabled]="!phmmResultFile()"
+                (click)="onDownloadPHMM()">
+                <mat-icon>download</mat-icon>
+                Download PHMM
+            </button>
+
+            <button mat-raised-button color="accent" class="download-button"
+                [class.download-ready]="simulationResultFile()" [disabled]="!simulationResultFile()"
+                (click)="onDownloadSequences()">
+                <mat-icon>download</mat-icon>
+                Download sequences
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<div class="table-container">
+  <div class="table-header">
+    <label class="entries-label">
+      Show 
+      <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="entries-select">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+      </select>
+      entries
+    </label>
+    <div class="search-box">
+      <label>Search: <input type="text" [(ngModel)]="searchText" (input)="onSearch()" class="search-input"></label>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="paginatedData" class="results-table">
+      
+      <!-- Dynamic column generation -->
+      <ng-container *ngFor="let column of config.columns" [matColumnDef]="column.key">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ column.label }}
+          <input 
+            *ngIf="isColumnFilterable(column.key)"
+            type="text" 
+            [(ngModel)]="columnFilters[column.key]" 
+            (input)="applyColumnFilter(column.exact_match ?? false)" 
+            class="column-filter" 
+            placeholder="All">
+        </th>
+          <td mat-cell 
+            *matCellDef="let row" 
+            [class.sequence-cell]="column.key === 'seqs'"
+            [attr.data-column]="column.key">
+          <div class="cell-content" 
+              [style.max-width]="column.width || '100%'"
+              [title]="getCellTooltip(row, column.key)"
+              [class.truncated]="isTruncated(row[column.key], column.width)">
+            {{ formatCellValue(row[column.key], column.key) }}
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <div class="table-footer">
+    <div class="showing-info">
+      Showing {{ getShowingStart() }} to {{ getShowingEnd() }} of {{ filteredData.length }} entries
+    </div>
+    <div class="pagination">
+      <button (click)="previousPage()" [disabled]="currentPage === 1" class="pagination-button">Previous</button>
+      <button *ngFor="let page of getPageNumbers()" 
+              (click)="goToPage(page)" 
+              [class.active]="page === currentPage"
+              class="pagination-button page-number">
+        {{ page }}
+      </button>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">Next</button>
+    </div>
+  </div>
+</div>

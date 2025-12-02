@@ -1,3 +1,24 @@
 # requirements.txt
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
+
+
+numpy>=1.24.0
+pandas>=2.0.0
+python-multipart==0.0.6
+
+# Bioinformatics
+biopython>=1.81
+python-Levenshtein==0.27.3
+
+# String processing
+regex>=2023.0.0
+cutadapt==4.1
+numba==0.59.0
+
+# K-mer analysis and dimensionality reduction
+scikit-learn>=1.3.0
+umap-learn>=0.5.0
+scipy>=1.10.0
+
+

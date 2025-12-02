@@ -1,0 +1,97 @@
+<div class="section-container">
+  <div class="left-subsection">
+    <h3 class="section-title">Choose data to preprocess *</h3>
+    <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'" [buttonText]="'Browse...'"
+      [placeholderText]="'FASTQ or FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+      (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
+
+    <mat-label class="section-label">Constant 5' region: </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput [(ngModel)]="constant5Region" />
+    </mat-form-field>
+
+    <mat-label class="section-label">Constant 3' region: </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput [(ngModel)]="constant3Region" />
+    </mat-form-field>
+
+    <label class="section-label">Sequence length range:
+      <mat-icon class="info-icon"
+        matTooltip="Define the minimum and maximum length for primer sequences">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">Min 1</span>
+        <span class="value-chip">{{ sequenceLengthMin }}</span>
+        <span class="value-chip">{{ sequenceLengthMax }}</span>
+        <span class="value-chip range-max">Max {{ sequenceLengthRange }}</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="1" [max]="sequenceLengthRange" [step]="1" [displayWith]="formatLabel" discrete
+          class="range-slider min-slider">
+          <input matSliderStartThumb [(ngModel)]="sequenceLengthMin">
+          <input matSliderEndThumb [(ngModel)]="sequenceLengthMax">
+        </mat-slider>
+      </div>
+    </div>
+
+
+    <label class="section-label">Max allowed error for sequences:
+      <mat-icon class="info-icon"
+        matTooltip="Maximum average base error per sequence (errors derived from Phred scores)">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">Min 0.001</span>
+        <span class="value-chip">{{ maxAllowedError.toFixed(3) }}</span>
+        <span class="value-chip range-max">Max {{ maxErrorRange }}</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="0.001" [max]="maxErrorRange" [step]="0.001" [displayWith]="formatErrorLabel" discrete
+          class="range-slider">
+          <input matSliderThumb [(ngModel)]="maxAllowedError">
+        </mat-slider>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" class="start-button" [disabled]="!uploadComplete || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()" (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+  </div>
+  <div div class="right-subsection">
+    <h4>Processing logs</h4>
+    <hr class="section-divider">
+    @if (isProcessing() || logs.length > 0) {
+    <div class="progress-header">
+      <!-- If currentStage and currentMessage are regular properties (not signals) -->
+      <h3>{{ currentStage | titlecase }} - {{ currentMessage }}</h3>
+    </div>
+
+    <!-- Live Logs -->
+    <div class="logs-container" #logContainer>
+      @for (log of logs; track log.timestamp) {
+      <div class="log-entry" [class]="'log-' + log.stage">
+        <span class="log-icon">{{ getStageIcon(log.stage) }}</span>
+        <span class="log-time">{{ log.timestamp * 1000 | date:'HH:mm:ss' }}</span>
+        <span class="log-stage">[{{ log.stage | uppercase }}]</span>
+        <span class="log-message">{{ log.message }}</span>
+        @if (log.data) {
+        <span class="log-data">{{ log.data | json }}</span>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>
