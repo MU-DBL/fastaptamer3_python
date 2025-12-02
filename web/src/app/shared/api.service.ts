@@ -230,6 +230,15 @@ export class ApiService {
   getClusterList(params: { input_path: string }): Observable<any>  {
     return this.http.post(`${this.baseUrl}/cluster-list`, params);
   }
+
+  getPositionEnrichment(params: {
+    fadf_recluster_path: string;
+    output_format: string;
+    seq_type: string;
+    cluster_selected: number;
+  }): Observable<any>  {
+    return this.http.post(`${this.baseUrl}/position-enrichment`, params);
+  }
 }
 
 

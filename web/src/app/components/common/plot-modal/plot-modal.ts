@@ -29,7 +29,7 @@ export class PlotModal implements AfterViewInit, OnDestroy {
     private plotModalService: PlotModalService,
     private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   ngAfterViewInit(): void {
     // Listen to modal open/close state changes
@@ -50,14 +50,14 @@ export class PlotModal implements AfterViewInit, OnDestroy {
     ])
       .pipe(
         takeUntil(this.destroy$),
-        distinctUntilChanged((prev, curr) => 
+        distinctUntilChanged((prev, curr) =>
           prev[0] === curr[0] && prev[1] === curr[1]
         ),
         filter(([isOpen, config]) => isOpen && config !== null)
       )
       .subscribe(([isOpen, config]) => {
         this.plotConfig = config;
-        
+
         // ✅ Create plot outside Angular zone
         this.ngZone.runOutsideAngular(() => {
           // Microtask ensures DOM is fully updated
@@ -68,8 +68,8 @@ export class PlotModal implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (isPlatformBrowser(this.platformId)) {
-        window.removeEventListener('resize', this.handleResize);
-    }   
+      window.removeEventListener('resize', this.handleResize);
+    }
 
     if (this.plotContainer && this.PlotlyJS) {
       try {
@@ -86,16 +86,16 @@ export class PlotModal implements AfterViewInit, OnDestroy {
   close(): void {
     // Cleanup plot resources
     if (isPlatformBrowser(this.platformId)) {
-        window.removeEventListener('resize', this.handleResize);
+      window.removeEventListener('resize', this.handleResize);
     }
     if (this.plotContainer && this.PlotlyJS) {
       try {
-          this.PlotlyJS.purge(this.plotContainer.nativeElement);
+        this.PlotlyJS.purge(this.plotContainer.nativeElement);
       } catch (e) {
-          console.warn('Purge error', e);
+        console.warn('Purge error', e);
       }
     }
-    
+
     // Let the service handle the state change
     this.plotModalService.close();
   }
@@ -117,7 +117,7 @@ export class PlotModal implements AfterViewInit, OnDestroy {
     }
 
     const container = this.plotContainer.nativeElement;
-    
+
     try {
       this.PlotlyJS.purge(container);
     } catch (e) {
@@ -130,10 +130,12 @@ export class PlotModal implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const containerWidth = container.offsetWidth;
-    const containerHeight = container.offsetHeight;
+    const containerWidth = container.offsetWidth || 766;
+    const containerHeight = container.offsetHeight || 504;
 
     console.log('Creating plot:', containerWidth, 'x', containerHeight);
+    const safeWidth = Math.max(300, containerWidth);
+    const safeHeight = Math.max(200, containerHeight);
 
     const layout = {
       ...this.plotConfig.layout,
@@ -143,28 +145,29 @@ export class PlotModal implements AfterViewInit, OnDestroy {
       margin: { l: 60, r: 40, t: 60, b: 60 },
     };
 
-    const defaultConfig = { 
+    const defaultConfig = {
       responsive: true,
       displayModeBar: true,
       displaylogo: false,
       modeBarButtonsToRemove: ['lasso2d', 'select2d'],
-      toImageButtonOptions: { 
-        format: 'svg' as const, 
+      toImageButtonOptions: {
+        format: 'svg' as const,
         filename: this.getPlotTitle(),
-        width: containerWidth,
-        height: containerHeight
+        width: safeWidth,
+        height: safeHeight
       }
     };
 
     const config = { ...defaultConfig, ...this.plotConfig.config };
 
     try {
+
       await this.PlotlyJS.newPlot(container, this.plotConfig.data, layout, config);
       console.log('Plot created successfully');
 
       window.removeEventListener('resize', this.handleResize);
       window.addEventListener('resize', this.handleResize);
-      
+
     } catch (err: any) {
       console.error('Plotly error:', err);
     }
@@ -172,7 +175,7 @@ export class PlotModal implements AfterViewInit, OnDestroy {
 
   private handleResize = (): void => {
     if (!this.plotContainer?.nativeElement || !this.PlotlyJS) return;
-    
+
     try {
       this.PlotlyJS.Plots.resize(this.plotContainer.nativeElement);
     } catch (e) {

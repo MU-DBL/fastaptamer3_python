@@ -41,11 +41,10 @@ def perform_msa(
 
         # Run MUSCLE5 using subprocess
         # MUSCLE5 uses different syntax than MUSCLE3
-        result = subprocess.run(
-            ["muscle", "-align", input_path, "-output", temp_output],
+        process = subprocess.run(
+            ["muscle", "-super5", input_path, "-output", temp_output],
             capture_output=True,
             text=True,
-            check=True,
         )
 
         # Read aligned sequences
