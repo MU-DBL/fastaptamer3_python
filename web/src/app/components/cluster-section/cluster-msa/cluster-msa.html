@@ -90,9 +90,9 @@
                 </div>
             </div>
 
-            <button mat-raised-button class="plot-button" [disabled]="!uploadComplete || isProcessing()"
+            <button mat-raised-button class="plot-button" [disabled]="!processedFileName() || isProcessingEntropy()"
                 (click)="onEntropyPlot()">
-                <mat-icon [class.spinning]="isProcessing()">play_arrow</mat-icon>
+                <mat-icon [class.spinning]="isProcessingEntropy()">{{ isProcessingEntropy() ? 'sync' : 'bar_chart' }}</mat-icon>
                 MSA entropy
             </button>
         </div>
@@ -135,9 +135,9 @@
                 </mat-form-field>
             </div>
 
-            <button mat-raised-button class="plot-button" [disabled]="!uploadComplete || isProcessing()"
+            <button mat-raised-button class="plot-button" [disabled]="!processedFileName() || isProcessingMutInfo()"
                 (click)="onMIPlot()">
-                <mat-icon [class.spinning]="isProcessing()">play_arrow</mat-icon>
+                <mat-icon [class.spinning]="isProcessingMutInfo()">{{ isProcessingMutInfo() ? 'sync' : 'grid_on' }}</mat-icon>
                 MSA mutual information
             </button>
         </div>
@@ -147,3 +147,6 @@
         </app-table>
     </div>
 </div>
+
+<!-- Plot Modal -->
+<app-plot-modal></app-plot-modal>

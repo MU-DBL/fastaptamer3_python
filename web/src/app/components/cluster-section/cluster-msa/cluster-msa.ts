@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Table, TableConfig } from '../../common/table/table';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
+import { PlotModal } from '../../common/plot-modal/plot-modal';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
+import { PlotModalService } from '../../../shared/plot-modal.service';
 import { catchError, finalize, of, switchMap, tap } from 'rxjs';
 import { ColumnName, FileService } from '../../../shared/file-service';
 
@@ -15,6 +17,7 @@ import { ColumnName, FileService } from '../../../shared/file-service';
     FormsModule,
     Upload,
     Table,
+    PlotModal,
     ...MATERIAL_IMPORTS],
   templateUrl: './cluster-msa.html',
   styleUrl: './cluster-msa.scss',
@@ -24,6 +27,7 @@ export class ClusterMsa {
 
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
+  private plotModalService = inject(PlotModalService);
 
   private cdr = inject(ChangeDetectorRef);
 
@@ -32,6 +36,8 @@ export class ClusterMsa {
   uploadComplete: boolean = false;
 
   isProcessing = signal(false);
+  isProcessingEntropy = signal(false);
+  isProcessingMutInfo = signal(false);
   processedFileName = signal('');
 
   availableClusters: number[] = []; // Populates the mat-select
@@ -56,7 +62,7 @@ export class ClusterMsa {
   miLegendTitle = 'MI';
   miPlotTitle = 'Pairwise mutual information in MSA';
   miFillPalette = 'magma';
-  availablePalettes = ['magma', 'viridis', 'plasma', 'inferno', 'cividis'];
+  availablePalettes = ['magma', 'viridis', 'plasma', 'inferno', 'cividis', 'rocket', 'mako', 'turbo'];
 
   processedFile = '';
 
@@ -182,29 +188,164 @@ export class ClusterMsa {
     this.fileService.downloadFile(filename)
   }
 
-  onMIPlot(): void {
+  onEntropyPlot(): void {
+    if (!this.processedFileName()) {
+      alert('Please run MSA first before generating entropy plot.');
+      return;
+    }
+
+    this.isProcessingEntropy.set(true);
+    
     const params = {
-      cluster: this.selectedCluster,
-      adjustPlot: this.adjustMIPlot === 'yes',
-      xAxis: this.miXAxis,
-      yAxis: this.miYAxis,
-      legendTitle: this.miLegendTitle,
-      plotTitle: this.miPlotTitle,
-      fillPalette: this.miFillPalette
+      input_path: this.processedFileName()
     };
+
+    this.apiService.clusterMsaEntropy(params).pipe(
+      tap(response => {
+        if (response.status === 'ok') {
+          this.createEntropyPlot(response);
+        }
+      }),
+      catchError(error => {
+        console.error('Entropy calculation failed:', error);
+        alert('Failed to calculate entropy. Please try again.');
+        return of(null);
+      }),
+      finalize(() => {
+        this.isProcessingEntropy.set(false);
+      })
+    ).subscribe();
   }
 
-    onEntropyPlot(): void {
+  onMIPlot(): void {
+    if (!this.processedFileName()) {
+      alert('Please run MSA first before generating mutual information plot.');
+      return;
+    }
+
+    this.isProcessingMutInfo.set(true);
+    
     const params = {
-      cluster: this.selectedCluster,
-      adjustPlot: this.adjustEntropyPlot === 'yes',
-      xAxis: this.entropyXAxis,
-      yAxis: this.entropyYAxis,
-      legendTitle: this.entropyLegendTitle,
-      plotTitle: this.entropyPlotTitle,
-      barOutlineColor: this.entropyBarOutlineColor,
-      barFillColor: this.entropyBarFillColor
+      input_path: this.processedFileName()
     };
+
+    this.apiService.clusterMsaMutInfo(params).pipe(
+      tap(response => {
+        if (response.status === 'ok') {
+          this.createMutualInfoPlot(response);
+        }
+      }),
+      catchError(error => {
+        console.error('Mutual information calculation failed:', error);
+        alert('Failed to calculate mutual information. Please try again.');
+        return of(null);
+      }),
+      finalize(() => {
+        this.isProcessingMutInfo.set(false);
+      })
+    ).subscribe();
+  }
+
+  private createEntropyPlot(response: any): void {
+    const plotData = [{
+      x: response.positions,
+      y: response.entropy_values,
+      type: 'bar',
+      name: 'Entropy',
+      marker: {
+        color: this.entropyBarFillColor,
+        line: {
+          color: this.entropyBarOutlineColor,
+          width: 1
+        }
+      },
+      hovertemplate: 'Position: %{x}<br>Entropy: %{y:.3f} nats<extra></extra>'
+    }];
+
+    const layout = {
+      title: this.entropyPlotTitle,
+      xaxis: {
+        title: this.entropyXAxis,
+        type: 'linear'
+      },
+      yaxis: {
+        title: this.entropyYAxis
+      },
+      showlegend: false,
+      hovermode: 'closest'
+    };
+
+    const config = {
+      responsive: true,
+      displayModeBar: true,
+      displaylogo: false,
+      toImageButtonOptions: {
+        format: 'svg' as const,
+        filename: 'msa_entropy'
+      }
+    };
+
+    this.plotModalService.openPlot({
+      data: plotData,
+      layout: layout,
+      config: config
+    });
+  }
+
+  private createMutualInfoPlot(response: any): void {
+    const colorscales: { [key: string]: string } = {
+      'magma': 'Magma',
+      'viridis': 'Viridis',
+      'plasma': 'Plasma',
+      'inferno': 'Inferno',
+      'cividis': 'Cividis',
+      'rocket': 'Magma', // Fallback to Magma since rocket might not be available in Plotly.js
+      'mako': 'Blues',
+      'turbo': 'Turbo'
+    };
+
+    const plotData = [{
+      z: response.mutual_info_matrix,
+      x: response.positions,
+      y: response.positions,
+      type: 'heatmap',
+      colorscale: colorscales[this.miFillPalette] || 'Magma',
+      showscale: true,
+      colorbar: {
+        title: this.miLegendTitle
+      },
+      hovertemplate: 'Position 1: %{x}<br>Position 2: %{y}<br>MI: %{z:.3f}<extra></extra>'
+    }];
+
+    const layout = {
+      title: this.miPlotTitle,
+      xaxis: {
+        title: this.miXAxis,
+        type: 'linear'
+      },
+      yaxis: {
+        title: this.miYAxis,
+        type: 'linear'
+      },
+      width: 600,
+      height: 600
+    };
+
+    const config = {
+      responsive: true,
+      displayModeBar: true,
+      displaylogo: false,
+      toImageButtonOptions: {
+        format: 'svg' as const,
+        filename: 'msa_mutual_information'
+      }
+    };
+
+    this.plotModalService.openPlot({
+      data: plotData,
+      layout: layout,
+      config: config
+    });
   }
   
 }

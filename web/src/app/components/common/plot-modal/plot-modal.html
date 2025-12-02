@@ -3,7 +3,7 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>{{ getPlotTitle() }}</h2>
-      <button mat-icon-button (click)="close()">
+      <button mat-icon-button (click)="close(); $event.stopPropagation()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
