@@ -28,15 +28,11 @@ class PosEnrichInput(BaseModel):
 class PosEnrichResponse(BaseModel):
     status: str
     result: str  # filename
-    num_sequences_analyzed: int
-    sequence_length: int
-    num_positions: int
-    enrichment_range: Dict[str, float]
-    # Matrix data for heatmap
-    matrix: List[List[Optional[float]]]  # Change to Optional[float] to allow None
+    enrichment_matrix: List[List[Optional[float]]]  # Change to Optional[float] to allow None
     residues: List[str]         # row labels
     positions: List[int]        # column labels
-
+    avg_enrichment: List[Optional[float]]  # average enrichment per position
+            
 @router.post("/position-enrichment", response_model=PosEnrichResponse)
 async def fa_pos_enrich_endpoint(params: PosEnrichInput):
     """
@@ -89,62 +85,35 @@ async def fa_pos_enrich_endpoint(params: PosEnrichInput):
         save_sequences(result_df, str(output_path), params.output_format)
         print(f"[STEP 3] ✓ File saved")
         
-        print(f"[STEP 4] Creating pivot table for heatmap...")
+        # print(f"[STEP 4] Creating pivot table for heatmap...")
         # Convert to matrix format for heatmap
         matrix_df = result_df.pivot(
             index='Residue', 
             columns='Position', 
             values='AvEnrich'
         )
-        print(f"[STEP 4] ✓ Pivot table created. Shape: {matrix_df.shape}")
+        # print(f"[STEP 4] ✓ Pivot table created. Shape: {matrix_df.shape}")
         
         # Extract matrix data with proper type handling
         residues = matrix_df.index.tolist()
-        positions = [int(p) for p in matrix_df.columns.tolist()]
+        positions = [int(p) for p in matrix_df.columns.tolist()]       
         
-        # CRITICAL FIX: Replace NaN/Inf with None for JSON compliance
-        print(f"[STEP 5] Cleaning matrix for JSON serialization...")
-        matrix_clean = matrix_df.replace([np.nan, np.inf, -np.inf], None).values.tolist()
-        
-        # Alternative if you prefer 0 instead of null in frontend:
-        # matrix_clean = matrix_df.fillna(0).replace([np.inf, -np.inf], 0).values.tolist()
-        
-        print(f"[STEP 5] ✓ Matrix cleaned: {len(residues)} residues x {len(positions)} positions")
-        
-        print(f"[STEP 6] Calculating summary statistics...")
-        # Calculate summary statistics on valid values only
-        enrichment_values = result_df["AvEnrich"].replace([np.inf, -np.inf], np.nan).dropna()
-        
-        if len(enrichment_values) > 0:
-            enrichment_range = {
-                "min": float(enrichment_values.min()),
-                "max": float(enrichment_values.max()),
-                "mean": float(enrichment_values.mean()),
-                "median": float(enrichment_values.median())
-            }
-        else:
-            enrichment_range = {
-                "min": 0.0,
-                "max": 0.0,
-                "mean": 0.0,
-                "median": 0.0
-            }
-        print(f"[STEP 6] ✓ Statistics: {enrichment_range}")
-        
-        print("=" * 60)
-        print("REQUEST COMPLETED SUCCESSFULLY")
-        print("=" * 60)
-        
+        clean_df = (
+            matrix_df
+            .replace([np.inf, -np.inf], np.nan)  
+            .fillna(0)                            
+        )
+
+        matrix_clean = clean_df.values.tolist()
+        avg_enrichment = clean_df.mean(axis=0).tolist()
+
         return PosEnrichResponse(
             status="ok",
             result=output_path.name,
-            num_sequences_analyzed=len(result_df["Position"].unique()) if len(result_df) > 0 else 0,
-            sequence_length=int(result_df["Position"].max()) if len(result_df) > 0 else 0,
-            num_positions=len(result_df["Position"].unique()) if len(result_df) > 0 else 0,
-            enrichment_range=enrichment_range,
-            matrix=matrix_clean,  # Use cleaned matrix
             residues=residues,
-            positions=positions
+            positions=positions,
+            avg_enrichment = avg_enrichment,
+            enrichment_matrix=matrix_clean
         )
     
     except Exception as e:
@@ -189,13 +158,6 @@ def fa_pos_enrich(
         - Position: Position in aligned sequence (1-indexed)
         - AvEnrich: Average enrichment for that residue at that position
     """
-    print(f"\n{'='*60}")
-    print(f"INSIDE fa_pos_enrich()")
-    print(f"Input shape: {fadf_recluster.shape}")
-    print(f"Cluster selection: {cluster_selection}")
-    print(f"Sequence type: {seq_type}")
-    print(f"Max sequences: {max_sequences}")
-    print(f"{'='*60}\n")
     
     # Define acceptable alphabets for each sequence type
     seq_alphabets = {
@@ -210,15 +172,12 @@ def fa_pos_enrich(
     
     # If DNA sequences, convert U (uracil) to T (thymine)
     if seq_type == "dna":
-        print("[SUBSTEP 1] Converting U to T for DNA sequences...")
         fadf_recluster = fadf_recluster.copy()
         fadf_recluster[ColumnName.SEQUENCES] = fadf_recluster[ColumnName.SEQUENCES].str.replace(
             "U", "T", regex=False
         )
-        print("[SUBSTEP 1] ✓ Conversion complete")
     
     # Filter sequences based on three criteria:
-    print("[SUBSTEP 2] Filtering sequences...")
     filtered_df = fadf_recluster[
         (fadf_recluster[ColumnName.CLUSTER] == cluster_selection) &
         (~fadf_recluster[ColumnName.SEQUENCES].str.contains(alphabet_pattern, regex=True, na=False)) &
@@ -226,7 +185,6 @@ def fa_pos_enrich(
     ].copy()
     
     num_sequences = len(filtered_df)
-    print(f"[SUBSTEP 2] Found {num_sequences} valid sequences for cluster {cluster_selection}")
     
     # Check if we have any sequences to analyze
     if num_sequences == 0:
@@ -238,49 +196,32 @@ def fa_pos_enrich(
     
     # Sample if too many sequences
     if num_sequences > max_sequences:
-        print(f"[WARNING] {num_sequences} sequences exceed limit of {max_sequences}")
-        print(f"[INFO] Sampling top {max_sequences} sequences by enrichment...")
         filtered_df = filtered_df.nlargest(max_sequences, "Enrichment", keep='first')
-        print(f"[INFO] ✓ Sampled {len(filtered_df)} sequences")
     
     # Ensure ID column exists (required by perform_msa function)
-    print("[SUBSTEP 3] Checking ID column...")
     if ColumnName.ID not in filtered_df.columns:
         filtered_df[ColumnName.ID] = [f"seq_{i}" for i in range(len(filtered_df))]
-        print(f"[SUBSTEP 3] Created IDs for {len(filtered_df)} sequences")
-    print("[SUBSTEP 3] ✓ ID column ready")
     
     # Check if MSA is needed
     seq_lengths = filtered_df[ColumnName.SEQUENCES].str.len()
     all_same_length = seq_lengths.nunique() == 1
     
     if all_same_length:
-        print(f"[INFO] All sequences have uniform length ({seq_lengths.iloc[0]}). Skipping MSA.")
         aligned_df = filtered_df.copy()
     else:
         # Perform Multiple Sequence Alignment
-        print(f"[SUBSTEP 4] Starting Multiple Sequence Alignment...")
-        print(f"  - Aligning {len(filtered_df)} sequences")
-        print(f"  - This may take a while...")
-        print(f"  - Start time: {pd.Timestamp.now()}")
-        
         aligned_df = perform_msa(filtered_df)
-        
-        print(f"[SUBSTEP 4] ✓ MSA complete! End time: {pd.Timestamp.now()}")
-        print(f"  - Aligned sequences shape: {aligned_df.shape}")
+
     
     # Ensure Enrichment column is present after MSA
-    print("[SUBSTEP 5] Ensuring Enrichment column...")
     if "Enrichment" not in aligned_df.columns:
         aligned_df = aligned_df.merge(
             filtered_df[[ColumnName.ID, "Enrichment"]], 
             on=ColumnName.ID, 
             how='left'
         )
-    print("[SUBSTEP 5] ✓ Enrichment column ready")
     
     # Extract only the columns we need for analysis
-    print("[SUBSTEP 6] Processing aligned sequences...")
     posenrich_df = aligned_df[[ColumnName.SEQUENCES, "Enrichment"]].copy()
     posenrich_df["Enrichment"] = pd.to_numeric(posenrich_df["Enrichment"], errors='coerce')
     
@@ -289,12 +230,10 @@ def fa_pos_enrich(
     
     # Get the length of aligned sequences
     seq_length = len(seq_matrix.iloc[0])
-    print(f"[SUBSTEP 6] Sequence length: {seq_length}")
     
     # Initialize list to store results
     position_data = []
     
-    print("[SUBSTEP 7] Calculating positional enrichment...")
     # Iterate through each position in the aligned sequences
     for pos_idx in range(seq_length):
         # Extract the character at this position for all sequences
@@ -318,14 +257,10 @@ def fa_pos_enrich(
                 'AvEnrich': round(float(enrich_value), 3) if pd.notna(enrich_value) else np.nan
             })
     
-    print(f"[SUBSTEP 7] ✓ Calculated enrichment for {seq_length} positions")
     
     # Create final results DataFrame
     pe_results = pd.DataFrame(position_data)
     
     # Ensure AvEnrich is float type
-    pe_results['AvEnrich'] = pe_results['AvEnrich'].astype(float)
-    
-    print(f"✓ fa_pos_enrich complete. Result shape: {pe_results.shape}\n")
-    
+    pe_results['AvEnrich'] = pe_results['AvEnrich'].astype(float)    
     return pe_results

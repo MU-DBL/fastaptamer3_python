@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Table, TableConfig } from '../../common/table/table';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
-import { PlotModal } from '../../common/plot-modal/plot-modal';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
 import { PlotModalService } from '../../../shared/plot-modal.service';
@@ -17,7 +16,6 @@ import { ColumnName, FileService } from '../../../shared/file-service';
     FormsModule,
     Upload,
     Table,
-    PlotModal,
     ...MATERIAL_IMPORTS],
   templateUrl: './cluster-msa.html',
   styleUrl: './cluster-msa.scss',
@@ -44,7 +42,6 @@ export class ClusterMsa {
   selectedCluster: number | null = null;
   sequenceType: 'nucleotide' | 'aminoacid' = 'nucleotide';
   msaDownloadFormat: 'fasta' | 'csv' = 'fasta';
-  
 
   // Entropy plot parameters
   adjustEntropyPlot = 'no';
@@ -62,7 +59,7 @@ export class ClusterMsa {
   miLegendTitle = 'MI';
   miPlotTitle = 'Pairwise mutual information in MSA';
   miFillPalette = 'magma';
-  availablePalettes = ['magma', 'viridis', 'plasma', 'inferno', 'cividis', 'rocket', 'mako', 'turbo'];
+  availablePalettes = ['Magma', 'Viridis', 'Plasma', 'Inferno', 'Cividis', 'Blues', 'Turbo'];
 
   processedFile = '';
 
@@ -293,23 +290,12 @@ export class ClusterMsa {
   }
 
   private createMutualInfoPlot(response: any): void {
-    const colorscales: { [key: string]: string } = {
-      'magma': 'Magma',
-      'viridis': 'Viridis',
-      'plasma': 'Plasma',
-      'inferno': 'Inferno',
-      'cividis': 'Cividis',
-      'rocket': 'Magma', // Fallback to Magma since rocket might not be available in Plotly.js
-      'mako': 'Blues',
-      'turbo': 'Turbo'
-    };
-
     const plotData = [{
       z: response.mutual_info_matrix,
       x: response.positions,
       y: response.positions,
       type: 'heatmap',
-      colorscale: colorscales[this.miFillPalette] || 'Magma',
+      colorscale: this.miFillPalette || 'Magma',
       showscale: true,
       colorbar: {
         title: this.miLegendTitle
@@ -327,8 +313,6 @@ export class ClusterMsa {
         title: this.miYAxis,
         type: 'linear'
       },
-      width: 600,
-      height: 600
     };
 
     const config = {
@@ -347,5 +331,4 @@ export class ClusterMsa {
       config: config
     });
   }
-  
 }
