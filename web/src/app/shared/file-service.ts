@@ -23,7 +23,20 @@ export enum ColumnName {
   TOTAL_READS = 'TotalReads',
   TOTAL_RPU = 'TotalRPU',
   AVERAGE_LED = 'AverageLED',
-  SID = 'SID'
+  SID = 'SID',
+
+  // Recluster columns
+  ID_A = 'ID.a',
+  RANK_A = 'Rank.a',
+  READS_A = 'Reads.a',
+  RPU_A = 'RPU.a',
+  ID_B = 'ID.b',
+  RANK_B = 'Rank.b',
+  READS_B = 'Reads.b',
+  RPU_B = 'RPU.b',
+  ENRICHMENT = 'Enrichment',
+  LOG2E = 'log2E',
+  POPULATION = 'Population'
 }
 
 
