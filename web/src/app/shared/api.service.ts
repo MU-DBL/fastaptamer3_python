@@ -239,6 +239,27 @@ export class ApiService {
   }): Observable<any>  {
     return this.http.post(`${this.baseUrl}/position-enrichment`, params);
   }
+
+  // Recluster two populations
+  recluster(params: {
+    fadf1_cluster_path: string;
+    fadf2_cluster_path: string;
+    led_threshold: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/recluster`, params);
+  }
+
+  // Get LED matrix between two populations
+  getReclusterLedMatrix(params: {
+    fadf1_cluster_path: string;
+    fadf2_cluster_path: string;
+    led_threshold?: number;
+    use_parallel?: boolean;
+    n_jobs?: number;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/recluster-led-matrix`, params);
+  }
 }
 
 
