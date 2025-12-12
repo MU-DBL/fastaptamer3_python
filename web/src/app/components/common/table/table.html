@@ -34,8 +34,8 @@
           <div class="cell-content" 
               [style.max-width]="column.width || '100%'"
               [title]="getCellTooltip(row, column.key)"
-              [class.truncated]="isTruncated(row[column.key], column.width)">
-            {{ formatCellValue(row[column.key], column.key) }}
+              [class.truncated]="isTruncated(row[column.key], column.width)"
+              [innerHTML]="column.key === 'seqs' ? formatSequenceWithHighlight(row[column.key]) : formatCellValue(row[column.key], column.key)">
           </div>
         </td>
       </ng-container>

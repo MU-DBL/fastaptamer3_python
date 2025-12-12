@@ -1,0 +1,52 @@
+import os
+from pathlib import Path
+from fastapi import APIRouter
+from pydantic import BaseModel
+from services import motif_service
+
+router = APIRouter()
+UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
+
+
+class MotifSearchInput(BaseModel):
+    input_path: str = ""
+    motif: str = ""
+    highlight: bool = False
+    partial: bool = False
+    motif_type: str = "Nucleotide"
+    output_format: str = "fasta"
+
+
+@router.post("/motif-search")
+async def motif_search(params: MotifSearchInput):
+    """
+    Search for sequences containing user-defined motifs.
+    
+    Args:
+        params: MotifSearchInput containing:
+            - input_path: Name of the input FASTA file
+            - motif: Comma-separated list of motifs
+            - highlight: Whether to highlight motifs in output
+            - partial: Whether to allow partial matches (OR vs AND)
+            - motif_type: Type of motif (Nucleotide, AminoAcid, String)
+            - output_format: Output format (fasta or csv)
+    
+    Returns:
+        JSON response with status and result filename
+    """
+    filepath = f"{UPLOAD_DIR}/{params.input_path}"
+    base_name = os.path.splitext(os.path.basename(params.input_path))[0]
+    output_format = params.output_format
+    output_path = f"{UPLOAD_DIR}/{base_name}_motif_search.{output_format}"
+
+    output_path = motif_service.search_motif(
+        fasta_input=filepath,
+        motif=params.motif,
+        highlight=params.highlight,
+        partial=params.partial,
+        motif_type=params.motif_type,
+        output_format=output_format,
+        output_path=output_path
+    )
+    
+    return {"status": "ok", "result": os.path.basename(output_path)}

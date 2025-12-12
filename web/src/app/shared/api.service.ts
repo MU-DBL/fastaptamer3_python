@@ -260,6 +260,18 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/recluster-led-matrix`, params);
   }
+
+  // Motif Search
+  motifSearch(params: {
+    input_path: string;
+    motif: string;
+    highlight: boolean;
+    partial: boolean;
+    motif_type: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-search`, params);
+  }
 }
 
 

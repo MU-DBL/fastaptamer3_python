@@ -241,4 +241,19 @@ export class Table implements OnInit, OnChanges {
     // Simple heuristic: if value is long and width is constrained
     return value.length > 50 && !!maxWidth;
   }
+
+  formatSequenceWithHighlight(sequence: string): string {
+    if (!sequence || typeof sequence !== 'string') {
+      return '-';
+    }
+    
+    // Check if sequence contains parentheses indicating highlighted regions
+    // Pattern: (MATCHED_TEXT) - highlight these portions
+    if (sequence.includes('(') && sequence.includes(')')) {
+      // Replace (text) with highlighted span
+      return sequence.replace(/\(([^)]+)\)/g, '<span class="highlighted-motif">$1</span>');
+    }
+    
+    return sequence;
+  }
 }
