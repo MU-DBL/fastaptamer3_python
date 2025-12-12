@@ -3,6 +3,8 @@ from pathlib import Path
 from routers import position_enrichment, recluster
 from routers import cluster_msa,cluster_phmm, cluster_list
 from routers import preprocess,count,recount,filehandler,progress, cluster, cluster_diversity
+from routers import motif_search
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -37,6 +39,7 @@ app.include_router(cluster_phmm.router, prefix="/api/v1", tags=["cluster_phmm"])
 app.include_router(cluster_list.router, prefix="/api/v1", tags=["cluster_list"])
 app.include_router(recluster.router, prefix="/api/v1", tags=["recluster"])
 app.include_router(position_enrichment.router, prefix="/api/v1", tags=["position_enrichment"])
+app.include_router(motif_search.router, prefix="/api/v1", tags=["motif_search"])
 
 @app.get("/")
 async def root():

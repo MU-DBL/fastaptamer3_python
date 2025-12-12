@@ -80,10 +80,20 @@
 .sequence-cell {
   font-family: 'Courier New', monospace;
   font-size: 13px;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 600px;
+  word-break: break-all;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+// Highlighted motif styling
+::ng-deep .highlighted-motif {
+  background-color: #ffeb3b;
+  color: #000;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
+  border: 1px solid #ffc107;
 }
 
 .table-footer {
