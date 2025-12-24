@@ -272,6 +272,17 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-search`, params);
   }
+
+  // Motif Omit
+  motifOmit(params: {
+    input_path: string;
+    motif: string;
+    partial: boolean;
+    motif_type: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-omit`, params);
+  }
 }
 
 
