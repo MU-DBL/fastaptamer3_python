@@ -83,17 +83,27 @@ def search_motif(
         formatted_patterns.append(format_motif(m, motif_type))
     
     # Filter sequences based on motif matching
+    # Note: Using case-sensitive matching to match R behavior (grepl default)
+    # format_motif already handles uppercase conversion for Nucleotide/AminoAcid
     if partial:
         # Partial filter uses OR operation (any motif matches)
         # Combine all patterns with OR
         combined_pattern = "|".join(formatted_patterns)
-        mask = seq_df[ColumnName.SEQUENCES].str.contains(combined_pattern, regex=True, case=False)
+        mask = seq_df[ColumnName.SEQUENCES].str.contains(
+            combined_pattern, 
+            regex=True, 
+            case=True
+        )
     else:
         # Full filter requires ALL motifs to be present (AND operation)
         # Each pattern must match independently
         mask = pd.Series([True] * len(seq_df), index=seq_df.index)
         for pattern in formatted_patterns:
-            pattern_mask = seq_df[ColumnName.SEQUENCES].str.contains(pattern, regex=True, case=False)
+            pattern_mask = seq_df[ColumnName.SEQUENCES].str.contains(
+                pattern, 
+                regex=True, 
+                case=True
+            )
             mask = mask & pattern_mask
     
     # Apply filter
@@ -104,8 +114,8 @@ def search_motif(
         def highlight_sequence(seq):
             result = seq
             for pattern in formatted_patterns:
-                # Use re.sub to add parentheses around matches
-                result = re.sub(f"({pattern})", r"(\1)", result, flags=re.IGNORECASE)
+                # Use case-sensitive matching to match R gsub behavior
+                result = re.sub(f"({pattern})", r"(\1)", result)
             return result
         
         filtered_df[ColumnName.SEQUENCES] = filtered_df[ColumnName.SEQUENCES].apply(highlight_sequence)
@@ -119,6 +129,93 @@ def search_motif(
     )
     
     # Save results
+    if output_format == 'fasta':
+        # Write FASTA manually to prevent BioPython's 60-character line wrapping
+        # which breaks frontend parsing
+        with open(output_path, 'w') as f:
+            for _, row in filtered_df.iterrows():
+                f.write(f">{row[ColumnName.ID]}\n")
+                f.write(f"{row[ColumnName.SEQUENCES]}\n")
+    else:
+        # For CSV, use standard save_sequences
+        file_service.save_sequences(filtered_df, output_path, output_format)
+    
+    return output_path
+
+
+def omit_motif(
+    fasta_input: str,
+    motif: str,
+    partial: bool = False,
+    motif_type: str = "Nucleotide",
+    output_format: str = "fasta",
+    output_path: str = None
+) -> str:
+    """
+    Omit sequences containing user-defined motifs.
+    
+    Args:
+        fasta_input: Path to input FASTA file
+        motif: A comma-separated list of motifs (e.g., "ACT,AAA,ACG")
+        partial: When True (Yes), omits sequences with at least one motif (OR operation - more aggressive)
+                 When False (No), omits only sequences with ALL motifs (AND operation - less aggressive)
+        motif_type: Type of motif - "Nucleotide", "AminoAcid", or "String"
+        output_format: Output format - "fasta" or "csv"
+        output_path: Path for output file
+    
+    Returns:
+        Path to the output file
+    """
+    # Parse input FASTA file
+    seq_df = file_service.parse_fasta(fasta_input)
+    
+    # Split motifs and format each one
+    motif_list = [m.strip() for m in motif.split(',') if m.strip()]
+    
+    # Format each motif pattern individually
+    formatted_patterns = []
+    for m in motif_list:
+        formatted_patterns.append(format_motif(m, motif_type))
+    
+    # Filter sequences based on motif matching
+    # Note: Using case-sensitive matching to match R behavior (grepl default)
+    # format_motif already handles uppercase conversion for Nucleotide/AminoAcid
+    # OMIT logic: opposite of search - we keep sequences that DON'T match
+    if partial:
+        # partial=True (Yes): Omit sequences with ANY motif (OR operation)
+        # This is MORE aggressive - removes more sequences
+        combined_pattern = "|".join(formatted_patterns)
+        mask = ~seq_df[ColumnName.SEQUENCES].str.contains(
+            combined_pattern, 
+            regex=True, 
+            case=True
+        )
+    else:
+        # partial=False (No): Omit sequences only if they have ALL motifs (AND operation)
+        # This is LESS aggressive - removes fewer sequences
+        mask = pd.Series([True] * len(seq_df), index=seq_df.index)
+        for pattern in formatted_patterns:
+            pattern_mask = seq_df[ColumnName.SEQUENCES].str.contains(
+                pattern, 
+                regex=True, 
+                case=True
+            )
+            mask = mask & pattern_mask
+        # Invert the mask to omit sequences that have ALL motifs
+        mask = ~mask
+    
+    # Apply filter
+    filtered_df = seq_df[mask].copy()
+    
+    # Ensure ID column is properly formatted (following count_service pattern)
+    # This creates consistent ID format: Rank=X;Reads=Y;RPU=Z for both CSV and FASTA
+    filtered_df[ColumnName.ID] = (
+        'Rank=' + filtered_df[ColumnName.RANK].astype(str) + ';' +
+        'Reads=' + filtered_df[ColumnName.READS].astype(str) + ';' +
+        'RPU=' + filtered_df[ColumnName.RPU].astype(str)
+    )
+    
+    # Save results (no highlighting for omit functionality)
     if output_format == 'fasta':
         # Write FASTA manually to prevent BioPython's 60-character line wrapping
         # which breaks frontend parsing

@@ -1,18 +1,3 @@
-.placeholder-container {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 300px;
-  
-  mat-card {
-    max-width: 600px;
-    width: 100%;
-    
-    mat-card-content {
-      padding: 20px;
-      font-size: 14px;
-      color: #666;
-    }
-  }
-}
+// Import shared styles for all components
+@use '../../../shared/shared-styles.scss';
+
