@@ -9,9 +9,11 @@ from services.constants import ColumnName
 from numba import jit, prange
 from typing import Any, Optional, List, Tuple
 import numpy as np
+from typing import Dict, Any
 
 router = APIRouter()
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
+EPSILON = 0.001
 
 class EnrichInput(BaseModel):
     fadf1_cluster_path: str = ""
@@ -53,17 +55,21 @@ async def fa_enrich_endpoint(params: EnrichInput):
             keep_na=params.keep_na
         )
         
+        result_df = result_df.copy()
+
+        # add epsilon
+        result_df["RPU_a_adj"] = result_df["RPU.a"] + EPSILON
+        result_df["RPU_b_adj"] = result_df["RPU.b"] + EPSILON
+
+        result_df["R"] = np.log2(result_df["RPU_b_adj"] / result_df["RPU_a_adj"])
+        result_df["A"] = 0.5 * np.log2(result_df["RPU_b_adj"] * result_df["RPU_a_adj"])
+        
         # Save output
         save_sequences(result_df, str(output_path), params.output_format)
-        
-        # Calculate enrichment statistics
-        enrichment_stats = calculate_enrichment_stats(result_df)
-        
+    
         return EnrichResponse(
             status="ok",
-            result=output_path.name,
-            num_sequences=len(result_df),
-            enrichment_stats=enrichment_stats
+            result=output_path.name
         )
     
     except Exception as e:
@@ -78,18 +84,7 @@ def fa_enrich(
     fadf2: pd.DataFrame,
     keep_na: bool = False
 ) -> pd.DataFrame:
-    """
-    Calculate enrichment between two populations.
-    
-    Args:
-        fadf1: First population dataframe (baseline)
-        fadf2: Second population dataframe (enriched)
-        keep_na: If True, keeps sequences present in only one population (full join)
-                 If False, only keeps sequences present in both (inner join)
-    
-    Returns:
-        DataFrame with enrichment metrics
-    """
+
     # Rename columns for population 1 (add .a suffix)
     population1_rename = {
         ColumnName.ID: "ID.a",
@@ -164,34 +159,3 @@ def fa_enrich(
     merge_df = merge_df.sort_values("Rank.a", na_position='last')
     
     return merge_df
-
-
-def calculate_enrichment_stats(df: pd.DataFrame) -> Dict[str, Any]:
-    """Calculate summary statistics for enrichment analysis."""
-    # Filter out inf values for statistics
-    enrichment_values = df["Enrichment"].replace([np.inf, -np.inf], np.nan).dropna()
-    log2e_values = df["log2E"].replace([np.inf, -np.inf], np.nan).dropna()
-    
-    stats = {
-        "enrichment": {
-            "min": float(enrichment_values.min()) if len(enrichment_values) > 0 else 0,
-            "max": float(enrichment_values.max()) if len(enrichment_values) > 0 else 0,
-            "mean": float(enrichment_values.mean()) if len(enrichment_values) > 0 else 0,
-            "median": float(enrichment_values.median()) if len(enrichment_values) > 0 else 0,
-            "std": float(enrichment_values.std()) if len(enrichment_values) > 0 else 0
-        },
-        "log2_enrichment": {
-            "min": float(log2e_values.min()) if len(log2e_values) > 0 else 0,
-            "max": float(log2e_values.max()) if len(log2e_values) > 0 else 0,
-            "mean": float(log2e_values.mean()) if len(log2e_values) > 0 else 0,
-            "median": float(log2e_values.median()) if len(log2e_values) > 0 else 0,
-            "std": float(log2e_values.std()) if len(log2e_values) > 0 else 0
-        },
-        "sequences_only_in_pop1": int((df["RPU.b"] == 0).sum()),
-        "sequences_only_in_pop2": int((df["RPU.a"] == 0).sum()),
-        "sequences_in_both": int(((df["RPU.a"] > 0) & (df["RPU.b"] > 0)).sum()),
-        "highly_enriched_count": int((df["Enrichment"] > 10).sum()),
-        "highly_depleted_count": int((df["Enrichment"] < 0.1).sum())
-    }
-    
-    return stats

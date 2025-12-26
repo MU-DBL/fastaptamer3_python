@@ -1,0 +1,6082 @@
+[
+  {
+    "whichGroup": "Standard",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Standard",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ATA",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Vertebrate mitochondrial",
+    "Codon": "AGG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CTT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CTC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CTA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CTG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ATA",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Yeast mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Mold, protozoan, and coelenterate mitochondrial + Mycoplasma/Spiroplasma",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ATA",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AGA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "AGG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Invertebrate mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ciliate, dasycladacean and Hexamita nuclear",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AAA",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AGA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "AGG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Echinoderm and flatworm mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TGA",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Euplotid nuclear",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Bacterial, archaeal and plant plastid",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CTG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Alternative yeast nuclear",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ATA",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "AGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Ascidian mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TAA",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AAA",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AGA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "AGG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Alternative flatworm mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Blepharisma nuclear",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TAG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Chlorophycean mitochondrial",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ATA",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AAA",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AGA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "AGG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Trematode mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TAG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TCA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Scenedesmus obliquus mitochondrial",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TTA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Thraustochytrium mitochondrial",
+    "Codon": "TGA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TGA",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AGA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "AGG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Pterobranchia mitochondrial",
+    "Codon": "TAG",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TTT",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TTC",
+    "Translation": "F"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TCT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TCC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TCA",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TCG",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TAT",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TAC",
+    "Translation": "Y"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TGT",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TGC",
+    "Translation": "C"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TGG",
+    "Translation": "W"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CTT",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CTC",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CTA",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CTG",
+    "Translation": "L"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CCT",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CCC",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CCA",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CCG",
+    "Translation": "P"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CAT",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CAC",
+    "Translation": "H"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CAA",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CAG",
+    "Translation": "Q"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CGT",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CGC",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "CGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ATT",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ATC",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ATA",
+    "Translation": "I"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ATG",
+    "Translation": "M"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ACT",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ACC",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ACA",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "ACG",
+    "Translation": "T"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AAT",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AAC",
+    "Translation": "N"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AAA",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AAG",
+    "Translation": "K"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AGT",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AGC",
+    "Translation": "S"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AGA",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "AGG",
+    "Translation": "R"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GTT",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GTC",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GTA",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GTG",
+    "Translation": "V"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GCT",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GCC",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GCA",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GCG",
+    "Translation": "A"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GAT",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GAC",
+    "Translation": "D"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GAA",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GAG",
+    "Translation": "E"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GGT",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GGC",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GGA",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "GGG",
+    "Translation": "G"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TAA",
+    "Translation": "*"
+  },
+  {
+    "whichGroup": "Candidate Division SR1 and Gracilibacteria",
+    "Codon": "TAG",
+    "Translation": "*"
+  }
+]
