@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from routers import motif_discovery, motif_track, sequence_enrichment, translate
 from routers import position_enrichment, recluster
 from routers import cluster_msa,cluster_phmm, cluster_list
 from routers import preprocess,count,recount,filehandler,progress, cluster, cluster_diversity
@@ -40,6 +41,11 @@ app.include_router(cluster_list.router, prefix="/api/v1", tags=["cluster_list"])
 app.include_router(recluster.router, prefix="/api/v1", tags=["recluster"])
 app.include_router(position_enrichment.router, prefix="/api/v1", tags=["position_enrichment"])
 app.include_router(motif_search.router, prefix="/api/v1", tags=["motif_search"])
+app.include_router(motif_search.router, prefix="/api/v1", tags=["motif_search"])
+app.include_router(motif_discovery.router, prefix="/api/v1", tags=["motif_discovery"])
+app.include_router(motif_track.router, prefix="/api/v1", tags=["motif_track"])
+app.include_router(sequence_enrichment.router, prefix="/api/v1", tags=["sequence_enrichment"])
+app.include_router(translate.router, prefix="/api/v1", tags=["translate"])
 
 @app.get("/")
 async def root():
