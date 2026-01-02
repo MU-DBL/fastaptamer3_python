@@ -283,6 +283,27 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-omit`, params);
   }
+
+  // Motif Tracker
+  motifTracker(params: {
+    input_paths: string[];
+    population_names: string[];
+    query_list: string[];
+    query_aliases?: string[];
+    motif_type: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-tracker`, params);
+  }
+
+  // Sequence Tracker
+  sequenceTracker(params: {
+    input_paths: string[];
+    population_names: string[];
+    query_list: string[];
+    query_aliases?: string[];
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/sequence-tracker`, params);
+  }
 }
 
 

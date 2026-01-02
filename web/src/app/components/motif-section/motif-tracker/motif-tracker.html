@@ -1,10 +1,321 @@
-<div class="placeholder-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Motif Tracker</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>This feature is coming soon. It will allow you to track motif enrichment across selection rounds.</p>
-    </mat-card-content>
-  </mat-card>
+<div class="section-container">
+  <div class="left-subsection">
+    
+    <!-- FILE UPLOAD SECTION -->
+    <h3 class="section-title">Upload Multiple FASTA Files *</h3>
+    
+    <div class="file-upload-section">
+      <input 
+        type="file" 
+        #multiFileInput
+        multiple
+        accept=".fasta,.fa"
+        (change)="onMultipleFilesSelected($event)"
+        style="display: none;">
+      
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="multiFileInput.click()"
+        [disabled]="isUploading"
+        class="browse-button">
+        Browse...
+      </button>
+      
+      <span class="upload-status">
+        @if (uploadingFiles.length === 0) {
+          <span>FASTA files</span>
+        } @else if (isUploading) {
+          <span>Uploading {{ uploadingFiles.length }} file(s)...</span>
+        } @else {
+          <span class="upload-complete">{{ uploadedFiles.length }} file(s) uploaded</span>
+        }
+      </span>
+    </div>
+
+    <!-- Upload Progress Bars -->
+    @if (uploadingFiles.length > 0) {
+      <div class="upload-progress-section">
+        @for (file of uploadingFiles; track file.name) {
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="progress-percentage">{{ file.progress }}%</span>
+            </div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="file.progress"
+              [class.complete]="file.isComplete">
+            </mat-progress-bar>
+            @if (file.isComplete) {
+              <span class="complete-text">Upload complete</span>
+            }
+          </div>
+        }
+      </div>
+
+      @if (!isUploading) {
+        <p class="notice">
+          *All files uploaded successfully. You can now select and order them below.
+        </p>
+      } @else {
+        <p class="notice">
+          *Please wait while files are being uploaded...
+        </p>
+      }
+    }
+
+    <!-- FILE SELECTION AND ORDERING -->
+    <h3 class="section-title">File Order for Tracking ({{ fileSelections.length }} files)</h3>
+    
+    @if (fileSelections.length === 0) {
+      <div class="empty-state-box">
+        <mat-icon>reorder</mat-icon>
+        <p>Upload files above and they will appear here for ordering</p>
+      </div>
+    } @else {
+      <p class="instruction-text">
+        <mat-icon>drag_indicator</mat-icon>
+        Drag and drop files to reorder, or use arrow buttons. Uncheck to exclude files from tracking.
+      </p>
+      
+      <div class="file-ordering-section">
+        <div 
+          class="file-selection-list"
+          cdkDropList
+          (cdkDropListDropped)="onFileDrop($event)">
+          
+          @for (selection of fileSelections; track selection.fileName) {
+            <mat-card 
+              class="file-selection-card"
+              [class.excluded]="!selection.include"
+              cdkDrag>
+              <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              
+              <mat-card-content>
+                <div class="file-selection-row">
+                  <mat-checkbox 
+                    [(ngModel)]="selection.include"
+                    color="primary"
+                    matTooltip="Include in tracking">
+                  </mat-checkbox>
+
+                  <mat-icon class="drag-handle" cdkDragHandle>drag_indicator</mat-icon>
+                  
+                  <div class="order-badge">{{ selection.order }}</div>
+                  
+                  <div class="file-info">
+                    <span class="file-name" [title]="selection.fileName">{{ selection.fileName }}</span>
+                  </div>
+
+                  <div class="action-buttons">
+                    <button 
+                      mat-icon-button
+                      [disabled]="$index === 0"
+                      (click)="moveFileUp($index)"
+                      matTooltip="Move up">
+                      <mat-icon>arrow_upward</mat-icon>
+                    </button>
+                    
+                    <button 
+                      mat-icon-button
+                      [disabled]="$index === fileSelections.length - 1"
+                      (click)="moveFileDown($index)"
+                      matTooltip="Move down">
+                      <mat-icon>arrow_downward</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- QUERY INPUT -->
+    <mat-label class="section-label">Motif or Sequence List (one per line) *</mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <textarea 
+        matInput 
+        [(ngModel)]="queryList"
+        rows="5"
+        placeholder="AAA&#10;GTG&#10;UUCG"></textarea>
+    </mat-form-field>
+
+    <!-- ALIAS INPUT -->
+    <mat-label class="section-label">Alias List (one per line, optional)</mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <textarea 
+        matInput 
+        [(ngModel)]="queryAliases"
+        rows="5"
+        placeholder="motif1&#10;motif2&#10;motif3"></textarea>
+    </mat-form-field>
+
+    <!-- QUERY TYPE SELECTION -->
+    <h3 class="section-title">Search for motifs or whole sequences?</h3>
+    <mat-radio-group 
+      [(ngModel)]="queryType"
+      (change)="onQueryTypeChange()"
+      class="radio-group">
+      <mat-radio-button value="Motif">Motif</mat-radio-button>
+      <mat-radio-button value="Sequence">Sequence</mat-radio-button>
+    </mat-radio-group>
+
+    <!-- MOTIF TYPE (Conditional) -->
+    @if (queryType === 'Motif') {
+      <h3 class="section-title">Type of pattern?</h3>
+      <mat-radio-group 
+        [(ngModel)]="motifType"
+        class="radio-group">
+        <mat-radio-button value="Nucleotide">Nucleotide</mat-radio-button>
+        <mat-radio-button value="AminoAcid">AminoAcid</mat-radio-button>
+        <mat-radio-button value="String">String</mat-radio-button>
+      </mat-radio-group>
+    }
+
+    <!-- PLOT CUSTOMIZATION OPTIONS -->
+    <mat-divider></mat-divider>
+    
+    <h3 class="section-title">Adjust default tracker plot?</h3>
+    <mat-radio-group 
+      [(ngModel)]="adjustPlotSettings"
+      (change)="onAdjustPlotSettingsChange()"
+      class="radio-group">
+      <mat-radio-button value="no">No</mat-radio-button>
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustPlotSettings === 'yes') {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>X-axis - represents uploaded populations</mat-label>
+        <input matInput [(ngModel)]="plotXAxis">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Y-axis - represents percentage for motifs or total RPU for sequences</mat-label>
+        <input matInput [(ngModel)]="plotYAxis">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Plot title</mat-label>
+        <input matInput [(ngModel)]="plotTitle">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Color palette</mat-label>
+        <mat-select [(ngModel)]="plotColorPalette">
+          <mat-option value="Accent">Accent</mat-option>
+          <mat-option value="Dark2">Dark2</mat-option>
+          <mat-option value="Paired">Paired</mat-option>
+          <mat-option value="Pastel1">Pastel1</mat-option>
+          <mat-option value="Pastel2">Pastel2</mat-option>
+          <mat-option value="Set1">Set1</mat-option>
+          <mat-option value="Set2">Set2</mat-option>
+        </mat-select>
+      </mat-form-field>
+    }
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start Tracking' }}
+      </button>
+
+      <!-- PLOT BUTTON -->
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="download-button"
+        [disabled]="!trackerData || trackerData.length === 0"
+        (click)="openTrackerPlot()">
+        <mat-icon>show_chart</mat-icon>
+        Tracker Plot
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownloadTracker()">
+        <mat-icon>download</mat-icon>
+        Download Summary
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="enrichmentFileName()"
+        [disabled]="!enrichmentFileName()"
+        (click)="onDownloadEnrichment()">
+        <mat-icon>download</mat-icon>
+        Download Enrichment
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULTS SECTION -->
+  <div class="right-subsection">
+    <div class="results-section">
+      <h3 class="results-title">Tracker Results</h3>
+      <app-table
+        [config]="trackerTableConfig"
+        [data]="trackerData">
+      </app-table>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="results-section">
+      <h3 class="results-title">Enrichment Results</h3>
+      <app-table
+        [config]="enrichmentTableConfig"
+        [data]="enrichmentData">
+      </app-table>
+    </div>
+  </div>
 </div>
+<!-- PLOT MODAL -->
+@if (showTrackerPlot()) {
+  <div class="plot-modal-overlay" (click)="closeTrackerPlot()">
+    <mat-card class="plot-modal-content" (click)="$event.stopPropagation()">
+      <mat-card-header class="plot-modal-header">
+        <div class="plot-modal-title-section">
+          <h2 class="plot-modal-title">Tracker Plot</h2>
+        </div>
+        <button 
+          mat-icon-button 
+          class="plot-modal-close"
+          (click)="closeTrackerPlot()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content class="plot-modal-body">
+        <!-- Plot display only -->
+        @if (trackerData && trackerData.length > 0) {
+          <div class="plot-container">
+            <app-tracker-plot
+              [data]="trackerData"
+              [queryType]="queryType"
+              [xAxisLabel]="plotXAxis"
+              [yAxisLabel]="plotYAxis"
+              [title]="plotTitle"
+              [colorPalette]="plotColorPalette">
+            </app-tracker-plot>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
