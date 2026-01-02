@@ -75,7 +75,7 @@ async def motif_tracker(params: MotifTrackerInput):
             lambda r: round(
                 r[ColumnName.TOTAL_READS] / total_reads[r[ColumnName.POPULATION_NUMBER] - 1] * 100,
                 2,
-            ),
+            ) if total_reads[r[ColumnName.POPULATION_NUMBER] - 1] > 0 else 0.0,
             axis=1,
         )
     else:
@@ -92,11 +92,11 @@ async def motif_tracker(params: MotifTrackerInput):
     result_df = add_aliases(result_df, params, ColumnName.MOTIF)
 
     base = Path(params.input_paths[0]).stem
-    output = UPLOAD_DIR / f"{base}_motif_tracker.{params.output_format}"
-    enrichment = UPLOAD_DIR / f"{base}_motif_tracker_enrichment.{params.output_format}"
+    output = UPLOAD_DIR / f"{base}_motif_tracker.csv"
+    enrichment = UPLOAD_DIR / f"{base}_motif_tracker_enrichment.csv"
 
-    save_sequences(result_df, output, params.output_format)
-    tracker_enrichment(result_df, enrichment, params.output_format)
+    save_sequences(result_df, output, "csv")
+    tracker_enrichment(result_df, enrichment, "csv")
 
     return {
         "status": "ok",
@@ -108,11 +108,13 @@ async def motif_tracker(params: MotifTrackerInput):
 @router.post("/sequence-tracker")
 async def sequence_tracker(params: MotifTrackerInput):
     validate_inputs(params)
+
     dfs, _ = load_fasta_files(params)
 
     rows = []
 
     for pop_idx, df in enumerate(dfs, start=1):
+        # Filter sequences that exactly match the query list
         matches = df[df[ColumnName.SEQUENCES].isin(params.query_list)]
         if matches.empty:
             continue
@@ -125,16 +127,38 @@ async def sequence_tracker(params: MotifTrackerInput):
         )
         rows.append(matches)
 
-    result_df = pd.concat(rows) if rows else pd.DataFrame()
+    if rows:
+        # Concatenate all matches - do NOT aggregate, keep individual sequences
+        result_df = pd.concat(rows)
+        # Select only relevant columns and arrange by Sequences
+        result_df = result_df[[
+            ColumnName.POPULATION_NUMBER,
+            ColumnName.POPULATION_NAME,
+            ColumnName.SEQUENCES,
+            ColumnName.RANK,
+            ColumnName.READS,
+            ColumnName.RPU
+        ]].sort_values(ColumnName.SEQUENCES)
+    else:
+        result_df = pd.DataFrame(
+            columns=[
+                ColumnName.POPULATION_NUMBER,
+                ColumnName.POPULATION_NAME,
+                ColumnName.SEQUENCES,
+                ColumnName.RANK,
+                ColumnName.READS,
+                ColumnName.RPU,
+            ]
+        )
 
     result_df = add_aliases(result_df, params, ColumnName.SEQUENCES)
 
     base = Path(params.input_paths[0]).stem
-    output = UPLOAD_DIR / f"{base}_sequence_tracker.{params.output_format}"
-    enrichment = UPLOAD_DIR / f"{base}_sequence_tracker_enrichment.{params.output_format}"
+    output = UPLOAD_DIR / f"{base}_sequence_tracker.csv"
+    enrichment = UPLOAD_DIR / f"{base}_sequence_tracker_enrichment.csv"
 
-    save_sequences(result_df, output, params.output_format)
-    tracker_enrichment(result_df, enrichment, params.output_format)
+    save_sequences(result_df, output, "csv")
+    tracker_enrichment(result_df, enrichment, "csv")
 
     return {
         "status": "ok",
@@ -162,11 +186,16 @@ def tracker_enrichment(df: pd.DataFrame, output_path: Path, output_format: str):
 
         for i in range(1, len(sub)):
             prev, curr = sub.iloc[i - 1], sub.iloc[i]
-            enrichment = (
-                round(curr[value_col] / prev[value_col], 2)
-                if prev[value_col] > 0
-                else float("inf")
-            ) 
+            
+            # Calculate enrichment with proper handling of edge cases
+            if prev[value_col] > 0:
+                enrichment = round(curr[value_col] / prev[value_col], 2)
+            elif curr[value_col] > 0:
+                # If previous is 0 but current is not, show as "inf" or very high number
+                enrichment = "inf"
+            else:
+                # Both are 0, no enrichment
+                enrichment = 0.0
 
             records.append(
                 {
