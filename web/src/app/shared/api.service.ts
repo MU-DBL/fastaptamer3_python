@@ -304,6 +304,16 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/sequence-tracker`, params);
   }
+
+  // Motif Discovery
+  motifDiscovery(params: {
+    input_path: string;
+    min_reads: number;
+    length_range: number[];
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-discovery`, params);
+  }
 }
 
 
