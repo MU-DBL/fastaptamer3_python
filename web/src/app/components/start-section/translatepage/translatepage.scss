@@ -1,0 +1,14 @@
+@import '../../../shared/shared-styles.scss';
+
+.translate-page-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.left-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
