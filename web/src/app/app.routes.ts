@@ -3,11 +3,13 @@ import { Start }from './components/start-section/start/start'
 import { NotFound } from './components/not-found/not-found';
 import { Clusterpage } from './components/cluster-section/clusterpage/clusterpage';
 import { Motifpage } from './components/motif-section/motifpage/motifpage';
+import { Translatepage } from './components/start-section/translatepage/translatepage';
 
 export const routes: Routes = [
   { path: '', component: Start },   // Default route
   { path: 'start', component: Start },    
   { path: 'cluster', component: Clusterpage },
-  { path: 'motif', component: Motifpage },                                  
+  { path: 'motif', component: Motifpage },
+  { path: 'translate', component: Translatepage },
   { path: '**', component: NotFound }  // 404 - Must be last!
 ];

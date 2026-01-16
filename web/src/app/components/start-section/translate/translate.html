@@ -1,0 +1,302 @@
+<div class="section-container">
+  <div class="left-subsection">
+    <h3 class="section-title">Choose data to translate*:</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA file'"
+      [showUploadNote]="true"
+      [uploadNotePath]="'#'"
+      [uploadSpeed]="200"
+      (fileSelected)="onFileSelected($event)"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
+
+    <h3 class="section-title">Open reading frame:</h3>
+    <mat-radio-group 
+      [(ngModel)]="orf"
+      class="radio-group">
+      <mat-radio-button [value]="1">1</mat-radio-button>
+      <mat-radio-button [value]="2">2</mat-radio-button>
+      <mat-radio-button [value]="3">3</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">Should non-unique sequences be merged?</h3>
+    <mat-radio-group 
+      [(ngModel)]="converge"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">Genetic code selection:</h3>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Select genetic code</mat-label>
+      <mat-select [(ngModel)]="translateSelection">
+        @for (code of geneticCodes; track code) {
+          <mat-option [value]="code">{{ code }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <h3 class="section-title">Do you want to customize the translation table?</h3>
+    <mat-radio-group 
+      [(ngModel)]="nonstandardTranslations"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (nonstandardTranslations === 'yes') {
+      <div class="custom-translation-panel">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comma-separated codons to modify</mat-label>
+          <input matInput [(ngModel)]="translateInputChangesCodons" placeholder="e.g., AAA, TTT, GGG">
+          <mat-hint>These alphanumeric codons will have altered translations</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comma-separated translations</mat-label>
+          <input matInput [(ngModel)]="translateInputChangesOutputs" placeholder="e.g., Z, X, Y">
+          <mat-hint>These must correspond to the same order as input codons</mat-hint>
+        </mat-form-field>
+      </div>
+    }
+
+    <h3 class="section-title">FASTA or CSV download?</h3>
+    <mat-radio-group 
+      [(ngModel)]="downloadFormat"
+      class="radio-group">
+      <mat-radio-button value="fasta">FASTA</mat-radio-button>
+      <mat-radio-button value="csv">CSV</mat-radio-button>
+    </mat-radio-group>
+
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="!uploadComplete || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+
+    <!-- Plotting Section -->
+    <div class="plotting-section">
+      <hr class="section-divider">
+      
+      <!-- Min Reads Slider -->
+      <label class="section-label">Min. number of reads to plot:
+        <mat-icon class="info-icon" matTooltip="Minimum number of reads for sequences to be plotted">help_outline</mat-icon>
+      </label>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="value-chip range-min">0</span>
+          <span class="value-chip">{{ minReadsToPlot }}</span>
+          <span class="value-chip range-max">1000</span>
+        </div>
+        <div class="dual-range-container">
+          <mat-slider [min]="0" [max]="1000" [step]="10" discrete class="range-slider">
+            <input matSliderThumb [(ngModel)]="minReadsToPlot">
+          </mat-slider>
+        </div>
+      </div>
+
+      <!-- Max Rank Slider -->
+      <label class="section-label">Max. rank to plot:
+        <mat-icon class="info-icon" matTooltip="Maximum rank of sequences to be plotted">help_outline</mat-icon>
+      </label>
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="value-chip range-min">10</span>
+          <span class="value-chip">{{ maxRankToPlot }}</span>
+          <span class="value-chip range-max">1000</span>
+        </div>
+        <div class="dual-range-container">
+          <mat-slider [min]="10" [max]="1000" [step]="10" discrete class="range-slider">
+            <input matSliderThumb [(ngModel)]="maxRankToPlot">
+          </mat-slider>
+        </div>
+      </div>
+
+      <!-- Reads per Rank Customization -->
+      <h3 class="section-title">Adjust default reads-per-rank plot?</h3>
+      <mat-radio-group 
+        [(ngModel)]="adjustReadsPerRank"
+        (change)="onAdjustReadsPerRankChange()"
+        class="radio-group">
+        <mat-radio-button value="yes">Yes</mat-radio-button>
+        <mat-radio-button value="no">No</mat-radio-button>
+      </mat-radio-group>
+
+      @if (adjustReadsPerRank === 'yes') {
+        <div class="customization-panel">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>X-axis label</mat-label>
+            <textarea matInput [(ngModel)]="rprXAxis" rows="2"></textarea>
+            <mat-hint>Represents sequence rank</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Y-axis label</mat-label>
+            <textarea matInput [(ngModel)]="rprYAxis" rows="2"></textarea>
+            <mat-hint>Represents sequence abundance</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Plot title</mat-label>
+            <textarea matInput [(ngModel)]="rprTitle" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="color-picker-field">
+            <label>Line color:</label>
+            <input type="color" [(ngModel)]="rprLineColor" class="color-input">
+            <span class="color-value">{{ rprLineColor }}</span>
+          </div>
+        </div>
+      }
+
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="plot-button"
+        [disabled]="translateData.length === 0"
+        (click)="readsPerRankPlot()">
+        <mat-icon>show_chart</mat-icon>
+        Reads per rank
+      </button>
+
+      <hr class="section-divider">
+
+      <!-- Sequence Length Histogram Customization -->
+      <h3 class="section-title">Adjust default sequence-length histogram?</h3>
+      <mat-radio-group 
+        [(ngModel)]="adjustSeqLengthHistogram"
+        (change)="onAdjustSeqLengthHistogramChange()"
+        class="radio-group">
+        <mat-radio-button value="yes">Yes</mat-radio-button>
+        <mat-radio-button value="no">No</mat-radio-button>
+      </mat-radio-group>
+
+      @if (adjustSeqLengthHistogram === 'yes') {
+        <div class="customization-panel">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>X-axis label</mat-label>
+            <textarea matInput [(ngModel)]="histXAxis" rows="2"></textarea>
+            <mat-hint>Represents sequence length</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Y-axis 1 label</mat-label>
+            <textarea matInput [(ngModel)]="histYAxis1" rows="2"></textarea>
+            <mat-hint>Represents unique sequence count</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Y-axis 2 label</mat-label>
+            <textarea matInput [(ngModel)]="histYAxis2" rows="2"></textarea>
+            <mat-hint>Represents total sequence count</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Plot title</mat-label>
+            <textarea matInput [(ngModel)]="histTitle" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="color-picker-field">
+            <label>Bar outline color:</label>
+            <input type="color" [(ngModel)]="histBarOutline" class="color-input">
+            <span class="color-value">{{ histBarOutline }}</span>
+          </div>
+
+          <div class="color-picker-field">
+            <label>Bar fill color (unique):</label>
+            <input type="color" [(ngModel)]="histBarFill" class="color-input">
+            <span class="color-value">{{ histBarFill }}</span>
+          </div>
+
+          <div class="color-picker-field">
+            <label>Bar fill color (total):</label>
+            <input type="color" [(ngModel)]="histBarFill2" class="color-input">
+            <span class="color-value">{{ histBarFill2}}</span>
+          </div>
+        </div>
+      }
+
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="plot-button"
+        [disabled]="translateData.length === 0"
+        (click)="seqLengthHistogramPlot()">
+        <mat-icon>bar_chart</mat-icon>
+        Sequence-length histogram
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Display -->
+  <div class="right-subsection">
+    @if (translateData.length > 0) {
+      <app-table [config]="tableConfig" [data]="translateData"></app-table>
+    } @else {
+      <div class="no-data-message">
+        <mat-icon>info</mat-icon>
+        <p>No data to display. Please upload a file and click Start.</p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Reads Per Rank Modal -->
+@if (showReadsPerRankModalFlag) {
+  <div class="modal-overlay" (click)="closeReadsPerRankModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ rprTitle }}</h2>
+        <button mat-icon-button (click)="closeReadsPerRankModal()" class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div #readsPerRankContainer class="plot-container"></div>
+      </div>
+      <div class="modal-footer">
+        <button mat-raised-button (click)="closeReadsPerRankModal()">Close</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Sequence Length Histogram Modal -->
+@if (showSeqLengthModalFlag) {
+  <div class="modal-overlay" (click)="closeSeqLengthModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ histTitle }}</h2>
+        <button mat-icon-button (click)="closeSeqLengthModal()" class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div #seqLengthContainer class="plot-container"></div>
+      </div>
+      <div class="modal-footer">
+        <button mat-raised-button (click)="closeSeqLengthModal()">Close</button>
+      </div>
+    </div>
+  </div>
+}

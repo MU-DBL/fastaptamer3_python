@@ -10,6 +10,7 @@ export enum ColumnName {
   RPU = 'RPU',
   SEQUENCES = 'sequences',
   LENGTH = 'length',
+  UNIQUE_NTS = 'Unique_Nts',
 
   // Cluster columns
   CLUSTER = 'Cluster',
@@ -156,6 +157,8 @@ export class FileService {
       ColumnName.TOTAL_RPU,
       ColumnName.AVERAGE_LED,
       ColumnName.SID,
+      ColumnName.UNIQUE_NTS,
+      ColumnName.LENGTH,
     ];
 
     // Define which columns are Floats
