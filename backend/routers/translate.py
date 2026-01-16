@@ -132,9 +132,6 @@ def translate_sequence(sequence: str, translation_map: Dict[str, str], orf: int 
     sequence = sequence.upper()
     sequence = sequence[orf - 1:]  # orf is 1-based in R
     
-    # Convert T to U (DNA to RNA)
-    sequence = sequence.replace('T', 'U')
-    
     # Remove trailing bases if length not divisible by 3
     remainder = len(sequence) % 3
     if remainder > 0:
@@ -234,10 +231,11 @@ async def translate_sequences(params: TranslateInput):
                 how='left'
             )
             
-            # Recreate ID column
-            converged_df[ColumnName.ID] = converged_df.apply(
-                lambda row: f">{row[ColumnName.RANK]}-{row[ColumnName.READS]}-{row[ColumnName.RPU]}",
-                axis=1
+            # Recreate ID column in semicolon format (consistent with count_service pattern)
+            converged_df[ColumnName.ID] = (
+                'Rank=' + converged_df[ColumnName.RANK].astype(str) + ';' +
+                'Reads=' + converged_df[ColumnName.READS].astype(str) + ';' +
+                'RPU=' + converged_df[ColumnName.RPU].astype(str)
             )
             
             translate_df = converged_df[[
@@ -247,7 +245,15 @@ async def translate_sequences(params: TranslateInput):
                 ColumnName.RPU,
                 'Unique_Nts',
                 ColumnName.SEQUENCES
-            ]]
+            ]].copy()
+        else:
+            # When not converging, update ID to maintain consistent format
+            translate_df = translate_df.copy()
+            translate_df[ColumnName.ID] = (
+                'Rank=' + translate_df[ColumnName.RANK].astype(str) + ';' +
+                'Reads=' + translate_df[ColumnName.READS].astype(str) + ';' +
+                'RPU=' + translate_df[ColumnName.RPU].astype(str)
+            )
         
         # Step 5: Add sequence length column
         translate_df['Length'] = translate_df[ColumnName.SEQUENCES].str.len()

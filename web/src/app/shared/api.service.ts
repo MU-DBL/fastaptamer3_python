@@ -314,6 +314,18 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-discovery`, params);
   }
+
+  // Translate
+  translate(params: {
+    input_path: string;
+    orf: number;
+    converge: boolean;
+    input_changes: Array<{Codon: string, Translation: string}> | null;
+    translate_selection: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/translate`, params);
+  }
 }
 
 
