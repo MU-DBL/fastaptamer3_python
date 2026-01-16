@@ -1,5 +1,5 @@
 # Use official lightweight Python image
-FROM --platform=linux/amd64 python:3.10-slim
+FROM python:3.10-slim
 
 # Prevent prompts; speed up pip
 ENV DEBIAN_FRONTEND=noninteractive \
