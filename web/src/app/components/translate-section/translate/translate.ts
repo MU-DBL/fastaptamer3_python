@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -29,33 +29,14 @@ export interface CodonChange {
 })
 export class Translate {
 
-  constructor(
-    private cdr: ChangeDetectorRef, 
-    private plotModalService: PlotModalService
-  ) {}
-
   // Services
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
-
-  // DOM Elements for plots
-  @ViewChild('readsPerRankContainer') readsPerRankContainer!: ElementRef;
-  @ViewChild('seqLengthContainer') seqLengthContainer!: ElementRef;
+  private plotModalService = inject(PlotModalService);
 
   // Signals
   isProcessing = signal(false);
   processedFileName = signal('');
-  
-  // Plotting State
-  plotly: any;
-  showReadsPerRankModalFlag = false;
-  showSeqLengthModalFlag = false;
-
-  readsPerRankData: any = null;
-  readsPerRankParams: any = null;
-
-  seqLengthData: any = null;
-  seqLengthParams: any = null;
 
   // File handling
   selectedFile: File | null = null;
@@ -245,7 +226,6 @@ export class Translate {
             switchMap(blob => this.fileService.parseClusterFile(blob, response.result)),
             tap(parsedData => {
               this.translateData = parsedData;
-              this.cdr.detectChanges();
             })
           );
         }
@@ -286,11 +266,6 @@ export class Translate {
     const xData = filteredData.map((row: any) => row[ColumnName.RANK]);
     const yData = filteredData.map((row: any) => row[ColumnName.READS]);
 
-    // Import plotly dynamically
-    if (!this.plotly) {
-      this.plotly = await import('plotly.js-dist-min');
-    }
-
     const trace = {
       x: xData,
       y: yData,
@@ -302,12 +277,12 @@ export class Translate {
 
     const layout = {
       title: {
-        text: `<b>${this.rprTitle}</b>`,
+        text: this.rprTitle,
         font: { size: 18 }
       },
       xaxis: {
         title: {
-          text: `<b>${this.rprXAxis}</b>`,
+          text: this.rprXAxis,
           font: { size: 14 }
         },
         showgrid: true,
@@ -319,7 +294,7 @@ export class Translate {
       },
       yaxis: {
         title: {
-          text: `<b>${this.rprYAxis}</b>`,
+          text: this.rprYAxis,
           font: { size: 14 }
         },
         showgrid: true,
@@ -336,28 +311,12 @@ export class Translate {
       paper_bgcolor: 'white'
     };
 
-    this.readsPerRankData = { traces: [trace], layout };
-    this.readsPerRankParams = {
-      title: this.rprTitle,
-      xAxisLabel: this.rprXAxis,
-      yAxisLabel: this.rprYAxis,
-      lineColor: this.rprLineColor
-    };
-
-    this.showReadsPerRankModalFlag = true;
-    this.cdr.detectChanges();
-
-    // Wait for next tick to ensure container is rendered
-    setTimeout(() => {
-      if (this.readsPerRankContainer) {
-        this.plotly.newPlot(
-          this.readsPerRankContainer.nativeElement,
-          [trace],
-          layout,
-          { responsive: true }
-        );
-      }
-    }, 100);
+    // Use shared plot modal service
+    this.plotModalService.openPlot({
+      data: [trace],
+      layout: layout,
+      config: { responsive: true }
+    });
   }
 
   async seqLengthHistogramPlot() {
@@ -388,11 +347,6 @@ export class Translate {
     const uniqueCounts = sortedEntries.map(([, counts]) => counts.unique);
     const totalCounts = sortedEntries.map(([, counts]) => counts.total);
 
-    // Import plotly dynamically
-    if (!this.plotly) {
-      this.plotly = await import('plotly.js-dist-min');
-    }
-
     const trace1 = {
       x: lengths,
       y: uniqueCounts,
@@ -419,12 +373,12 @@ export class Translate {
 
     const layout = {
       title: {
-        text: `<b>${this.histTitle}</b>`,
+        text: this.histTitle,
         font: { size: 18 }
       },
       xaxis: {
         title: {
-          text: `<b>${this.histXAxis}</b>`,
+          text: this.histXAxis,
           font: { size: 14 }
         },
         showgrid: true,
@@ -436,7 +390,7 @@ export class Translate {
       },
       yaxis: {
         title: {
-          text: `<b>${this.histYAxis1}</b>`,
+          text: this.histYAxis1,
           font: { size: 14 }
         },
         side: 'left',
@@ -448,7 +402,7 @@ export class Translate {
       },
       yaxis2: {
         title: {
-          text: `<b>${this.histYAxis2}</b>`,
+          text: this.histYAxis2,
           font: { size: 14 }
         },
         side: 'right',
@@ -466,38 +420,11 @@ export class Translate {
       paper_bgcolor: 'white'
     };
 
-    this.seqLengthData = { traces: [trace1, trace2], layout };
-    this.seqLengthParams = {
-      title: this.histTitle,
-      xAxisLabel: this.histXAxis,
-      yAxis1Label: this.histYAxis1,
-      yAxis2Label: this.histYAxis2,
-      barOutline: this.histBarOutline,
-      barFill: this.histBarFill,
-      barFill2: this.histBarFill2
-    };
-
-    this.showSeqLengthModalFlag = true;
-    this.cdr.detectChanges();
-
-    // Wait for next tick to ensure container is rendered
-    setTimeout(() => {
-      if (this.seqLengthContainer) {
-        this.plotly.newPlot(
-          this.seqLengthContainer.nativeElement,
-          [trace1, trace2],
-          layout,
-          { responsive: true }
-        );
-      }
-    }, 100);
-  }
-
-  closeReadsPerRankModal(): void {
-    this.showReadsPerRankModalFlag = false;
-  }
-
-  closeSeqLengthModal(): void {
-    this.showSeqLengthModalFlag = false;
+    // Use shared plot modal service
+    this.plotModalService.openPlot({
+      data: [trace1, trace2],
+      layout: layout,
+      config: { responsive: true }
+    });
   }
 }
