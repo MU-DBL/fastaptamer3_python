@@ -1,0 +1,141 @@
+@import '../../../shared/shared-styles.scss';
+
+.section-container {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  height: 100%;
+}
+
+.left-subsection {
+  flex: 0 0 400px;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.right-subsection {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+  align-items: center;
+
+  .start-button, .download-button {
+    min-width: 120px;
+    font-weight: 500;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    mat-icon {
+      margin-right: 8px;
+      
+      &.spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+
+  .download-ready {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.section-divider {
+  margin: 1.5rem 0;
+  border-top-color: #333;
+}
+
+.customization-panel {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.color-picker-field {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+  label {
+    font-weight: 500;
+    color: #333;
+    min-width: 150px;
+  }
+  
+  .color-input {
+    width: 60px;
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .color-value {
+    font-family: monospace;
+    color: #666;
+  }
+}
+
+.plot-button {
+  width: 100%;
+  height: 44px;
+  margin: 1rem 0 0.5rem 0;
+  
+  mat-icon {
+    margin-right: 0.5rem;
+  }
+}
+
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+.info-note {
+  font-size: 0.875rem;
+  color: #666;
+  font-style: italic;
+  margin: 0.5rem 0;
+}
