@@ -1,11 +1,216 @@
-<div class="sequence-enrichment-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Sequence Enrichment</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>This feature will analyze sequence enrichment across samples.</p>
-      <p class="placeholder-text">⚠️ Component placeholder - Implementation pending</p>
-    </mat-card-content>
-  </mat-card>
+<div class="section-container">
+  <div class="left-subsection">
+    <h3 class="section-title">Input data 1 *</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="200"
+      (fileSelected)="onFile1Selected($event)"
+      (uploadComplete)="onFile1UploadComplete($event)">
+    </app-upload>
+
+    <h3 class="section-title">Input data 2 *</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="200"
+      (fileSelected)="onFile2Selected($event)"
+      (uploadComplete)="onFile2UploadComplete($event)">
+    </app-upload>
+
+    <h3 class="section-title">Keep missing sequences?</h3>
+    <mat-radio-group 
+      [(ngModel)]="keepNA"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+    <p class="info-note">If No, only keep sequences found in all files.</p>
+
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="!uploadComplete1 || !uploadComplete2 || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <!-- log2(Enrichment) Histogram Customization -->
+    <h3 class="section-title">Adjust default enrichment histogram?</h3>
+    <mat-radio-group 
+      [(ngModel)]="adjustHistogram"
+      (change)="onAdjustHistogramChange()"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustHistogram === 'yes') {
+      <div class="customization-panel">
+        <mat-label class="section-label">X-axis - represents bins of log2(enrichment) values</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="histXAxis" />
+        </mat-form-field>
+
+        <mat-label class="section-label">Y-axis - represents unique sequence count</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="histYAxis" />
+        </mat-form-field>
+
+        <mat-label class="section-label">Plot title</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="histTitle" />
+        </mat-form-field>
+
+        <div class="color-picker-field">
+          <label>Color for bar outline:</label>
+          <input type="color" [(ngModel)]="histBarOutline" class="color-input" />
+          <span class="color-value">{{ histBarOutline }}</span>
+        </div>
+
+        <div class="color-picker-field">
+          <label>Color for bar fill:</label>
+          <input type="color" [(ngModel)]="histBarFill" class="color-input" />
+          <span class="color-value">{{ histBarFill }}</span>
+        </div>
+      </div>
+    }
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      class="plot-button"
+      [disabled]="enrichmentData.length === 0"
+      (click)="log2EnrichmentHistogram()">
+      <mat-icon>bar_chart</mat-icon>
+      log2(enrichment) histogram
+    </button>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <!-- RPU Scatter Plot Customization -->
+    <h3 class="section-title">Adjust default RPU scatter plot?</h3>
+    <mat-radio-group 
+      [(ngModel)]="adjustRPUScatter"
+      (change)="onAdjustRPUScatterChange()"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustRPUScatter === 'yes') {
+      <div class="customization-panel">
+        <mat-label class="section-label">X-axis - represents RPU in 1st population</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="rpuScatterXAxis" />
+        </mat-form-field>
+
+        <mat-label class="section-label">Y-axis - represents RPU in 2nd population</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="rpuScatterYAxis" />
+        </mat-form-field>
+
+        <mat-label class="section-label">Plot title</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="rpuScatterTitle" />
+        </mat-form-field>
+
+        <div class="color-picker-field">
+          <label>Color for points:</label>
+          <input type="color" [(ngModel)]="rpuScatterPointColor" class="color-input" />
+          <span class="color-value">{{ rpuScatterPointColor }}</span>
+        </div>
+      </div>
+    }
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      class="plot-button"
+      [disabled]="enrichmentData.length === 0"
+      (click)="rpuScatterPlot()">
+      <mat-icon>scatter_plot</mat-icon>
+      RPU scatter plot
+    </button>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <!-- RA Plot Customization -->
+    <h3 class="section-title">Adjust default RA scatter plot?</h3>
+    <mat-radio-group 
+      [(ngModel)]="adjustRAPlot"
+      (change)="onAdjustRAPlotChange()"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustRAPlot === 'yes') {
+      <div class="customization-panel">
+        <mat-label class="section-label">X-axis - represents mean log2(RPU)</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="raPlotXAxis" />
+        </mat-form-field>
+
+        <mat-label class="section-label">Y-axis - represents fold change</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="raPlotYAxis" />
+        </mat-form-field>
+
+        <mat-label class="section-label">Plot title</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="raPlotTitle" />
+        </mat-form-field>
+
+        <div class="color-picker-field">
+          <label>Color for points:</label>
+          <input type="color" [(ngModel)]="raPlotPointColor" class="color-input" />
+          <span class="color-value">{{ raPlotPointColor }}</span>
+        </div>
+      </div>
+    }
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      class="plot-button"
+      [disabled]="enrichmentData.length === 0"
+      (click)="raPlot()">
+      <mat-icon>show_chart</mat-icon>
+      RA plot
+    </button>
+  </div>
+
+  <!-- Table Display -->
+  <div class="right-subsection">
+    @if (enrichmentData.length > 0) {
+      <app-table [config]="tableConfig" [data]="enrichmentData"></app-table>
+    } @else {
+      <div class="no-data-message">
+        <mat-icon>info</mat-icon>
+        <p>No data to display. Please upload both FASTA files and click Start.</p>
+      </div>
+    }
+  </div>
 </div>

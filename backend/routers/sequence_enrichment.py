@@ -24,8 +24,8 @@ class EnrichInput(BaseModel):
 class EnrichResponse(BaseModel):
     status: str
     result: str
-    num_sequences: int
-    enrichment_stats: Dict[str, Any]
+    num_sequences: int = 0
+    enrichment_stats: Dict[str, Any] = {}
 
 @router.post("/sequence-enrich", response_model=EnrichResponse)
 async def fa_enrich_endpoint(params: EnrichInput):
@@ -69,7 +69,14 @@ async def fa_enrich_endpoint(params: EnrichInput):
     
         return EnrichResponse(
             status="ok",
-            result=output_path.name
+            result=output_path.name,
+            num_sequences=len(result_df),
+            enrichment_stats={
+                "mean_enrichment": float(result_df["Enrichment"].mean()),
+                "median_enrichment": float(result_df["Enrichment"].median()),
+                "mean_log2E": float(result_df["log2E"].mean()),
+                "median_log2E": float(result_df["log2E"].median())
+            }
         )
     
     except Exception as e:
@@ -123,32 +130,34 @@ def fa_enrich(
     )
     
     # Calculate enrichment and log2(enrichment)
-    # Handle division by zero and NaN values
-    rpu_a = merge_df["RPU.a"].fillna(0)
-    rpu_b = merge_df["RPU.b"].fillna(0)
+    # Following R script logic: calculate first, then handle NaN
+    # R does: Enrichment = round(RPU.b / RPU.a, 3)
+    #         log2E = round(log2(RPU.b / RPU.a), 3)
+    #         then replace(is.na(), 0)
     
-    # Calculate enrichment (avoid division by zero)
-    enrichment = np.where(
-        rpu_a > 0,
-        rpu_b / rpu_a,
-        np.where(rpu_b > 0, np.inf, 0)  # inf if only in pop2, 0 if both are 0
-    )
+    rpu_a = merge_df["RPU.a"]
+    rpu_b = merge_df["RPU.b"]
     
-    # Calculate log2 enrichment (handle inf and 0)
-    log2_enrichment = np.where(
-        enrichment > 0,
-        np.log2(enrichment),
-        np.where(enrichment == 0, -np.inf, np.inf)
-    )
+    # Calculate enrichment directly (like R does)
+    # This will naturally produce NaN for missing sequences and inf for division by zero
+    enrichment = rpu_b / rpu_a
+    log2_enrichment = np.log2(enrichment)
     
     merge_df["Enrichment"] = np.round(enrichment, 3)
     merge_df["log2E"] = np.round(log2_enrichment, 3)
     
-    # Replace inf with a large number for practical purposes (optional)
+    # R's replace(is.na(), 0) only replaces NA/NaN, not Inf
+    # However, for practical CSV export and display, we convert inf to large numbers
+    # This prevents issues with CSV parsing and provides meaningful display values
+    merge_df["Enrichment"] = merge_df["Enrichment"].replace([np.nan], 0)
+    merge_df["log2E"] = merge_df["log2E"].replace([np.nan], 0)
+    
+    # Replace inf values with large but finite numbers (for CSV compatibility)
+    # Note: R would keep Inf, but this causes issues in downstream processing
     merge_df["Enrichment"] = merge_df["Enrichment"].replace([np.inf, -np.inf], [999.999, -999.999])
     merge_df["log2E"] = merge_df["log2E"].replace([np.inf, -np.inf], [20.0, -20.0])
     
-    # Fill remaining NaN values with 0
+    # Fill remaining NaN values in other columns with 0 (matching R's behavior)
     merge_df = merge_df.fillna(0)
     
     # Move Sequences column to first position and sort by Rank.a
