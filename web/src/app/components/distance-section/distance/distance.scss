@@ -74,6 +74,22 @@
   padding: 1rem;
   border-radius: 4px;
   margin: 1rem 0;
+
+  .section-label {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .section-label:first-child {
+    margin-top: 0;
+  }
+
+  mat-form-field {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .color-picker-field {
@@ -81,11 +97,13 @@
   align-items: center;
   gap: 1rem;
   margin-bottom: 1rem;
+  margin-top: 1rem;
   
   label {
+    font-size: 14px;
     font-weight: 500;
-    color: #333;
-    min-width: 150px;
+    color: rgba(0, 0, 0, 0.87);
+    min-width: 180px;
   }
   
   .color-input {
