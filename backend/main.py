@@ -4,7 +4,7 @@ from routers import motif_discovery, motif_track, sequence_enrichment, translate
 from routers import position_enrichment, recluster
 from routers import cluster_msa,cluster_phmm, cluster_list
 from routers import preprocess,count,recount,filehandler,progress, cluster, cluster_diversity
-from routers import motif_search
+from routers import motif_search, distance
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -46,6 +46,7 @@ app.include_router(motif_discovery.router, prefix="/api/v1", tags=["motif_discov
 app.include_router(motif_track.router, prefix="/api/v1", tags=["motif_track"])
 app.include_router(sequence_enrichment.router, prefix="/api/v1", tags=["sequence_enrichment"])
 app.include_router(translate.router, prefix="/api/v1", tags=["translate"])
+app.include_router(distance.router, prefix="/api/v1", tags=["distance"])
 
 @app.get("/")
 async def root():

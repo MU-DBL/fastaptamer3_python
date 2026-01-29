@@ -17,6 +17,9 @@ export enum ColumnName {
   RANK_IN_CLUSTER = 'RankInCluster',
   LED = 'LED',
 
+  // Distance columns
+  DISTANCE = 'Distance',
+
   ORIGINAL_ID = 'OriginalID',
 
   // Diversity analysis columns
@@ -152,6 +155,7 @@ export class FileService {
       ColumnName.CLUSTER,
       ColumnName.RANK_IN_CLUSTER,
       ColumnName.LED,
+      ColumnName.DISTANCE,
       ColumnName.TOTAL_SEQUENCES,
       ColumnName.TOTAL_READS,
       ColumnName.TOTAL_RPU,
