@@ -71,6 +71,8 @@ def parse_fasta(fasta_input):
                     header_dict[ColumnName.RANK_IN_CLUSTER] = int(value)
                 elif key == ColumnName.LED:
                     header_dict[ColumnName.LED] = int(value)
+                elif key == ColumnName.DISTANCE:
+                    header_dict[ColumnName.DISTANCE] = int(value)
         
         # Add sequence
         header_dict[ColumnName.SEQUENCES] = sequence

@@ -326,6 +326,15 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/translate`, params);
   }
+
+  // Distance
+  sequenceDistance(params: {
+    input_path: string;
+    query_sequence: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/sequence-distance`, params);
+  }
 }
 
 

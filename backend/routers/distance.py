@@ -27,7 +27,7 @@ async def sequence_distance(params: DistanceInput):
     if not input_file.exists():
         raise HTTPException(status_code=404, detail=f"File not found: {params.input_path}")
     
-    fa_df = read_file(str(input_file))
+    fa_df = read_file(input_file)
     
     # Validate required columns
     required_cols = [ColumnName.ID, ColumnName.RANK, ColumnName.READS, 
@@ -47,8 +47,17 @@ async def sequence_distance(params: DistanceInput):
         lambda seq: levenshtein_distance(seq.upper(), query_upper)
     )
     
+    # Sort by distance (ascending)
+    result_df = fa_df.sort_values(by=ColumnName.DISTANCE).reset_index(drop=True)
+    
+    # Build ID column with all metadata including Distance
+    result_df[ColumnName.ID] = result_df.apply(
+        lambda row: f"{ColumnName.RANK}={int(row[ColumnName.RANK])};{ColumnName.READS}={int(row[ColumnName.READS])};{ColumnName.RPU}={row[ColumnName.RPU]};{ColumnName.DISTANCE}={int(row[ColumnName.DISTANCE])}", 
+        axis=1
+    )
+    
     # Select and reorder columns
-    result_df = fa_df[[
+    result_df = result_df[[
         ColumnName.ID,
         ColumnName.RANK,
         ColumnName.READS,
@@ -56,9 +65,6 @@ async def sequence_distance(params: DistanceInput):
         ColumnName.SEQUENCES,
         ColumnName.DISTANCE
     ]].copy()
-    
-    # Sort by distance (ascending)
-    result_df = result_df.sort_values(by=ColumnName.DISTANCE).reset_index(drop=True)
     
     # Save output
     base = Path(params.input_path).stem

@@ -10,6 +10,7 @@ class ColumnName:
     RPU = 'RPU'
     SEQUENCES = 'sequences'
     LENGTH='length'
+    DISTANCE = 'Distance'
 
     # cluster
     CLUSTER = 'Cluster'
