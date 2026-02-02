@@ -77,14 +77,13 @@
 #   "output_format": "csv"
 # }
 
-POST http://localhost:5001/api/v1/motif-tracker
+POST http://localhost:5001/api/v1/mutation-network
 
 {
-  "input_paths": ["sample100_count.fasta", "sample100_count.fasta"],
-  "population_names": ["Sample1", "Sample2"],
-  "query_list": ["ATG", "GCA"],
-  "query_aliases": ["Start Codon", "Alanine"],
-  "motif_type": "Nucleotide",
+  "input_path": "sample100_count.fasta",
+  "start_node": "TTGACGATAACTCGAGAAGAACCGAGGTGCAAACGGGAGAACACAATGGATTACACCGAGCTCGGCTGAC",
+  "end_node": "CACCATACCAATGGCATCGCTATGATCGAGCGCTAGCCTAGACCAATCTGGAGCTGACCACAGGGAACG",
+  "max_cost": 1,
   "output_format": "csv"
 }
 
