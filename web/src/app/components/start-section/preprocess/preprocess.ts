@@ -3,13 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { Component, inject, signal } from '@angular/core';
-import { ApiService, ProgressEvent} from '../../../shared/api.service';
+import { ApiService, ProgressEvent } from '../../../shared/api.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-preprocess',
-  imports: [  
-    CommonModule, 
+  imports: [
+    CommonModule,
     FormsModule,
     Upload,
     ...MATERIAL_IMPORTS],
@@ -26,7 +26,7 @@ export class Preprocess {
   downloadFormat: string = 'fasta';
   uploadComplete: boolean = false;
   isUploading: boolean = false;
-  
+
   // Use signals for reactive state
   isProcessing = signal<boolean>(false);
   processedFileName = signal('');
@@ -96,59 +96,71 @@ export class Preprocess {
   }
 
   private subscribeToProgress(jobId: string): void {
+
+    this.progressSubscription?.unsubscribe();
+
     this.progressSubscription = this.apiService
       .subscribeToProgress(jobId)
       .subscribe({
         next: (event: ProgressEvent) => {
+          // Immutable update for Angular change detection
+          this.logs = [...this.logs, event];
+
+          // Update stage / message / progress
+          this.currentStage = event.stage ?? '';
+          this.currentMessage = event.message ?? '';
+          if (event.progress != null) {
+            this.progress = event.progress;
+          }
+
+          // Handle completion or error
           if (event.stage === 'complete') {
             this.isProcessing.set(false);
             this.processedFileName.set(event.data?.output_path ?? '');
           } else if (event.stage === 'error') {
             this.isProcessing.set(false);
             console.error('SSE error:', event.message);
-          } else{
-            this.currentStage = event.stage ?? '';
-            this.currentMessage = event.message ?? '';
-            if (event.progress != null) this.progress = event.progress; // 0..1
-          } 
-          this.logs.push(event);
-          setTimeout(() => this.scrollToBottom(), 50);
+          }
+
+          // Debug log
+          console.log('Progress event:', this.logs.length);
         },
         error: (error) => {
           console.error('Progress stream error:', error);
           this.isProcessing.set(false);
-          alert('Connection to server lost');
+          this.cancelProcessing()
         },
         complete: () => {
+          console.log('SSE stream completed');
           this.isProcessing.set(false);
-          console.log('Processing completed');
         }
       });
   }
 
+
   cancelProcessing(): void {
     if (this.currentJobId) {
       this.apiService.cancelJob(this.currentJobId);
+
+      // Unsubscribe from SSE to stop updates
       this.progressSubscription?.unsubscribe();
+      this.progressSubscription = undefined;
+
+      // Reset flags
       this.isProcessing.set(false);
       this.currentJobId = null;
-    }
-  }
-
-  private scrollToBottom(): void {
-    const logContainer = document.getElementById('log-container');
-    if (logContainer) {
-      logContainer.scrollTop = logContainer.scrollHeight;
+      this.currentStage = '';
+      this.currentMessage = '';
+      this.progress = 0;
     }
   }
 
   getStageIcon(stage: string): string {
     const icons: { [key: string]: string } = {
       'init': '🚀',
-      'cutadapt': '✂️',
+      'trimming': '✂️',
       'qc': '🔍',
       'write': '💾',
-      'convert': '🔄',
       'complete': '✅',
       'error': '❌'
     };

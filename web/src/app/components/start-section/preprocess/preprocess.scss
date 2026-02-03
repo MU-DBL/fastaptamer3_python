@@ -3,3 +3,40 @@
 
 // Component-specific styles (if any)
 // Add any preprocess-specific styles here
+.log-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* icon */
+.log-icon {
+  width: 16px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+/* time */
+.log-time {
+  color: #6b7280; /* gray-500 */
+  min-width: 70px;
+}
+
+/* stage label */
+.log-stage {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* message */
+.log-message {
+  color: #111827; /* gray-900 */
+  white-space: normal;
+  word-break: break-word;
+}

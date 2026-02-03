@@ -1,74 +1,79 @@
 import time
 import json
 import asyncio
+from typing import Dict
 from fastapi import APIRouter
-import threading
-import queue
 from fastapi.responses import StreamingResponse
+from state import progress_queues
 
 router = APIRouter()
 
-from state import progress_queues
+
+async def send_progress(job_id, stage, message, progress=None, data=None):
+    """Send progress update to SSE stream (async version)"""
+    if job_id in progress_queues:
+        event_data = {
+            "stage": stage,
+            "message": message,
+            "progress": progress,
+            "timestamp": time.time(),
+            "data": data,
+        }
+        await progress_queues[job_id].put(event_data)
+        print(f"📤 Progress sent: {job_id} - {stage} - {message}", flush=True)
 
 
 @router.get("/progress/{job_id}")
 async def progress_stream(job_id: str):
-    """SSE endpoint for progress updates"""
+    """SSE endpoint that streams progress updates"""
+    
+    # Create queue if doesn't exist
+    if job_id not in progress_queues:
+        progress_queues[job_id] = asyncio.Queue()
+    
+    q = progress_queues[job_id]
     
     async def generate():
-        if job_id not in progress_queues:
-            yield f"data: {json.dumps({'error': 'Invalid job ID'})}\n\n"
-            return
+        print(f"🎯 [SSE] Starting stream for job {job_id}", flush=True)
         
-        q = progress_queues[job_id]
-        
-        # Send immediate connection confirmation
-        yield f"data: {json.dumps({'stage': 'connected', 'message': 'Connected to job stream'})}\n\n"
-        
-        while True:
-            try:
-                # Non-blocking check with small timeout
-                data = q.get(timeout=1)  # Changed from 30 to 1
-                event = f"data: {json.dumps(data)}\n\n"
-                yield event
-                
-                # Important: Add a small delay to force flush
-                await asyncio.sleep(0.01)
-                
-                # Clean up if job is complete or errored
-                if data['stage'] in ['complete', 'error']:
-                    threading.Timer(10, lambda: progress_queues.pop(job_id, None)).start()
-                    break
+        yield f"data: {json.dumps({'stage': 'connected', 'message': 'Processing large files may take some time, please be patient.'})}\n\n"
+
+        message_count = 0
+        try:
+            while True:
+                try:
+                    data = await asyncio.wait_for(q.get(), timeout=1.0)
                     
-            except queue.Empty:
-                # Send keepalive more frequently
-                yield f": keepalive\n\n"
-                await asyncio.sleep(0.1)
-    
+                    message_count += 1
+                    print(f"📡 [SSE] Message #{message_count}: {data}", flush=True)
+                    yield f"data: {json.dumps(data)}\n\n"
+
+                    if data["stage"] in ["complete", "error"]:
+                        print(f"✅ [SSE] Job {job_id} finished. Total messages: {message_count}", flush=True)
+                        asyncio.create_task(cleanup_queue(job_id))
+                        break
+
+                except asyncio.TimeoutError:
+                    print(f"⏰ [SSE] Timeout (messages so far: {message_count})", flush=True)
+                    yield ": keepalive\n\n"
+
+        except asyncio.CancelledError:
+            print(f"🔌 [SSE] Client disconnected from job {job_id}", flush=True)
+            raise
+
     return StreamingResponse(
         generate(),
         media_type="text/event-stream",
         headers={
-            'Cache-Control': 'no-cache, no-transform',
-            'X-Accel-Buffering': 'no',
-            'Connection': 'keep-alive',
-            'Content-Type': 'text/event-stream; charset=utf-8',
-            'Access-Control-Allow-Origin': '*',  # Add CORS
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        }
+            "Cache-Control": "no-cache, no-transform",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
     )
 
 
-def send_progress(job_id, stage, message, progress=None, data=None):
-    """Send progress update to SSE stream"""
-    if job_id in progress_queues:
-        event_data = {
-            'stage': stage,
-            'message': message,
-            'progress': progress,
-            'timestamp': time.time(),
-            'data': data
-        }
-        progress_queues[job_id].put(event_data)
-        print(f"📤 Progress sent: {job_id} - {stage} - {message}")  # Debug log
+async def cleanup_queue(job_id: str, delay: float = 5.0):
+    """Clean up queue after job completes"""
+    await asyncio.sleep(delay)
+    progress_queues.pop(job_id, None)
+    print(f"🗑️ Cleaned up queue for {job_id}", flush=True)

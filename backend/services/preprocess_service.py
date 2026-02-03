@@ -188,7 +188,7 @@ def trim_constant_region(seq_df, const_region, file_format):
 
 
 
-def run_preprocess(job_id, input_path, const5p="", const3p="", 
+async def run_preprocess(job_id, input_path, const5p="", const3p="", 
                                   length_range=(10, 100), max_error=0.005,
                                   output_path=None, output_format='fasta'):
     """
@@ -198,7 +198,7 @@ def run_preprocess(job_id, input_path, const5p="", const3p="",
         start_time = time.time()
         temp_trimmed = "/tmp/trimmed.fastq"
         
-        send_progress(job_id, 'init', 'Starting preprocessing...', 0)
+        await send_progress(job_id, 'init', 'Starting preprocessing...', 0)
         
         if input_path.endswith(('.fq', '.fastq', '.fq.gz', '.fastq.gz')):
             file_format = 'fastq'
@@ -221,28 +221,27 @@ def run_preprocess(job_id, input_path, const5p="", const3p="",
             input_path
         ])
         
-        send_progress(job_id, 'cutadapt', 'Running adapter trimming...', 10)
+        await send_progress(job_id, 'trimming', 'Running adapter trimming...', 10)
         cutadapt_start = time.time()
         result = subprocess.run(cmd, capture_output=True, text=True)
         cutadapt_time = time.time() - cutadapt_start
         
         if result.returncode != 0:
             error_msg = result.stderr or result.stdout
-            send_progress(job_id, 'error', f'Cutadapt failed: {error_msg}', None)
+            await send_progress(job_id, 'error', f'Cutadapt failed: {error_msg}', None)
             raise RuntimeError(f"Cutadapt failed: {error_msg}") 
         
-        send_progress(job_id, 'cutadapt', f'Adapter trimming completed', 40, 
-                     {'time': cutadapt_time, 'output': result.stdout})
+        await send_progress(job_id, 'trimming', f'Adapter trimming completed', 40, {'time': cutadapt_time, 'output': result.stdout})
         
         # Fast quality filtering
         if file_format == 'fastq':
-            send_progress(job_id, 'qc', 'Starting quality filtering...', 50)
+            await send_progress(job_id, 'QC', 'Starting quality filtering...', 50)
             qc_start = time.time()
             
             records = list(SeqIO.parse(temp_trimmed, 'fastq'))
             before_qc = len(records)
             
-            send_progress(job_id, 'qc', f'Loaded {before_qc:,} sequences', 55)
+            await send_progress(job_id, 'QC', f'Loaded {before_qc:,} sequences', 55)
             
             # Filter with numba (very fast)
             filtered_records = []
@@ -258,29 +257,25 @@ def run_preprocess(job_id, input_path, const5p="", const3p="",
                 # Send progress updates
                 if (i + 1) % batch_size == 0:
                     progress = 55 + int(30 * (i + 1) / len(records))
-                    send_progress(job_id, 'qc', 
-                                f'Filtered {i+1:,}/{before_qc:,} sequences', 
-                                progress)
+                    await send_progress(job_id, 'QC',  f'Filtered {i+1:,}/{before_qc:,} sequences',  progress)
             
             after_qc = len(filtered_records)
             qc_time = time.time() - qc_start
             pass_rate = 100 * after_qc / before_qc if before_qc > 0 else 0
             
-            send_progress(job_id, 'qc', 
-                        f'Quality filtering completed: {after_qc:,}/{before_qc:,} passed ({pass_rate:.1f}%)', 
-                        85, {'time': qc_time, 'passed': after_qc, 'total': before_qc})
+            await send_progress(job_id, 'qc', 
+                        f'Quality filtering completed: {after_qc:,}/{before_qc:,} passed ({pass_rate:.1f}%)', 85, {'time': qc_time, 'passed': after_qc, 'total': before_qc})
             
             # Write output
-            send_progress(job_id, 'write', 'Writing output file...', 90)
+            await send_progress(job_id, 'write', 'Writing output file...', 90)
             write_start = time.time()
             SeqIO.write(filtered_records, output_path, output_format)
             write_time = time.time() - write_start
             
-            send_progress(job_id, 'write', 'Output file written', 95, 
-                        {'time': write_time})
+            await send_progress(job_id, 'write', 'Output file written', 95, {'time': write_time})
             
         else:
-            send_progress(job_id, 'convert', 'Converting file format...', 85)
+            await send_progress(job_id, 'convert', 'Converting file format...', 85)
             conversion_start = time.time()
             if output_format != file_format:
                 records = SeqIO.parse(temp_trimmed, file_format)
@@ -288,20 +283,16 @@ def run_preprocess(job_id, input_path, const5p="", const3p="",
             else:
                 shutil.move(temp_trimmed, output_path)
             conversion_time = time.time() - conversion_start
-            send_progress(job_id, 'convert', 'Conversion completed', 95,
-                        {'time': conversion_time})
+            await send_progress(job_id, 'convert', 'Conversion completed', 95, {'time': conversion_time})
         
         if os.path.exists(temp_trimmed):
             os.remove(temp_trimmed)
         
         total_time = time.time() - start_time
-        send_progress(job_id, 'complete', 'Preprocessing completed successfully!', 100,
-                    {'total_time': total_time, 'output_path': output_path})
-        
-        return output_path
+        await send_progress(job_id, 'complete', 'Preprocessing completed successfully!', 100, {'total_time': total_time, "output_path":os.path.basename(output_path)})
         
     except Exception as e:
-        send_progress(job_id, 'error', str(e), None)
+        await send_progress(job_id, 'error', str(e), None)
         raise
 
 
