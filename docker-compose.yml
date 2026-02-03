@@ -1,0 +1,23 @@
+services:
+  backend:
+    build: ./backend
+    container_name: fa3-backend
+    image: yongfangqin/fastaptamer3-backend:latest
+    ports:
+      - "5001:5001"
+    environment:
+      - CORS_ORIGINS=http://localhost
+    networks:
+      - app-network
+
+  frontend:
+    build: ./web
+    container_name: fa3-frontend
+    image: yongfangqin/fastaptamer3-frontend:latest
+    ports:
+      - "4200:4200"
+    networks:
+      - app-network
+
+networks:
+  app-network:
