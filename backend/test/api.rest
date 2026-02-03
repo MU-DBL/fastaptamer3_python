@@ -77,15 +77,15 @@
 #   "output_format": "csv"
 # }
 
-POST http://localhost:5001/api/v1/mutation-network
-
-{
-  "input_path": "sample100_count.fasta",
-  "start_node": "TTGACGATAACTCGAGAAGAACCGAGGTGCAAACGGGAGAACACAATGGATTACACCGAGCTCGGCTGAC",
-  "end_node": "CACCATACCAATGGCATCGCTATGATCGAGCGCTAGCCTAGACCAATCTGGAGCTGACCACAGGGAACG",
-  "max_cost": 1,
-  "output_format": "csv"
-}
+# POST http://localhost:5001/api/v1/mutation-network
+#
+#{
+#  "input_path": "sample100_count.fasta",
+#  "start_node": "TTGACGATAACTCGAGAAGAACCGAGGTGCAAACGGGAGAACACAATGGATTACACCGAGCTCGGCTGAC",
+#  "end_node": "CACCATACCAATGGCATCGCTATGATCGAGCGCTAGCCTAGACCAATCTGGAGCTGACCACAGGGAACG",
+#  "max_cost": 1,
+#  "output_format": "csv"
+#}
 
 # POST http://localhost:5001/api/v1/translate
 
@@ -97,3 +97,34 @@ POST http://localhost:5001/api/v1/mutation-network
 #   "translate_selection": "Vertebrate mitochondrial",
 #   "output_format": "csv"
 # }
+
+
+# POST http://localhost:5001/api/v1/data-merge
+
+# {
+#    "input_paths": ["test_count_cluster.fasta", "test_count_cluster.fasta"],
+#    "merge_type":"outer",
+#    "output_format": "csv"
+# }
+
+# POST http://localhost:5001/api/v1/sequence-persistence
+
+# {
+#    "merged_file_path": "test_count_cluster_merged.csv"
+# }
+
+# POST http://localhost:5001/api/v1/upset-data
+
+# {
+#    "merged_file_path": "test_count_cluster_merged.csv"
+# }
+
+
+POST http://localhost:5001/api/v1/differential-expression
+
+{
+   "cond1_paths": ["70HRT14-count.fasta", "70HRT14-count.fasta", "70HRT14-count.fasta", "70HRT14-count.fasta"],
+   "cond2_paths": ["70HRT15-count.fasta", "70HRT15-count.fasta", "70HRT15-count.fasta", "70HRT15-count.fasta"],
+   "p_cutoff": "0.1",
+   "output_format": "csv"
+}

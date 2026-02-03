@@ -26,9 +26,6 @@ class UpSetInput(BaseModel):
 class PersistenceResponse(BaseModel):
     status: str
     data: List[Dict[str, int]]  # [{"freq": 1, "seqCount": 150}, ...]
-    total_unique_sequences: int
-    max_populations: int
-    populations_analyzed: int
 
 class UpSetResponse(BaseModel):
     status: str
@@ -79,7 +76,7 @@ async def data_merge(params: DataMergeInput):
                 status_code=404, 
                 detail=f"File not found: {file_path}"
             )
-        fa_df_list.append(read_file(str(input_file)))
+        fa_df_list.append(read_file(input_file))
     
     # Rename columns for each population
     population_columns = ["ID", "Rank", "Reads", "RPU", "Cluster", "RankInCluster", "LED"]
@@ -143,6 +140,7 @@ async def sequence_persistence(params: SeqPersistenceInput):
         Persistence distribution data for Angular visualization
     """
     # Load merged file
+    # print(params.merged_file_path)
     merged_file = UPLOAD_DIR / params.merged_file_path
     if not merged_file.exists():
         raise HTTPException(
@@ -151,7 +149,7 @@ async def sequence_persistence(params: SeqPersistenceInput):
         )
     
     # Read merged data
-    merge_df = read_file(str(merged_file))
+    merge_df = read_file(merged_file)
     
     if ColumnName.SEQUENCES not in merge_df.columns:
         raise HTTPException(
@@ -227,7 +225,7 @@ async def upset_data(params: UpSetInput):
         )
     
     # Read merged data
-    merge_df = read_file(str(merged_file))
+    merge_df = read_file(merged_file)
     
     if ColumnName.SEQUENCES not in merge_df.columns:
         raise HTTPException(
