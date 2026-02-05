@@ -335,6 +335,16 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/sequence-distance`, params);
   }
+
+  // Differential Analysis
+  differentialAnalysis(params: {
+    cond1_paths: string[];
+    cond2_paths: string[];
+    p_cutoff: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/differential-expression`, params);
+  }
 }
 
 
