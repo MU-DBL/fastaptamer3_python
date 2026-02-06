@@ -100,7 +100,12 @@ async def differential_expression(params: EdgeRPairTestInput):
     cond_merged = cond1_merged.merge(cond2_merged, on=ColumnName.SEQUENCES, how="inner")
 
     if len(cond_merged) < 10:
-        raise HTTPException(status_code=400, detail="Too few shared sequences for DE analysis")
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Too few sequences present in ALL files for DE analysis (found {len(cond_merged)}). "
+                   "edgeR requires sequences to be present in all replicates. "
+                   "This is normal if your replicates have different sequence compositions."
+        )
 
     # -----------------------
     # BUILD COUNT MATRIX
@@ -128,6 +133,8 @@ async def differential_expression(params: EdgeRPairTestInput):
     # -----------------------
     min_count = 5
     min_samples = 2
+    
+    sequences_before_filter = len(sequences)
 
     keep = (count_matrix >= min_count).sum(axis=1) >= min_samples
 
@@ -139,8 +146,9 @@ async def differential_expression(params: EdgeRPairTestInput):
     if len(count_matrix) == 0:
         raise HTTPException(
             status_code=400, 
-            detail=f"No sequences passed filtering (min_count={min_count}, min_samples={min_samples}). "
-                "Try lowering filtering thresholds or check if your input files have sufficient read counts."
+            detail=f"No sequences passed filtering criteria (min_count={min_count} reads in at least {min_samples} samples). "
+                f"Your files contained {sequences_before_filter} unique sequences before filtering. "
+                "This suggests your FASTA files have low read counts. Please check your input files."
         )
     
     # -----------------------
@@ -156,7 +164,8 @@ async def differential_expression(params: EdgeRPairTestInput):
     mean2 = cond2_cpm.mean(axis=1) + pseudocount
 
     log_fc = np.log2(mean2 / mean1)
-    log_cpm = np.log2((mean1 + mean2) / 2)
+    # logCPM: average log2 CPM across ALL samples (matching edgeR behavior)
+    log_cpm = np.log2(cpm_matrix.mean(axis=1) + pseudocount)
 
     # -----------------------
     # STATISTICAL TESTING (RAW COUNTS)

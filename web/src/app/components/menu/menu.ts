@@ -21,7 +21,7 @@ activeRoute: string = 'Start';
     { label: 'Distance', route: '/distance' },
     { label: 'Data Merge', route: '/data-merge' },
     { label: 'Sequence Enrichment', route: '/sequence-enrichment' },
-    { label: 'Differential Analysis', route: '/differential-analysis' },
+    { label: 'Differential Analysis', route: '/diff-analysis' },
     { label: 'Cluster', route: '/cluster' },
     { label: 'About', route: '/about' }
   ];
