@@ -1,0 +1,43 @@
+// Import shared styles for all startpage components
+@use '../../../shared/shared-styles.scss';
+
+// Match Preprocess: white input boxes (same as Constant 5'/3' region), including when disabled
+::ng-deep .left-subsection .mat-mdc-form-field.full-width .mat-mdc-text-field-wrapper {
+  background-color: white !important;
+}
+
+::ng-deep .left-subsection .mat-mdc-form-field.full-width .mat-mdc-form-field-infix {
+  background-color: white !important;
+}
+
+// Slider track blue when enabled (matches Preprocess single-thumb sliders)
+::ng-deep .range-slider .mdc-slider__track--active {
+  background-color: #1976d2;
+}
+
+// Path table (matches R DT::dataTableOutput - From_Sequence, To_Sequence, Transition_Cost)
+.path-table-container {
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.path-table {
+  width: 100%;
+  font-size: 13px;
+
+  th, td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  th {
+    font-weight: 600;
+    background-color: #f5f5f5;
+  }
+
+  td {
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+  }
+}

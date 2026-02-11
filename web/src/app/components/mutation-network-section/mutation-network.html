@@ -1,0 +1,109 @@
+<div class="section-container">
+  <div class="left-subsection">
+    <h3 class="section-title">Input data:</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA file'"
+      [showUploadNote]="true"
+      [uploadNotePath]="'#'"
+      [uploadSpeed]="200"
+      (fileSelected)="onFileSelected($event)"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
+
+    <mat-label class="section-label">Start sequence: </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input
+        matInput
+        [(ngModel)]="startSequence"
+        placeholder="Enter start sequence (e.g. nucleotide sequence)"
+        [disabled]="!uploadComplete" />
+    </mat-form-field>
+
+    <mat-label class="section-label">End sequence: </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input
+        matInput
+        [(ngModel)]="endSequence"
+        placeholder="Enter end sequence"
+        [disabled]="!uploadComplete" />
+    </mat-form-field>
+
+    <label class="section-label">Maximum allowable distance:</label>
+    <div class="slider-container">
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="value-chip range-min">Min 1</span>
+          <span class="value-chip">{{ maxDistance }}</span>
+          <span class="value-chip range-max">Max 5</span>
+        </div>
+        <div class="dual-range-container">
+          <mat-slider
+            [min]="1"
+            [max]="5"
+            [step]="1"
+            discrete
+            class="range-slider">
+            <input matSliderThumb [(ngModel)]="maxDistance">
+          </mat-slider>
+        </div>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error-text">{{ errorMessage() }}</p>
+    }
+
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        color="primary"
+        class="start-button"
+        [disabled]="!canStart"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+  </div>
+
+  <div class="right-subsection">
+    <!-- Data table output (matches R MutationNetworkTab: DT::dataTableOutput) -->
+    @if (graphData()?.steps?.length) {
+      <div class="path-table-container">
+        <table mat-table [dataSource]="graphData()!.steps" class="path-table">
+          <ng-container matColumnDef="fromSequence">
+            <th mat-header-cell *matHeaderCellDef>From_Sequence</th>
+            <td mat-cell *matCellDef="let step">{{ step.fromSequence }}</td>
+          </ng-container>
+          <ng-container matColumnDef="toSequence">
+            <th mat-header-cell *matHeaderCellDef>To_Sequence</th>
+            <td mat-cell *matCellDef="let step">{{ step.toSequence }}</td>
+          </ng-container>
+          <ng-container matColumnDef="transitionCost">
+            <th mat-header-cell *matHeaderCellDef>Transition_Cost</th>
+            <td mat-cell *matCellDef="let step">{{ step.transitionCost }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="pathTableColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: pathTableColumns"></tr>
+        </table>
+      </div>
+      <div #graphContainer class="graph-container"></div>
+    } @else if (isProcessing()) {
+      <p class="placeholder-message">Processing...</p>
+    } @else {
+      <p class="placeholder-message">Mutation network path will appear here after running with start and end sequences.</p>
+    }
+  </div>
+</div>
