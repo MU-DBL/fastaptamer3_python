@@ -1,9 +1,2 @@
-.mutation-network-container {
-  padding: 20px;
-}
-
-.placeholder-text {
-  color: #ff9800;
-  font-style: italic;
-  margin-top: 20px;
-}
+// Import shared styles for all components
+@use '../../../shared/shared-styles.scss';

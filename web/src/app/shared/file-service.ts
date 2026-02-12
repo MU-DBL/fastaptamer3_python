@@ -40,7 +40,11 @@ export enum ColumnName {
   RPU_B = 'RPU.b',
   ENRICHMENT = 'Enrichment',
   LOG2E = 'log2E',
-  POPULATION = 'Population'
+  POPULATION = 'Population',
+
+  FROM_SEQUENCE = 'From_Sequence',
+  TO_SEQUENCE = 'To_Sequence' ,
+  TRANSITION_COST = 'Transition_Cost'
 }
 
 
