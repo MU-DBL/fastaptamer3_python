@@ -1,0 +1,396 @@
+// Import shared styles for all components
+@use '../../../shared/shared-styles.scss';
+
+// File upload specific styles
+.file-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .browse-button {
+    min-width: 120px;
+  }
+
+  .upload-status {
+    font-size: 14px;
+    color: #666;
+
+    .upload-complete {
+      color: #4caf50;
+      font-weight: 500;
+    }
+  }
+}
+
+// Upload progress section
+.upload-progress-section {
+  margin: 20px 0;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+
+  .progress-item {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+
+      .file-name {
+        font-size: 13px;
+        color: #333;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+      }
+
+      .progress-percentage {
+        font-size: 12px;
+        color: #666;
+        margin-left: 12px;
+      }
+    }
+
+    mat-progress-bar {
+      height: 8px;
+      border-radius: 4px;
+
+      &.complete {
+        ::ng-deep .mdc-linear-progress__bar-inner {
+          border-color: #4caf50 !important;
+        }
+      }
+    }
+
+    .complete-text {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #4caf50;
+      font-weight: 500;
+    }
+  }
+}
+
+.notice {
+  font-size: 13px;
+  color: #666;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.instruction-text {
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0 16px 0;
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #2196f3;
+  }
+}
+
+.empty-state-box {
+  text-align: center;
+  padding: 60px 20px;
+  margin: 20px 0;
+  background-color: #fafafa;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// File ordering section
+.file-ordering-section {
+  margin: 24px 0;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+
+  .file-selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+
+  .file-selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .file-selection-card {
+    margin: 0;
+    transition: box-shadow 0.2s ease, opacity 0.2s ease;
+    cursor: move;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &.excluded {
+      opacity: 0.5;
+      background-color: #f5f5f5;
+
+      .order-badge {
+        background-color: #9e9e9e;
+      }
+
+      .file-name {
+        text-decoration: line-through;
+        color: #999;
+      }
+    }
+
+    &.cdk-drag-preview {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      opacity: 0.9;
+    }
+
+    &.cdk-drag-animating {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+    
+    mat-card-content {
+      padding: 16px;
+    }
+
+    .file-selection-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      mat-checkbox {
+        flex-shrink: 0;
+      }
+
+      .drag-handle {
+        cursor: grab;
+        color: #9e9e9e;
+        transition: color 0.2s ease;
+        flex-shrink: 0;
+
+        &:hover {
+          color: #2196f3;
+        }
+
+        &:active {
+          cursor: grabbing;
+        }
+      }
+
+      .order-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background-color: #2196f3;
+        color: white;
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .file-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+
+        .file-name {
+          font-size: 14px;
+          color: #333;
+          font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 100%;
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+
+        button {
+          &:disabled {
+            opacity: 0.3;
+          }
+        }
+      }
+    }
+  }
+
+  .drag-placeholder {
+    background: #e3f2fd;
+    border: 2px dashed #2196f3;
+    border-radius: 8px;
+    min-height: 68px;
+  }
+
+  // CDK drag drop styles
+  .cdk-drop-list-dragging .file-selection-card:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #757575;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+// Results section
+.results-section {
+  margin-bottom: 32px;
+
+  .results-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #333;
+  }
+}
+
+mat-divider {
+  margin: 32px 0;
+}
+
+// Animation for spinning icons
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+// Plot modal styles
+.plot-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.plot-modal-content {
+  background: white;
+  border-radius: 8px;
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.2);
+}
+
+.plot-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.plot-modal-title-section {
+  flex: 1;
+}
+
+.plot-modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+}
+
+.plot-modal-close {
+  margin-left: auto;
+}
+
+.plot-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 24px;
+}
+
+.customization-inputs {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plot-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}

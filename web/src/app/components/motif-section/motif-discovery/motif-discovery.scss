@@ -1,0 +1,35 @@
+// Import shared styles for all components
+@use '../../../shared/shared-styles.scss';
+
+// Additional specific styles for motif discovery
+.info-note {
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.section-divider {
+  margin: 30px 0 20px 0;
+  border-top-color: #333;
+}
+
+.plot-button {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.plot-button mat-icon {
+  margin-right: 8px;
+}
+
+.info-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  vertical-align: middle;
+  cursor: help;
+  color: #666;
+}
