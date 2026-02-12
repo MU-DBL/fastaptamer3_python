@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../../../shared/api.service';
+import { ApiService } from '../../shared/api.service';
 import { Observable } from 'rxjs';
 
 /** One step in the mutation path (backend CSV row). */

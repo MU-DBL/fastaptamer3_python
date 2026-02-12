@@ -10,9 +10,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
-import { FileUploadResult, Upload } from '../../common/upload/upload';
-import { ApiService } from '../../../shared/api.service';
+import { MATERIAL_IMPORTS } from '../../shared/material-imports';
+import { FileUploadResult, Upload } from '../common/upload/upload';
+import { ApiService } from '../../shared/api.service';
 import {
   MutationNetworkService,
   MutationNetworkGraphData,
@@ -104,6 +104,8 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
       this.uploadComplete = true;
       this.savedFileName = result.savedFileName;
       this.errorMessage.set(null);
+      this.processedFileName.set('');
+      this.graphData.set(null);
     } else if (result.error) {
       this.uploadComplete = false;
       this.errorMessage.set(result.error);
@@ -113,6 +115,37 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
   onStart(): void {
     if (!this.canStart) return;
 
+    // Validation checks (matching R mutationNetworkServer.R)
+    if (!this.uploadComplete || !this.savedFileName) {
+      this.errorMessage.set('No file provided!');
+      return;
+    }
+
+    const startSeq = this.startSequence.trim();
+    const endSeq = this.endSequence.trim();
+
+    if (!startSeq) {
+      this.errorMessage.set('Must supply valid start sequence!');
+      return;
+    }
+
+    if (!endSeq) {
+      this.errorMessage.set('Must supply valid end sequence!');
+      return;
+    }
+
+    // Validate alphanumeric only (matching R regex check: [^a-zA-Z0-9])
+    const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+    if (!alphanumericRegex.test(startSeq)) {
+      this.errorMessage.set('Start sequence must be alphanumeric!');
+      return;
+    }
+
+    if (!alphanumericRegex.test(endSeq)) {
+      this.errorMessage.set('End sequence must be alphanumeric!');
+      return;
+    }
+
     this.isProcessing.set(true);
     this.processedFileName.set('');
     this.graphData.set(null);
@@ -120,8 +153,8 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
 
     const params = {
       input_path: this.savedFileName,
-      start_node: this.startSequence.trim(),
-      end_node: this.endSequence.trim(),
+      start_node: startSeq,
+      end_node: endSeq,
       max_cost: this.maxDistance,
       output_format: this.outputFormat,
     };
@@ -141,7 +174,7 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
           if (response.status === 'ok' && response.result) {
             return this.apiService.downloadFile(response.result).pipe(
               timeout(30_000),
-              tap((blob) => this.handleDownloadedResult(blob, response.result))
+              tap((blob: Blob) => this.handleDownloadedResult(blob, response.result))
             );
           }
           return of(null);
@@ -183,7 +216,7 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
     if (!filename) return;
 
     this.apiService.downloadFile(filename).subscribe({
-      next: (blob) => {
+      next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -191,7 +224,7 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
         link.click();
         window.URL.revokeObjectURL(url);
       },
-      error: (error) => {
+      error: (error: any) => {
         this.errorMessage.set(error.error?.detail || 'Download failed');
       },
     });
@@ -297,7 +330,7 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
       .join('text')
       .attr('font-size', 10)
       .attr('fill', '#333')
-      .text((d) => String(d.cost));
+      .text((d: SimLink) => String(d.cost));
 
     const node = g
       .append('g')
@@ -312,16 +345,16 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
     node.call(
       d3
         .drag<SVGCircleElement, SimNode>()
-        .on('start', (event) => {
+        .on('start', (event: d3.D3DragEvent<SVGCircleElement, SimNode, SimNode>) => {
           if (!event.active) simulation.alphaTarget(0.3).restart();
           event.subject.fx = event.subject.x ?? 0;
           event.subject.fy = event.subject.y ?? 0;
         })
-        .on('drag', (event) => {
+        .on('drag', (event: d3.D3DragEvent<SVGCircleElement, SimNode, SimNode>) => {
           event.subject.fx = event.x;
           event.subject.fy = event.y;
         })
-        .on('end', (event) => {
+        .on('end', (event: d3.D3DragEvent<SVGCircleElement, SimNode, SimNode>) => {
           if (!event.active) simulation.alphaTarget(0);
           event.subject.fx = null;
           event.subject.fy = null;
@@ -337,19 +370,19 @@ export class MutationNetwork implements AfterViewInit, OnDestroy {
       .attr('dx', 12)
       .attr('dy', 4)
       .attr('fill', '#333')
-      .text((d) => (d.sequence.length > 20 ? d.sequence.slice(0, 20) + '…' : d.sequence));
+      .text((d: SimNode) => (d.sequence.length > 20 ? d.sequence.slice(0, 20) + '…' : d.sequence));
 
     simulation.on('tick', () => {
       link
-        .attr('x1', (d) => d.source.x ?? 0)
-        .attr('y1', (d) => d.source.y ?? 0)
-        .attr('x2', (d) => d.target.x ?? 0)
-        .attr('y2', (d) => d.target.y ?? 0);
+        .attr('x1', (d: SimLink) => d.source.x ?? 0)
+        .attr('y1', (d: SimLink) => d.source.y ?? 0)
+        .attr('x2', (d: SimLink) => d.target.x ?? 0)
+        .attr('y2', (d: SimLink) => d.target.y ?? 0);
       linkLabels
-        .attr('x', (d) => ((d.source.x ?? 0) + (d.target.x ?? 0)) / 2)
-        .attr('y', (d) => ((d.source.y ?? 0) + (d.target.y ?? 0)) / 2);
-      node.attr('cx', (d) => d.x ?? 0).attr('cy', (d) => d.y ?? 0);
-      nodeLabels.attr('x', (d) => d.x ?? 0).attr('y', (d) => d.y ?? 0);
+        .attr('x', (d: SimLink) => ((d.source.x ?? 0) + (d.target.x ?? 0)) / 2)
+        .attr('y', (d: SimLink) => ((d.source.y ?? 0) + (d.target.y ?? 0)) / 2);
+      node.attr('cx', (d: SimNode) => d.x ?? 0).attr('cy', (d: SimNode) => d.y ?? 0);
+      nodeLabels.attr('x', (d: SimNode) => d.x ?? 0).attr('y', (d: SimNode) => d.y ?? 0);
     });
 
     this.svg = svg;

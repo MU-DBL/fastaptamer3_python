@@ -345,6 +345,17 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/differential-expression`, params);
   }
+
+  // Mutation Network
+  mutationNetwork(params: {
+    input_path: string;
+    start_node: string;
+    end_node: string;
+    max_cost: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/mutation-network`, params);
+  }
 }
 
 
