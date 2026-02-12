@@ -21,7 +21,6 @@
 
     <h3 class="section-title">Genetic code selection:</h3>
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Select genetic code</mat-label>
       <mat-select [(ngModel)]="translateSelection">
         @for (code of geneticCodes; track code) {
         <mat-option [value]="code">{{ code }}</mat-option>
@@ -37,17 +36,17 @@
 
     @if (nonstandardTranslations === 'yes') {
     <div class="custom-translation-panel">
+      <mat-label>Comma-separated codons to modify</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Comma-separated codons to modify</mat-label>
         <input matInput [(ngModel)]="translateInputChangesCodons" placeholder="e.g., AAA, TTT, GGG">
-        <mat-hint>These alphanumeric codons will have altered translations</mat-hint>
       </mat-form-field>
+      <mat-label><i>These alphanumeric codons will have altered translations</i></mat-label>
 
+      <mat-label>Comma-separated translations</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Comma-separated translations</mat-label>
         <input matInput [(ngModel)]="translateInputChangesOutputs" placeholder="e.g., Z, X, Y">
-        <mat-hint>These must correspond to the same order as input codons</mat-hint>
       </mat-form-field>
+      <mat-label><i>These must correspond to the same order as input codons</i></mat-label>
     </div>
     }
 
@@ -119,17 +118,17 @@
 
       @if (adjustReadsPerRank === 'yes') {
       <div class="customization-panel">
-        <mat-label class="input-label">X-axis - represents sequence rank</mat-label>
+        <mat-label>X-axis - represents sequence rank</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="rprXAxis" />
         </mat-form-field>
 
-        <mat-label class="input-label">Y-axis - represents sequence abundance</mat-label>
+        <mat-label>Y-axis - represents sequence abundance</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="rprYAxis" />
         </mat-form-field>
 
-        <mat-label class="input-label">Plot title</mat-label>
+        <mat-label>Plot title</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="rprTitle" />
         </mat-form-field>
@@ -160,22 +159,22 @@
 
       @if (adjustSeqLengthHistogram === 'yes') {
       <div class="customization-panel">
-        <mat-label class="input-label">X-axis - represents sequence length</mat-label>
+        <mat-label>X-axis - represents sequence length</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="histXAxis" />
         </mat-form-field>
 
-        <mat-label class="input-label">Y-axis 1 - represents unique sequence count</mat-label>
+        <mat-label>Y-axis 1 - represents unique sequence count</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="histYAxis1" />
         </mat-form-field>
 
-        <mat-label class="input-label">Y-axis 2 - represents total sequence count</mat-label>
+        <mat-label>Y-axis 2 - represents total sequence count</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="histYAxis2" />
         </mat-form-field>
 
-        <mat-label class="input-label">Plot title</mat-label>
+        <mat-label>Plot title</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="histTitle" />
         </mat-form-field>

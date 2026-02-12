@@ -86,7 +86,7 @@
             <span class="value-chip range-max">Max 1000</span>
           </div>
           <div class="dual-range-container">
-            <mat-slider [min]="0" [max]="1000" [step]="10" [disabled]="!processedFileName()" discrete class="range-slider">
+            <mat-slider [min]="0" [max]="1000" [step]="10" discrete class="range-slider">
               <input matSliderThumb [(ngModel)]="minReadsToPlot">
             </mat-slider>
           </div>
@@ -103,7 +103,7 @@
             <span class="value-chip range-max">Max 1000</span>
           </div>
           <div class="dual-range-container">
-            <mat-slider [min]="10" [max]="1000" [step]="10" [disabled]="!processedFileName()" discrete class="range-slider">
+            <mat-slider [min]="10" [max]="1000" [step]="10" discrete class="range-slider">
               <input matSliderThumb [(ngModel)]="maxRankToPlot">
             </mat-slider>
           </div>
@@ -112,30 +112,30 @@
 
       <!-- Reads per Rank Section -->
       <h3 class="section-title">Adjust default reads-per-rank plot?</h3>
-      <mat-radio-group [(ngModel)]="adjustReadsPerRank" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-group [(ngModel)]="adjustReadsPerRank" class="radio-group">
         <mat-radio-button value="yes">Yes</mat-radio-button>
         <mat-radio-button value="no">No</mat-radio-button>
       </mat-radio-group>
 
       <div *ngIf="adjustReadsPerRank === 'yes'" class="customization-panel">
-        <label class="input-label">X-axis - represents sequence rank.</label>
+        <label>X-axis - represents sequence rank.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="rprXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="rprXAxis" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Y-axis - represents sequence abundance.</label>
+        <label>Y-axis - represents sequence abundance.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="rprYAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="rprYAxis" rows="2"></textarea>
         </mat-form-field>
         
-        <label class="input-label">Plot title.</label>
+        <label>Plot title.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="rprTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="rprTitle" rows="2" ></textarea>
         </mat-form-field>
         
         <div class="color-picker-field">
-          <label class="input-label">Color for plot line</label>
-          <input type="color" [(ngModel)]="rprLineColor" [disabled]="!processedFileName()" class="color-input">
+          <label>Color for plot line</label>
+          <input type="color" [(ngModel)]="rprLineColor" class="color-input">
         </div>
       </div>
 
@@ -147,40 +147,40 @@
 
       <!-- Sequence Length Histogram Section -->
       <h3 class="section-title">Adjust default sequence-length histogram?</h3>
-      <mat-radio-group [(ngModel)]="adjustSeqLengthHistogram" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-group [(ngModel)]="adjustSeqLengthHistogram" class="radio-group">
         <mat-radio-button value="yes">Yes</mat-radio-button>
         <mat-radio-button value="no">No</mat-radio-button>
       </mat-radio-group>
 
       <div *ngIf="adjustSeqLengthHistogram === 'yes'" class="customization-panel">
-        <label class="input-label">X-axis label - sequence length.</label>
+        <label>X-axis label - sequence length.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histXAxis" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Y-axis 1 label - number of unique sequences.</label>
+        <label>Y-axis 1 label - number of unique sequences.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histYAxis1" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histYAxis1" rows="2"></textarea>
         </mat-form-field>
         
-        <label class="input-label">Y-axis 2 label - total reads.</label>
+        <label>Y-axis 2 label - total reads.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histYAxis2" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histYAxis2" rows="2"></textarea>
         </mat-form-field>
         
-        <label class="input-label">Plot title.</label>
+        <label>Plot title.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histTitle" rows="2" ></textarea>
         </mat-form-field>
         
         <div class="color-picker-field">
-          <label class="input-label">Color for unique sequences bars (top chart)</label>
-          <input type="color" [(ngModel)]="histBarFill" [disabled]="!processedFileName()" class="color-input">
+          <label>Color for unique sequences bars (top chart)</label>
+          <input type="color" [(ngModel)]="histBarFill" class="color-input">
         </div>
         
         <div class="color-picker-field">
-          <label class="input-label">Color for total reads bars (bottom chart)</label>
-          <input type="color" [(ngModel)]="histBarFill2" [disabled]="!processedFileName()" class="color-input">
+          <label>Color for total reads bars (bottom chart)</label>
+          <input type="color" [(ngModel)]="histBarFill2" class="color-input">
         </div>
       </div>
 
@@ -192,46 +192,46 @@
 
       <!-- Abundance Plot Section -->
       <h3 class="section-title">Adjust default abundance plot?</h3>
-      <mat-radio-group [(ngModel)]="adjustAbundancePlot" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-group [(ngModel)]="adjustAbundancePlot" class="radio-group">
         <mat-radio-button value="yes">Yes</mat-radio-button>
         <mat-radio-button value="no">No</mat-radio-button>
       </mat-radio-group>
 
       <div *ngIf="adjustAbundancePlot === 'yes'" class="customization-panel">
         <h4 class="subsection-title">Should singletons be a separate bin?</h4>
-        <mat-radio-group [(ngModel)]="useSingleton" [disabled]="!processedFileName()" class="radio-group">
+        <mat-radio-group [(ngModel)]="useSingleton" class="radio-group">
           <mat-radio-button value="yes">Yes</mat-radio-button>
           <mat-radio-button value="no">No</mat-radio-button>
         </mat-radio-group>
         
-        <label class="input-label">Comma-separated breakpoints.</label>
+        <label>Comma-separated breakpoints.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="abundanceBreakpoints" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="abundanceBreakpoints" rows="2"></textarea>
         </mat-form-field>
         
-        <label class="input-label">X-axis label - abundance bins.</label>
+        <label>X-axis label - abundance bins.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="abundanceXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="abundanceXAxis" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Y-axis label - fraction of population.</label>
+        <label>Y-axis label - fraction of population.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="abundanceYAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="abundanceYAxis" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Plot title.</label>
+        <label>Plot title.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="abundancePlotTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="abundancePlotTitle" rows="2" ></textarea>
         </mat-form-field>
         
         <div class="color-picker-field">
-          <label class="input-label">Gradient start color (light - low unique count)</label>
-          <input type="color" [(ngModel)]="abundanceColorLight" [disabled]="!processedFileName()" class="color-input">
+          <label>Gradient start color (light - low unique count)</label>
+          <input type="color" [(ngModel)]="abundanceColorLight" class="color-input">
         </div>
         
         <div class="color-picker-field">
-          <label class="input-label">Gradient end color (dark - high unique count)</label>
-          <input type="color" [(ngModel)]="abundanceColorDark" [disabled]="!processedFileName()" class="color-input">
+          <label>Gradient end color (dark - high unique count)</label>
+          <input type="color" [(ngModel)]="abundanceColorDark" class="color-input">
         </div>
       </div>
 

@@ -69,27 +69,27 @@
     </mat-radio-group>
 
     <div *ngIf="showPlotCustomization === 'yes'" class="customization-panel">
-      <mat-label class="input-label">X-axis - represents motif rank</mat-label>
+      <mat-label>X-axis - represents motif rank</mat-label>
       <mat-form-field appearance="outline" class="full-width">
         <input matInput [(ngModel)]="plotXaxis" />
       </mat-form-field>
 
-      <mat-label class="input-label">Y-axis - represents -log10(p-value)</mat-label>
+      <mat-label>Y-axis - represents -log10(p-value)</mat-label>
       <mat-form-field appearance="outline" class="full-width">
         <input matInput [(ngModel)]="plotYaxis" />
       </mat-form-field>
 
-      <mat-label class="input-label">Legend title - represents motif length</mat-label>
+      <mat-label>Legend title - represents motif length</mat-label>
       <mat-form-field appearance="outline" class="full-width">
         <input matInput [(ngModel)]="plotLegend" />
       </mat-form-field>
 
-      <mat-label class="input-label">Plot title</mat-label>
+      <mat-label>Plot title</mat-label>
       <mat-form-field appearance="outline" class="full-width">
         <input matInput [(ngModel)]="plotTitle" />
       </mat-form-field>
 
-      <mat-label class="input-label">Color palette</mat-label>
+      <mat-label>Color palette</mat-label>
       <mat-form-field appearance="outline" class="full-width">
         <mat-select [(ngModel)]="plotPalette">
           <mat-option *ngFor="let palette of paletteOptions" [value]="palette">

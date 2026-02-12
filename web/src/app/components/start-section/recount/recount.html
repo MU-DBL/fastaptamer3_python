@@ -4,7 +4,7 @@
     <app-upload
       [acceptedFileTypes]="'.fasta,.fa'"
       [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA files'"
+      [placeholderText]="'FASTA file'"
       [showUploadNote]="false"
       [uploadSpeed]="200"
       (fileSelected)="onFile1Selected($event)"
@@ -15,7 +15,7 @@
     <app-upload
       [acceptedFileTypes]="'.fasta,.fa'"
       [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA files'"
+      [placeholderText]="'FASTA file'"
       [showUploadNote]="false"
       [uploadSpeed]="200"
       (fileSelected)="onFile2Selected($event)"
@@ -86,7 +86,7 @@
             <span class="value-chip range-max">1,000</span>
           </div>
           <div class="dual-range-container">
-            <mat-slider [min]="0" [max]="1000" [step]="10" [disabled]="!processedFileName()" discrete class="range-slider">
+            <mat-slider [min]="0" [max]="1000" [step]="10" discrete class="range-slider">
               <input matSliderThumb [(ngModel)]="minReadsToPlot">
             </mat-slider>
           </div>
@@ -103,7 +103,7 @@
             <span class="value-chip range-max">1,000</span>
           </div>
           <div class="dual-range-container">
-            <mat-slider [min]="10" [max]="1000" [step]="10" [disabled]="!processedFileName()" discrete class="range-slider">
+            <mat-slider [min]="10" [max]="1000" [step]="10"  discrete class="range-slider">
               <input matSliderThumb [(ngModel)]="maxRankToPlot">
             </mat-slider>
           </div>
@@ -112,30 +112,30 @@
 
       <!-- Reads per Rank Section -->
       <h3 class="section-title">Adjust default reads-per-rank plot?</h3>
-      <mat-radio-group [(ngModel)]="adjustReadsPerRank" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-group [(ngModel)]="adjustReadsPerRank" class="radio-group">
         <mat-radio-button value="yes">Yes</mat-radio-button>
         <mat-radio-button value="no">No</mat-radio-button>
       </mat-radio-group>
 
       <div *ngIf="adjustReadsPerRank === 'yes'" class="customization-panel">
-        <label class="input-label">X-axis - represents sequence rank.</label>
+        <label>X-axis - represents sequence rank.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="rprXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="rprXAxis" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Y-axis - represents sequence abundance.</label>
+        <label>Y-axis - represents sequence abundance.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="rprYAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="rprYAxis" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Plot title.</label>
+        <label>Plot title.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="rprTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="rprTitle" rows="2"></textarea>
         </mat-form-field>
         
         <div class="color-picker-field">
-          <label class="input-label">Color for plot line</label>
-          <input type="color" [(ngModel)]="rprLineColor" [disabled]="!processedFileName()" class="color-input">
+          <label>Color for plot line</label>
+          <input type="color" [(ngModel)]="rprLineColor" class="color-input">
         </div>
       </div>
 
@@ -147,40 +147,40 @@
 
       <!-- Sequence Length Histogram Section -->
       <h3 class="section-title">Adjust default sequence-length histogram?</h3>
-      <mat-radio-group [(ngModel)]="adjustSeqLengthHistogram" [disabled]="!processedFileName()" class="radio-group">
+      <mat-radio-group [(ngModel)]="adjustSeqLengthHistogram" class="radio-group">
         <mat-radio-button value="yes">Yes</mat-radio-button>
         <mat-radio-button value="no">No</mat-radio-button>
       </mat-radio-group>
 
       <div *ngIf="adjustSeqLengthHistogram === 'yes'" class="customization-panel">
-        <label class="input-label">X-axis label - sequence length.</label>
+        <label>X-axis label - sequence length.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histXAxis" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histXAxis" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Y-axis 1 label - number of unique sequences.</label>
+        <label>Y-axis 1 label - number of unique sequences.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histYAxis1" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histYAxis1" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Y-axis 2 label - total reads.</label>
+        <label>Y-axis 2 label - total reads.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histYAxis2" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histYAxis2" rows="2" ></textarea>
         </mat-form-field>
         
-        <label class="input-label">Plot title.</label>
+        <label>Plot title.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <textarea matInput [(ngModel)]="histTitle" rows="2" [disabled]="!processedFileName()"></textarea>
+          <textarea matInput [(ngModel)]="histTitle" rows="2" ></textarea>
         </mat-form-field>
         
         <div class="color-picker-field">
-          <label class="input-label">Color for unique sequences bars (top chart)</label>
-          <input type="color" [(ngModel)]="histBarFill" [disabled]="!processedFileName()" class="color-input">
+          <label>Color for unique sequences bars (top chart)</label>
+          <input type="color" [(ngModel)]="histBarFill" class="color-input">
         </div>
         
         <div class="color-picker-field">
-          <label class="input-label">Color for total reads bars (bottom chart)</label>
-          <input type="color" [(ngModel)]="histBarFill2" [disabled]="!processedFileName()" class="color-input">
+          <label>Color for total reads bars (bottom chart)</label>
+          <input type="color" [(ngModel)]="histBarFill2" class="color-input">
         </div>
       </div>
 

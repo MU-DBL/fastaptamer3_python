@@ -1,34 +1,22 @@
 <div class="section-container">
   <div class="left-subsection">
-    
+
     <!-- FILE UPLOAD 1 -->
     <h3 class="section-title">Cluster data 1 *</h3>
-    <app-upload 
-      [acceptedFileTypes]="'.fasta,.fa'" 
-      [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'" 
-      [showUploadNote]="true" 
-      [uploadNotePath]="'#'" 
-      [uploadSpeed]="200"
-      (fileSelected)="onFile1Selected($event)" 
+    <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
+      [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200" (fileSelected)="onFile1Selected($event)"
       (uploadComplete)="onUpload1Complete($event)">
     </app-upload>
 
     <!-- FILE UPLOAD 2 -->
     <h3 class="section-title">Cluster data 2 *</h3>
-    <app-upload 
-      [acceptedFileTypes]="'.fasta,.fa'" 
-      [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'" 
-      [showUploadNote]="true" 
-      [uploadNotePath]="'#'" 
-      [uploadSpeed]="200"
-      (fileSelected)="onFile2Selected($event)" 
+    <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
+      [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200" (fileSelected)="onFile2Selected($event)"
       (uploadComplete)="onUpload2Complete($event)">
     </app-upload>
 
     <!-- LED THRESHOLD SLIDER -->
-    <label class="section-label">Max. LED: 
+    <label class="section-label">Max. LED:
       <mat-icon class="info-icon" matTooltip="Max. edit distance from seed sequence">help_outline</mat-icon>
     </label>
     <div class="slider-group">
@@ -46,23 +34,14 @@
 
     <!-- RECLUSTER AND DOWNLOAD BUTTONS -->
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="!uploadComplete1 || !uploadComplete2 || isProcessing()"
-        (click)="onRecluster()">
+      <button mat-raised-button color="primary" class="start-button"
+        [disabled]="!uploadComplete1 || !uploadComplete2 || isProcessing()" (click)="onRecluster()">
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Recluster' }}
       </button>
 
-      <button 
-        mat-raised-button 
-        color="accent"
-        class="download-button"
-        [class.download-ready]="processedFileName()"
-        [disabled]="!processedFileName()"
-        (click)="onDownload()">
+      <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
         Download CSV
       </button>
@@ -78,52 +57,49 @@
     </mat-radio-group>
 
     @if (adjustHeatmap === 'yes') {
-      <div class="customization-panel">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>X-axis - clusters of 1st population</mat-label>
-          <input matInput [(ngModel)]="heatmapXAxis">
-        </mat-form-field>
+    <div class="customization-panel">
+      <mat-label>X-axis - clusters of 1st population</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="heatmapXAxis">
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Y-axis - clusters of 2nd population</mat-label>
-          <input matInput [(ngModel)]="heatmapYAxis">
-        </mat-form-field>
+      <mat-label>Y-axis - clusters of 2nd population</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="heatmapYAxis">
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Legend title - represents LED</mat-label>
-          <input matInput [(ngModel)]="heatmapLegend">
-        </mat-form-field>
+      <mat-label>Legend title - represents LED</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="heatmapLegend">
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Plot title</mat-label>
-          <input matInput [(ngModel)]="heatmapTitle">
-        </mat-form-field>
+      <mat-label>Plot title</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="heatmapTitle">
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Color palette</mat-label>
-          <mat-select [(ngModel)]="heatmapPalette">
-            <mat-option value="Magma">Magma</mat-option>
-            <mat-option value="Inferno">Inferno</mat-option>
-            <mat-option value="Plasma">Plasma</mat-option>
-            <mat-option value="Viridis">Viridis</mat-option>
-            <mat-option value="Cividis">Cividis</mat-option>
-            <mat-option value="Hot">Hot</mat-option>
-            <mat-option value="Jet">Jet</mat-option>
-            <mat-option value="Turbo">Turbo</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+      <mat-label>Color palette</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-select [(ngModel)]="heatmapPalette">
+          <mat-option value="Magma">Magma</mat-option>
+          <mat-option value="Inferno">Inferno</mat-option>
+          <mat-option value="Plasma">Plasma</mat-option>
+          <mat-option value="Viridis">Viridis</mat-option>
+          <mat-option value="Cividis">Cividis</mat-option>
+          <mat-option value="Hot">Hot</mat-option>
+          <mat-option value="Jet">Jet</mat-option>
+          <mat-option value="Turbo">Turbo</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
     }
 
     <!-- HEATMAP BUTTON -->
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="!uploadComplete1 || !uploadComplete2 || isHeatmapProcessing()"
-        (click)="onGenerateHeatmap()">
-        <mat-icon [class.spinning]="isHeatmapProcessing()">{{ isHeatmapProcessing() ? 'sync' : 'assessment' }}</mat-icon>
+      <button mat-raised-button color="primary" class="start-button"
+        [disabled]="!uploadComplete1 || !uploadComplete2 || isHeatmapProcessing()" (click)="onGenerateHeatmap()">
+        <mat-icon [class.spinning]="isHeatmapProcessing()">{{ isHeatmapProcessing() ? 'sync' : 'assessment'
+          }}</mat-icon>
         {{ isHeatmapProcessing() ? 'Generating...' : 'LED Heatmap' }}
       </button>
     </div>
@@ -138,46 +114,44 @@
     </mat-radio-group>
 
     @if (adjustPopSize === 'yes') {
-      <div class="customization-panel">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>X-axis - represents each cluster</mat-label>
-          <input matInput [(ngModel)]="popSizeXAxis">
-        </mat-form-field>
+    <div class="customization-panel">
+      <mat-label>X-axis - represents each cluster</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="popSizeXAxis">
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Y-axis - represents unique sequence count</mat-label>
-          <input matInput [(ngModel)]="popSizeYAxis">
-        </mat-form-field>
+      <mat-label>Y-axis - represents unique sequence count</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="popSizeYAxis">
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Legend title - represents populations</mat-label>
-          <input matInput [(ngModel)]="popSizeLegend">
-        </mat-form-field>
+      <mat-label>Legend title - represents populations</mat-label>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Plot title</mat-label>
-          <input matInput [(ngModel)]="popSizeTitle">
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="popSizeLegend">
+      </mat-form-field>
+      <mat-label>Plot title</mat-label>
 
-        <div class="color-picker-group">
-          <label>Population 1 bar color:</label>
-          <input type="color" [(ngModel)]="popSizeColor1" class="color-input">
-        </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="popSizeTitle">
+      </mat-form-field>
 
-        <div class="color-picker-group">
-          <label>Population 2 bar color:</label>
-          <input type="color" [(ngModel)]="popSizeColor2" class="color-input">
-        </div>
+      <div class="color-picker-group">
+        <label>Population 1 bar color:</label>
+        <input type="color" [(ngModel)]="popSizeColor1" class="color-input">
       </div>
+
+
+      <div class="color-picker-group">
+        <label>Population 2 bar color:</label>
+        <input type="color" [(ngModel)]="popSizeColor2" class="color-input">
+      </div>
+    </div>
     }
 
     <!-- POPULATION SIZE PLOT BUTTON -->
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="plot-button"
-        [disabled]="reclusterData.length === 0"
+      <button mat-raised-button color="primary" class="plot-button" [disabled]="reclusterData.length === 0"
         (click)="onGeneratePopSizePlot()">
         <mat-icon>bar_chart</mat-icon>
         Population Plot
@@ -194,46 +168,42 @@
     </mat-radio-group>
 
     @if (adjustRPU === 'yes') {
-      <div class="customization-panel">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>X-axis - represents each cluster</mat-label>
-          <input matInput [(ngModel)]="rpuXAxis">
-        </mat-form-field>
+    <div class="customization-panel">
+      <mat-label>X-axis - represents each cluster</mat-label>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Y-axis - represents average RPU</mat-label>
-          <input matInput [(ngModel)]="rpuYAxis">
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="rpuXAxis">
+      </mat-form-field>
+      <mat-label>Y-axis - represents average RPU</mat-label>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Legend title - represents populations</mat-label>
-          <input matInput [(ngModel)]="rpuLegend">
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="rpuYAxis">
+      </mat-form-field>
+      <mat-label>Legend title - represents populations</mat-label>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Plot title</mat-label>
-          <input matInput [(ngModel)]="rpuTitle">
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="rpuLegend">
+      </mat-form-field>
+      <mat-label>Plot title</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="rpuTitle">
+      </mat-form-field>
 
-        <div class="color-picker-group">
-          <label>Population 1 bar color:</label>
-          <input type="color" [(ngModel)]="rpuColor1" class="color-input">
-        </div>
-
-        <div class="color-picker-group">
-          <label>Population 2 bar color:</label>
-          <input type="color" [(ngModel)]="rpuColor2" class="color-input">
-        </div>
+      <div class="color-picker-group">
+        <label>Population 1 bar color:</label>
+        <input type="color" [(ngModel)]="rpuColor1" class="color-input">
       </div>
+
+      <div class="color-picker-group">
+        <label>Population 2 bar color:</label>
+        <input type="color" [(ngModel)]="rpuColor2" class="color-input">
+      </div>
+    </div>
     }
 
     <!-- RPU PLOT BUTTON -->
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="plot-button"
-        [disabled]="reclusterData.length === 0"
+      <button mat-raised-button color="primary" class="plot-button" [disabled]="reclusterData.length === 0"
         (click)="onGenerateRPUPlot()">
         <mat-icon>bar_chart</mat-icon>
         RPU Plot
@@ -250,41 +220,39 @@
     </mat-radio-group>
 
     @if (adjustLED === 'yes') {
-      <div class="customization-panel">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>X-axis - represents each cluster</mat-label>
-          <input matInput [(ngModel)]="ledXAxis">
-        </mat-form-field>
+    <div class="customization-panel">
+      <mat-label>X-axis - represents each cluster</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Y-axis - represents average LED</mat-label>
-          <input matInput [(ngModel)]="ledYAxis">
-        </mat-form-field>
+        <input matInput [(ngModel)]="ledXAxis">
+      </mat-form-field>
+      <mat-label>Y-axis - represents average LED</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Plot title</mat-label>
-          <input matInput [(ngModel)]="ledTitle">
-        </mat-form-field>
+        <input matInput [(ngModel)]="ledYAxis">
+      </mat-form-field>
 
-        <div class="color-picker-group">
-          <label>Bar outline color:</label>
-          <input type="color" [(ngModel)]="ledBarOutline" class="color-input">
-        </div>
+      <mat-label>Plot title</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
 
-        <div class="color-picker-group">
-          <label>Bar fill color:</label>
-          <input type="color" [(ngModel)]="ledBarFill" class="color-input">
-        </div>
+        <input matInput [(ngModel)]="ledTitle">
+      </mat-form-field>
+
+      <div class="color-picker-group">
+        <label>Bar outline color:</label>
+        <input type="color" [(ngModel)]="ledBarOutline" class="color-input">
       </div>
+
+      <div class="color-picker-group">
+        <label>Bar fill color:</label>
+        <input type="color" [(ngModel)]="ledBarFill" class="color-input">
+      </div>
+    </div>
     }
 
     <!-- LED PLOT BUTTON -->
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="plot-button"
-        [disabled]="reclusterData.length === 0"
+      <button mat-raised-button color="primary" class="plot-button" [disabled]="reclusterData.length === 0"
         (click)="onGenerateLEDPlot()">
         <mat-icon>bar_chart</mat-icon>
         LED Plot
@@ -301,36 +269,34 @@
     </mat-radio-group>
 
     @if (adjustEnrichment === 'yes') {
-      <div class="customization-panel">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>X-axis - represents each cluster</mat-label>
-          <input matInput [(ngModel)]="enrichmentXAxis">
-        </mat-form-field>
+    <div class="customization-panel">
+      <mat-label>X-axis - represents each cluster</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Plot title</mat-label>
-          <input matInput [(ngModel)]="enrichmentTitle">
-        </mat-form-field>
+        <input matInput [(ngModel)]="enrichmentXAxis">
+      </mat-form-field>
 
-        <div class="color-picker-group">
-          <label>Box outline color:</label>
-          <input type="color" [(ngModel)]="enrichmentBoxOutline" class="color-input">
-        </div>
+      <mat-label>Plot title</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
 
-        <div class="color-picker-group">
-          <label>Box fill color:</label>
-          <input type="color" [(ngModel)]="enrichmentBoxFill" class="color-input">
-        </div>
+        <input matInput [(ngModel)]="enrichmentTitle">
+      </mat-form-field>
+
+      <div class="color-picker-group">
+        <label>Box outline color:</label>
+        <input type="color" [(ngModel)]="enrichmentBoxOutline" class="color-input">
       </div>
+
+      <div class="color-picker-group">
+        <label>Box fill color:</label>
+        <input type="color" [(ngModel)]="enrichmentBoxFill" class="color-input">
+      </div>
+    </div>
     }
 
     <!-- ENRICHMENT BOX PLOT BUTTON -->
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="plot-button"
-        [disabled]="reclusterData.length === 0"
+      <button mat-raised-button color="primary" class="plot-button" [disabled]="reclusterData.length === 0"
         (click)="onGenerateEnrichmentPlot()">
         <mat-icon>show_chart</mat-icon>
         Box Plot
@@ -341,9 +307,7 @@
 
   <!-- RIGHT SUBSECTION - TABLE -->
   <div class="right-subsection">
-    <app-table 
-      [data]="reclusterData" 
-      [config]="tableConfig">
+    <app-table [data]="reclusterData" [config]="tableConfig">
     </app-table>
   </div>
 </div>

@@ -1,57 +1,37 @@
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data *</h3>
-    <app-upload
-      [acceptedFileTypes]="'.fasta,.fa'"
-      [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'"
-      [showUploadNote]="false"
-      [uploadSpeed]="200"
-      (fileSelected)="onFileSelected($event)"
+    <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
+      [showUploadNote]="false" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
       (uploadComplete)="onFileUploadComplete($event)">
     </app-upload>
 
-    <mat-label class="section-label"
-    matTooltip="Compute the LED between this sequence and all other sequences in the data."
-    matTooltipPosition="right">Enter Query sequence</mat-label>
+    <mat-label class="section-title"
+      matTooltip="Compute the LED between this sequence and all other sequences in the data."
+      matTooltipPosition="right">Query sequence</mat-label>
     <mat-form-field appearance="outline" class="full-width">
-      <input 
-        matInput 
-        [(ngModel)]="querySequence" 
-        placeholder="Alphanumeric sequence"
-        [disabled]="isProcessing()" />
+      <input matInput [(ngModel)]="querySequence" [disabled]="isProcessing()" />
     </mat-form-field>
 
-    <h3 class="section-title" 
-        matTooltip="FASTA is required for subsequent modules; CSV retains all features from data table"
-        matTooltipPosition="right">
+    <h3 class="section-title"
+      matTooltip="FASTA is required for subsequent modules; CSV retains all features from data table"
+      matTooltipPosition="right">
       Download format
     </h3>
-    <mat-radio-group 
-      [(ngModel)]="downloadFormat"
-      class="radio-group">
+    <mat-radio-group [(ngModel)]="downloadFormat" class="radio-group">
       <mat-radio-button value="fasta">FASTA</mat-radio-button>
       <mat-radio-button value="csv">CSV</mat-radio-button>
     </mat-radio-group>
 
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="!uploadComplete || !querySequence || isProcessing()"
-        (click)="onStart()">
+      <button mat-raised-button color="primary" class="start-button"
+        [disabled]="!uploadComplete || !querySequence || isProcessing()" (click)="onStart()">
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
-      <button 
-        mat-raised-button 
-        color="accent"
-        class="download-button"
-        [class.download-ready]="processedFileName()"
-        [disabled]="!processedFileName()"
-        (click)="onDownload()">
+      <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
         Download
       </button>
@@ -60,63 +40,52 @@
     <mat-divider class="section-divider"></mat-divider>
 
     <!-- Distance Histogram Customization -->
-    <h3 class="section-title" 
-        matTooltip="Customize plot components?"
-        matTooltipPosition="right">
+    <h3 class="section-title" matTooltip="Customize plot components?" matTooltipPosition="right">
       Adjust default distance histograms?
     </h3>
-    <mat-radio-group 
-      [(ngModel)]="adjustHistogram"
-      (change)="onAdjustHistogramChange()"
-      class="radio-group">
+    <mat-radio-group [(ngModel)]="adjustHistogram" (change)="onAdjustHistogramChange()" class="radio-group">
       <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>
     </mat-radio-group>
 
     @if (adjustHistogram === 'yes') {
-      <div class="customization-panel">
-        <mat-label class="section-label">X-axis - represents LED from query sequence</mat-label>
-        <mat-form-field appearance="outline" class="full-width">
-          <input matInput [(ngModel)]="histXAxis" />
-        </mat-form-field>
+    <div class="customization-panel">
+      <mat-label>X-axis - represents LED from query sequence</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="histXAxis" />
+      </mat-form-field>
 
-        <mat-label class="section-label">Y-axis 1 - represents count of unique sequences</mat-label>
-        <mat-form-field appearance="outline" class="full-width">
-          <input matInput [(ngModel)]="histYAxis1" />
-        </mat-form-field>
+      <mat-label>Y-axis 1 - represents count of unique sequences</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="histYAxis1" />
+      </mat-form-field>
 
-        <mat-label class="section-label">Y-axis 2 - represents count of total sequences</mat-label>
-        <mat-form-field appearance="outline" class="full-width">
-          <input matInput [(ngModel)]="histYAxis2" />
-        </mat-form-field>
+      <mat-label>Y-axis 2 - represents count of total sequences</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="histYAxis2" />
+      </mat-form-field>
 
-        <mat-label class="section-label">Plot title</mat-label>
-        <mat-form-field appearance="outline" class="full-width">
-          <input matInput [(ngModel)]="histTitle" />
-        </mat-form-field>
+      <mat-label>Plot title</mat-label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [(ngModel)]="histTitle" />
+      </mat-form-field>
 
-        <div class="color-picker-field">
-          <label>Color for bar outline:</label>
-          <input type="color" [(ngModel)]="histBarOutline" class="color-input" />
-          <span class="color-value">{{ histBarOutline }}</span>
-        </div>
-
-        <div class="color-picker-field">
-          <label>Color for bar fill:</label>
-          <input type="color" [(ngModel)]="histBarFill" class="color-input" />
-          <span class="color-value">{{ histBarFill }}</span>
-        </div>
+      <div class="color-picker-field">
+        <label>Color for bar outline:</label>
+        <input type="color" [(ngModel)]="histBarOutline" class="color-input" />
+        <span class="color-value">{{ histBarOutline }}</span>
       </div>
+
+      <div class="color-picker-field">
+        <label>Color for bar fill:</label>
+        <input type="color" [(ngModel)]="histBarFill" class="color-input" />
+        <span class="color-value">{{ histBarFill }}</span>
+      </div>
+    </div>
     }
 
-    <button 
-      mat-raised-button 
-      color="primary"
-      class="plot-button"
-      [disabled]="distanceData.length === 0"
-      (click)="distanceHistogram()"
-      matTooltip="See a histogram of distances"
-      matTooltipPosition="right">
+    <button mat-raised-button color="primary" class="plot-button" [disabled]="distanceData.length === 0"
+      (click)="distanceHistogram()" matTooltip="See a histogram of distances" matTooltipPosition="right">
       <mat-icon>bar_chart</mat-icon>
       Distance histogram
     </button>
@@ -125,12 +94,12 @@
   <!-- Table Display -->
   <div class="right-subsection">
     @if (distanceData.length > 0) {
-      <app-table [config]="tableConfig" [data]="distanceData"></app-table>
+    <app-table [config]="tableConfig" [data]="distanceData"></app-table>
     } @else {
-      <div class="no-data-message">
-        <mat-icon>info</mat-icon>
-        <p>No data to display. Please upload a FASTA file, enter a query sequence, and click Start.</p>
-      </div>
+    <div class="no-data-message">
+      <mat-icon>info</mat-icon>
+      <p>No data to display. Please upload a FASTA file, enter a query sequence, and click Start.</p>
+    </div>
     }
   </div>
 </div>

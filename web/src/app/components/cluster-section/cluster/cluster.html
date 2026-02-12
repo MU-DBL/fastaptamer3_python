@@ -2,7 +2,7 @@
     <div class="left-subsection">
         <h3 class="section-title">Choose file to cluster *</h3>
         <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'"
-            [placeholderText]="'FASTA count file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+            [placeholderText]="'FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
             (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
         </app-upload>
  

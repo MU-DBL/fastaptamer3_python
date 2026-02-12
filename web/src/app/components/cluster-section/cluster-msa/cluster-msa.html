@@ -51,42 +51,42 @@
         <hr class="section-divider">
         <div>
             <h3 class="section-title">Adjust default entropy plot?</h3>
-            <mat-radio-group [(ngModel)]="adjustEntropyPlot" [disabled]="!uploadComplete" class="radio-group">
+            <mat-radio-group [(ngModel)]="adjustEntropyPlot" class="radio-group">
                 <mat-radio-button value="yes">Yes</mat-radio-button>
                 <mat-radio-button value="no">No</mat-radio-button>
             </mat-radio-group>
 
             <div *ngIf="adjustEntropyPlot === 'yes'" class="customization-panel">
-                <label class="input-label">X-axis - represents position in MSA.</label>
+                <label>X-axis - represents position in MSA.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="entropyXAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                    <textarea matInput [(ngModel)]="entropyXAxis" rows="2" ></textarea>
                 </mat-form-field>
 
-                <label class="input-label">Y-axis - represents entropy in nats.</label>
+                <label>Y-axis - represents entropy in nats.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="entropyYAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                    <textarea matInput [(ngModel)]="entropyYAxis" rows="2" ></textarea>
                 </mat-form-field>
 
-                <label class="input-label">Legend title - represents nats (a unit of entropy).</label>
+                <label>Legend title - represents nats (a unit of entropy).</label>
                 <mat-form-field appearance="outline" class="full-width">
                     <textarea matInput [(ngModel)]="entropyLegendTitle" rows="2"
-                        [disabled]="!uploadComplete"></textarea>
+                        ></textarea>
                 </mat-form-field>
 
-                <label class="input-label">Plot title.</label>
+                <label>Plot title.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="entropyPlotTitle" rows="2" [disabled]="!uploadComplete"></textarea>
+                    <textarea matInput [(ngModel)]="entropyPlotTitle" rows="2" ></textarea>
                 </mat-form-field>
 
                 <div class="color-picker-field">
-                    <label class="input-label">Color for bar outline.</label>
-                    <input type="color" [(ngModel)]="entropyBarOutlineColor" [disabled]="!uploadComplete"
+                    <label>Color for bar outline.</label>
+                    <input type="color" [(ngModel)]="entropyBarOutlineColor" 
                         class="color-input">
                 </div>
 
                 <div class="color-picker-field">
-                    <label class="input-label">Color for bar fill.</label>
-                    <input type="color" [(ngModel)]="entropyBarFillColor" [disabled]="!uploadComplete"
+                    <label>Color for bar fill.</label>
+                    <input type="color" [(ngModel)]="entropyBarFillColor" 
                         class="color-input">
                 </div>
             </div>
@@ -100,35 +100,35 @@
         <hr class="section-divider">
         <div>
             <h3 class="section-title">Adjust default mutual information plot?</h3>
-            <mat-radio-group [(ngModel)]="adjustMIPlot" [disabled]="!uploadComplete" class="radio-group">
+            <mat-radio-group [(ngModel)]="adjustMIPlot" class="radio-group">
                 <mat-radio-button value="yes">Yes</mat-radio-button>
                 <mat-radio-button value="no">No</mat-radio-button>
             </mat-radio-group>
 
             <div *ngIf="adjustMIPlot === 'yes'" class="customization-panel">
-                <label class="input-label">X-axis - represents position in MSA.</label>
+                <label>X-axis - represents position in MSA.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="miXAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                    <textarea matInput [(ngModel)]="miXAxis" rows="2" ></textarea>
                 </mat-form-field>
 
-                <label class="input-label">Y-axis - represents position in MSA.</label>
+                <label>Y-axis - represents position in MSA.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="miYAxis" rows="2" [disabled]="!uploadComplete"></textarea>
+                    <textarea matInput [(ngModel)]="miYAxis" rows="2" ></textarea>
                 </mat-form-field>
 
-                <label class="input-label">Legend title - mutual information (MI).</label>
+                <label>Legend title - mutual information (MI).</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="miLegendTitle" rows="2" [disabled]="!uploadComplete"></textarea>
+                    <textarea matInput [(ngModel)]="miLegendTitle" rows="2" ></textarea>
                 </mat-form-field>
 
-                <label class="input-label">Plot title.</label>
+                <label>Plot title.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="miPlotTitle" rows="2" [disabled]="!uploadComplete"></textarea>
+                    <textarea matInput [(ngModel)]="miPlotTitle" rows="2"></textarea>
                 </mat-form-field>
 
-                <label class="input-label">Fill palette.</label>
+                <label>Fill palette.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-select [(ngModel)]="miFillPalette" [disabled]="!uploadComplete">
+                    <mat-select [(ngModel)]="miFillPalette" >
                         <mat-option *ngFor="let palette of availablePalettes" [value]="palette">
                             {{ palette }}
                         </mat-option>

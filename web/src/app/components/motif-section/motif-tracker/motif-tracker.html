@@ -134,7 +134,7 @@
     }
 
     <!-- QUERY INPUT -->
-    <mat-label class="section-label">Motif or Sequence List (one per line) *</mat-label>
+    <mat-label class="section-title">Motif or Sequence List (one per line) *</mat-label>
     <mat-form-field appearance="outline" class="full-width">
       <textarea 
         matInput 
@@ -144,7 +144,7 @@
     </mat-form-field>
 
     <!-- ALIAS INPUT -->
-    <mat-label class="section-label">Alias List (one per line, optional)</mat-label>
+    <mat-label class="section-title">Alias List (one per line, optional)</mat-label>
     <mat-form-field appearance="outline" class="full-width">
       <textarea 
         matInput 
@@ -189,22 +189,22 @@
 
      @if (adjustPlotSettings === 'yes') {
       <div class="customization-panel">
-        <mat-label class="input-label">X-axis - represents uploaded populations</mat-label>
+        <mat-label>X-axis - represents uploaded populations</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="plotXAxis">
         </mat-form-field>
 
-        <mat-label class="input-label">Y-axis - represents percentage for motifs or total RPU for sequences</mat-label>
+        <mat-label>Y-axis - represents percentage for motifs or total RPU for sequences</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="plotYAxis">
         </mat-form-field>
 
-        <mat-label class="input-label">Plot title</mat-label>
+        <mat-label>Plot title</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="plotTitle">
         </mat-form-field>
 
-        <mat-label class="input-label">Color palette</mat-label>
+        <mat-label>Color palette</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <mat-select [(ngModel)]="plotColorPalette">
             <mat-option value="Accent">Accent</mat-option>
