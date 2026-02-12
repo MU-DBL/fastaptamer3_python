@@ -1,14 +1,5 @@
 # Ignore files directory (user uploaded data)
 backend/files/
-
-# Ignore Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-
-
 backend/test/
 
 documents/
@@ -20,6 +11,14 @@ documents/
 *.swp
 *.swo
 
-# Ignore git
 .git/
 .gitignore
+
+frontend/node_modules
+frontend/dist
+frontend/.angular
+backend/__pycache__
+backend/*.pyc
+backend/.pytest_cache
+
+.env
