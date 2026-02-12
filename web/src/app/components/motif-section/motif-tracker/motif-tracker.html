@@ -187,34 +187,36 @@
       <mat-radio-button value="yes">Yes</mat-radio-button>
     </mat-radio-group>
 
-    @if (adjustPlotSettings === 'yes') {
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>X-axis - represents uploaded populations</mat-label>
-        <input matInput [(ngModel)]="plotXAxis">
-      </mat-form-field>
+     @if (adjustPlotSettings === 'yes') {
+      <div class="customization-panel">
+        <mat-label class="input-label">X-axis - represents uploaded populations</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="plotXAxis">
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Y-axis - represents percentage for motifs or total RPU for sequences</mat-label>
-        <input matInput [(ngModel)]="plotYAxis">
-      </mat-form-field>
+        <mat-label class="input-label">Y-axis - represents percentage for motifs or total RPU for sequences</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="plotYAxis">
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Plot title</mat-label>
-        <input matInput [(ngModel)]="plotTitle">
-      </mat-form-field>
+        <mat-label class="input-label">Plot title</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="plotTitle">
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Color palette</mat-label>
-        <mat-select [(ngModel)]="plotColorPalette">
-          <mat-option value="Accent">Accent</mat-option>
-          <mat-option value="Dark2">Dark2</mat-option>
-          <mat-option value="Paired">Paired</mat-option>
-          <mat-option value="Pastel1">Pastel1</mat-option>
-          <mat-option value="Pastel2">Pastel2</mat-option>
-          <mat-option value="Set1">Set1</mat-option>
-          <mat-option value="Set2">Set2</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-label class="input-label">Color palette</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-select [(ngModel)]="plotColorPalette">
+            <mat-option value="Accent">Accent</mat-option>
+            <mat-option value="Dark2">Dark2</mat-option>
+            <mat-option value="Paired">Paired</mat-option>
+            <mat-option value="Pastel1">Pastel1</mat-option>
+            <mat-option value="Pastel2">Pastel2</mat-option>
+            <mat-option value="Set1">Set1</mat-option>
+            <mat-option value="Set2">Set2</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     }
 
     <!-- ACTION BUTTONS -->

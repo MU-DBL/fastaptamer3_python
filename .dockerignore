@@ -1,0 +1,25 @@
+# Ignore files directory (user uploaded data)
+backend/files/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+
+backend/test/
+
+documents/
+
+# Ignore IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Ignore git
+.git/
+.gitignore

@@ -1,20 +1,17 @@
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data *</h3>
-    <app-upload
-      [acceptedFileTypes]="'.fasta,.fa'"
-      [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'"
-      [showUploadNote]="true"
-      [uploadSpeed]="200"
-      (fileSelected)="onFileSelected($event)"
+    <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
+      [showUploadNote]="true" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
       (uploadComplete)="onUploadComplete($event)">
     </app-upload>
-    
-    <p class="info-note">*This currently only supports DNA characters, but alternative alphabets will be supported soon!</p>
+
+    <p class="info-note">*This currently only supports DNA characters, but alternative alphabets will be supported soon!
+    </p>
 
     <label class="section-label">Min. number of reads to consider:
-      <mat-icon class="info-icon" matTooltip="Min. number of reads for sequences to be retained in analysis">help_outline</mat-icon>
+      <mat-icon class="info-icon"
+        matTooltip="Min. number of reads for sequences to be retained in analysis">help_outline</mat-icon>
     </label>
     <div class="slider-group">
       <div class="slider-header">
@@ -30,7 +27,8 @@
     </div>
 
     <label class="section-label">Motif length range:
-      <mat-icon class="info-icon" matTooltip="The minimum and maximum string lengths to consider in the analysis">help_outline</mat-icon>
+      <mat-icon class="info-icon"
+        matTooltip="The minimum and maximum string lengths to consider in the analysis">help_outline</mat-icon>
     </label>
     <div class="slider-group">
       <div class="slider-header">
@@ -48,23 +46,14 @@
     </div>
 
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="!uploadComplete || isProcessing()"
+      <button mat-raised-button color="primary" class="start-button" [disabled]="!uploadComplete || isProcessing()"
         (click)="onStart()">
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
-      <button 
-        mat-raised-button 
-        color="accent"
-        class="download-button"
-        [class.download-ready]="processedFileName()"
-        [disabled]="!processedFileName()"
-        (click)="onDownload()">
+      <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
         Download
       </button>
@@ -73,37 +62,35 @@
     <mat-divider class="section-divider"></mat-divider>
 
     <h3 class="section-title">Adjust default plots?</h3>
-    <mat-radio-group 
-      [(ngModel)]="showPlotCustomization"
-      (ngModelChange)="onPlotCustomizationChange()"
+    <mat-radio-group [(ngModel)]="showPlotCustomization" (ngModelChange)="onPlotCustomizationChange()"
       class="radio-group">
       <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>
     </mat-radio-group>
 
-    <div *ngIf="showPlotCustomization === 'yes'" class="plot-customization">
+    <div *ngIf="showPlotCustomization === 'yes'" class="customization-panel">
+      <mat-label class="input-label">X-axis - represents motif rank</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>X-axis - represents motif rank</mat-label>
         <input matInput [(ngModel)]="plotXaxis" />
       </mat-form-field>
 
+      <mat-label class="input-label">Y-axis - represents -log10(p-value)</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Y-axis - represents -log10(p-value)</mat-label>
         <input matInput [(ngModel)]="plotYaxis" />
       </mat-form-field>
 
+      <mat-label class="input-label">Legend title - represents motif length</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Legend title - represents motif length</mat-label>
         <input matInput [(ngModel)]="plotLegend" />
       </mat-form-field>
 
+      <mat-label class="input-label">Plot title</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Plot title</mat-label>
         <input matInput [(ngModel)]="plotTitle" />
       </mat-form-field>
 
+      <mat-label class="input-label">Color palette</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Color palette</mat-label>
         <mat-select [(ngModel)]="plotPalette">
           <mat-option *ngFor="let palette of paletteOptions" [value]="palette">
             {{ palette }}
@@ -112,11 +99,7 @@
       </mat-form-field>
     </div>
 
-    <button 
-      mat-raised-button 
-      color="primary"
-      class="plot-button"
-      [disabled]="tableData.length === 0"
+    <button mat-raised-button color="primary" class="plot-button" [disabled]="tableData.length === 0"
       (click)="onShowPlot()">
       <mat-icon>show_chart</mat-icon>
       Motif Discovery Plot
@@ -124,9 +107,7 @@
   </div>
 
   <div class="right-subsection">
-    <app-table
-      [config]="tableConfig"
-      [data]="tableData">
+    <app-table [config]="tableConfig" [data]="tableData">
     </app-table>
   </div>
 </div>
