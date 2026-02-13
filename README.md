@@ -1,5 +1,5 @@
 # Build the image
-docker build -t yongfangqin/fastaptamer3:latest .
+docker build --no-cache -t yongfangqin/fastaptamer3:latest .
 docker run -d -p 80:80 --name fastaptamer3 yongfangqin/fastaptamer3:latest
 
 

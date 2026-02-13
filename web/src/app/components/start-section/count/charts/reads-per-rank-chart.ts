@@ -31,6 +31,8 @@ export class ReadsPerRankChart implements AfterViewInit, OnChanges {
   @Input() title = 'Read count for each rank';
   @Input() lineColor = '#87CEEB';
 
+  private Plotly: any;
+
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.drawChart();
@@ -54,7 +56,8 @@ export class ReadsPerRankChart implements AfterViewInit, OnChanges {
 
     try {
       // Dynamically import Plotly only in the browser
-      const Plotly = await import('plotly.js-dist-min');
+      const { default: Plotly } = await import('plotly.js-dist-min');
+      this.Plotly = Plotly;
 
       const xValues = this.data.map(d => d.rank);
       const yValues = this.data.map(d => d.reads);

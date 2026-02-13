@@ -109,7 +109,8 @@ export class PlotModal implements AfterViewInit, OnDestroy {
 
     if (!this.PlotlyJS) {
       try {
-        this.PlotlyJS = await import('plotly.js-dist-min');
+        const { default: Plotly } = await import('plotly.js-dist-min');
+        this.PlotlyJS = Plotly;
       } catch (error) {
         console.error('Failed to load Plotly:', error);
         return;
