@@ -356,6 +356,56 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/mutation-network`, params);
   }
+
+  // Data Merge
+  dataMerge(params: {
+    input_paths: string[];
+    merge_type: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/data-merge`, params);
+  }
+
+  // Sequence Persistence
+  sequencePersistence(params: {
+    merged_file_path: string;
+  }): Observable<{
+    status: string;
+    data: Array<{ freq: number; seqCount: number }>;
+  }> {
+    return this.http.post<{
+      status: string;
+      data: Array<{ freq: number; seqCount: number }>;
+    }>(`${this.baseUrl}/sequence-persistence`, params);
+  }
+
+  // UpSet Data
+  upSetData(params: {
+    merged_file_path: string;
+    fasta_names?: string[];
+  }): Observable<{
+    status: string;
+    sets: string[];
+    set_sizes: { [key: string]: number };
+    intersections: Array<{
+      sets: string[];
+      size: number;
+      sequences: string[];
+    }>;
+    total_unique_sequences: number;
+  }> {
+    return this.http.post<{
+      status: string;
+      sets: string[];
+      set_sizes: { [key: string]: number };
+      intersections: Array<{
+        sets: string[];
+        size: number;
+        sequences: string[];
+      }>;
+      total_unique_sequences: number;
+    }>(`${this.baseUrl}/upset-data`, params);
+  }
 }
 
 
