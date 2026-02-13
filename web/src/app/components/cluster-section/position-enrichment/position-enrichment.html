@@ -36,13 +36,13 @@
                     Download
                 </button>
             </div>
-            <p>Position enrichment analysis with MSA is inherently slow. Please wait patiently.</p>
+            <p class="note-box">Position enrichment analysis with multiple sequence alignment is computationally intensive and may take some time to
+                complete. Please wait while processing.</p>
         </div>
         <hr class="section-divider">
         <div>
             <h3 class="section-title">Adjust default bar plot?</h3>
-            <mat-radio-group [(ngModel)]="adjustPositionEnrichmentPlot" 
-                class="radio-group">
+            <mat-radio-group [(ngModel)]="adjustPositionEnrichmentPlot" class="radio-group">
                 <mat-radio-button value="yes">Yes</mat-radio-button>
                 <mat-radio-button value="no">No</mat-radio-button>
             </mat-radio-group>
@@ -50,35 +50,31 @@
             <div *ngIf="adjustPositionEnrichmentPlot === 'yes'" class="customization-panel">
                 <label>X-axis - represents position in alignment.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="posEnrichXAxis" rows="2" ></textarea>
+                    <textarea matInput [(ngModel)]="posEnrichXAxis" rows="2"></textarea>
                 </mat-form-field>
 
                 <label>Y-axis - represents mean enrichment at the position.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="posEnrichYAxis" rows="2" ></textarea>
+                    <textarea matInput [(ngModel)]="posEnrichYAxis" rows="2"></textarea>
                 </mat-form-field>
 
                 <label>Plot title.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="posEnrichPlotTitle" rows="2"
-                        ></textarea>
+                    <textarea matInput [(ngModel)]="posEnrichPlotTitle" rows="2"></textarea>
                 </mat-form-field>
 
                 <div class="color-picker-field">
                     <label>Color for bar outline.</label>
-                    <input type="color" [(ngModel)]="posEnrichBarOutlineColor" 
-                        class="color-input">
+                    <input type="color" [(ngModel)]="posEnrichBarOutlineColor" class="color-input">
                 </div>
 
                 <div class="color-picker-field">
                     <label>Color for bar fill.</label>
-                    <input type="color" [(ngModel)]="posEnrichBarFillColor"
-                        class="color-input">
+                    <input type="color" [(ngModel)]="posEnrichBarFillColor" class="color-input">
                 </div>
             </div>
 
-            <button mat-raised-button class="plot-button" [disabled]="!processedFileName()"
-                (click)="onPosEnrichPlot()">
+            <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="onPosEnrichPlot()">
                 <mat-icon></mat-icon>
                 Position Enrichment
             </button>
@@ -94,23 +90,22 @@
             <div *ngIf="adjustHeatPlot === 'yes'" class="customization-panel">
                 <label>X-axis - represents position in alignment.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="heatmapXAxis" rows="2" ></textarea>
+                    <textarea matInput [(ngModel)]="heatmapXAxis" rows="2"></textarea>
                 </mat-form-field>
 
                 <label>Y-axis - represents possible enrichment at the position.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="heatmapYAxis" rows="2" ></textarea>
+                    <textarea matInput [(ngModel)]="heatmapYAxis" rows="2"></textarea>
                 </mat-form-field>
 
                 <label>Legend title - represents mean enrichment at the position.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="heatmapLegendTitle" rows="2"
-                        ></textarea>
+                    <textarea matInput [(ngModel)]="heatmapLegendTitle" rows="2"></textarea>
                 </mat-form-field>
 
                 <label>Plot title.</label>
                 <mat-form-field appearance="outline" class="full-width">
-                    <textarea matInput [(ngModel)]="heatmapPlotTitle" rows="2" ></textarea>
+                    <textarea matInput [(ngModel)]="heatmapPlotTitle" rows="2"></textarea>
                 </mat-form-field>
 
                 <label>Fill palette.</label>
@@ -123,8 +118,7 @@
                 </mat-form-field>
             </div>
 
-            <button mat-raised-button class="plot-button" [disabled]="!processedFileName()"
-                (click)="onHeatPlot()">
+            <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="onHeatPlot()">
                 <mat-icon></mat-icon>
                 Heatmap
             </button>
