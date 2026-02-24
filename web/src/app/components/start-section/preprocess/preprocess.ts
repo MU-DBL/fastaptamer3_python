@@ -74,8 +74,8 @@ export class Preprocess {
 
     const params = {
       input_path: this.savedFileName,
-      const5p: this.constant5Region,
-      const3p: this.constant3Region,
+      const5p: this.constant5Region.replace(/\s/g, ''),
+      const3p: this.constant3Region.replace(/\s/g, ''),
       min_length: this.sequenceLengthMin,
       max_length: this.sequenceLengthMax,
       max_error: this.maxAllowedError,

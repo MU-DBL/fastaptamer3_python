@@ -1,0 +1,188 @@
+<div class="page-note">
+  Chains multiple operations (Preprocess, Count, Cluster, etc.) into an automated sequential pipeline, passing each step's output directly as the next step's input. Upload an initial file, define your steps, and run the full workflow in one click.
+</div>
+<div class="section-container">
+
+  <!-- LEFT PANEL: Pipeline Builder -->
+  <div class="left-subsection">
+    <h2 class="page-title">Pipeline Builder</h2>
+
+    <!-- Initial File Upload -->
+    <div class="upload-section">
+      <h3 class="section-title">1. Upload Initial File</h3>
+      <app-upload
+        [acceptedFileTypes]="'.fasta,.fastq'"
+        [placeholderText]="'FASTA or FASTQ file'"
+        [uploadSpeed]="200"
+        (uploadComplete)="onInitialUpload($event)">
+      </app-upload>
+      @if (initialFileName) {
+        <p class="file-ready">
+          <mat-icon class="file-icon">check_circle</mat-icon>
+          <strong>{{ initialFileName }}</strong>
+        </p>
+      }
+    </div>
+
+    <!-- Step List -->
+    <div class="steps-section">
+      <h3 class="section-title">2. Define Steps</h3>
+
+      @if (steps.length === 0) {
+        <p class="empty-hint">No steps defined. Click "Add Step" to begin.</p>
+      }
+
+      @for (step of steps; track step.id; let i = $index) {
+        <mat-card class="step-card">
+          <mat-card-header>
+            <div class="step-header">
+              <span class="step-badge">{{ i + 1 }}</span>
+              <mat-select
+                [(ngModel)]="step.operationKey"
+                (ngModelChange)="onOperationChange(step)"
+                class="operation-select"
+                [disabled]="isRunning()">
+                @for (op of operationDefs; track op.key) {
+                  <mat-option [value]="op.key">{{ op.label }}</mat-option>
+                }
+              </mat-select>
+              <button mat-icon-button (click)="removeStep(i)" [disabled]="isRunning()" title="Remove step">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            @if (getStepError(i); as err) {
+              <div class="step-rule-error">
+                <mat-icon class="rule-icon">warning</mat-icon>{{ err }}
+              </div>
+            }
+          </mat-card-header>
+
+          <mat-card-content>
+            @for (entry of step.params | keyvalue: originalOrder; track entry.key) {
+              <div class="param-entry">
+                <span class="param-key">{{ getParamLabel(step.operationKey, entry.key) }}</span>
+                @if (getParamOptions(step.operationKey, entry.key); as options) {
+                  <mat-select
+                    [(ngModel)]="step.params[entry.key]"
+                    [disabled]="isRunning()"
+                    class="param-select">
+                    @for (opt of options; track opt) {
+                      <mat-option [value]="opt">{{ opt }}</mat-option>
+                    }
+                  </mat-select>
+                } @else {
+                  <input
+                    class="param-value-input"
+                    [(ngModel)]="step.params[entry.key]"
+                    [type]="'text'"
+                    [disabled]="isRunning()">
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <button
+        mat-stroked-button
+        class="add-step-button"
+        (click)="addStep()"
+        [disabled]="isRunning()">
+        <mat-icon>add</mat-icon>
+        Add Step
+      </button>
+    </div>
+
+    <!-- Run Button -->
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        color="primary"
+        class="run-button"
+        [disabled]="!canRun()"
+        (click)="runPipeline()">
+        <mat-icon [class.spinning]="isRunning()">{{ isRunning() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isRunning() ? 'Running...' : 'Run Pipeline' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: Execution Results -->
+  <div class="right-subsection">
+    <h2 class="page-title">Pipeline Results</h2>
+
+    @if (steps.length === 0) {
+      <p class="empty-hint">Define steps on the left panel, then click Run Pipeline.</p>
+    }
+
+    @for (step of steps; track step.id; let i = $index) {
+      <div class="result-row" [ngClass]="'status-' + step.status">
+
+        <div class="result-header">
+          <span class="step-number">Step {{ i + 1 }}</span>
+          <span class="operation-name">{{ getOperationLabel(step.operationKey) }}</span>
+
+          <span class="status-area">
+            @switch (step.status) {
+              @case ('idle') {
+                <span class="status-badge idle">Pending</span>
+              }
+              @case ('running') {
+                <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
+                <span class="status-badge running">Running...</span>
+              }
+              @case ('complete') {
+                <mat-icon class="status-icon success">check_circle</mat-icon>
+                <span class="status-badge complete">Complete</span>
+              }
+              @case ('error') {
+                <mat-icon class="status-icon error-icon">error</mat-icon>
+                <span class="status-badge error-badge">Error</span>
+              }
+            }
+          </span>
+
+          @if (step.outputFile) {
+            <button mat-stroked-button class="download-btn" (click)="downloadResult(step)">
+              <mat-icon>download</mat-icon>
+              Download
+            </button>
+          }
+        </div>
+
+        @if (step.inputFile) {
+          <div class="result-files">
+            <span class="file-label">Input:</span>
+            <span class="file-name">{{ step.inputFile }}</span>
+          </div>
+        }
+
+        @if (step.outputFile) {
+          <div class="result-files">
+            <span class="file-label">Output:</span>
+            <span class="file-name output-name">{{ step.outputFile }}</span>
+          </div>
+        }
+
+        @if (step.error) {
+          <div class="error-message">{{ step.error }}</div>
+        }
+
+        <!-- Preprocess SSE progress logs -->
+        @if (step.operationKey === 'preprocess' && step.progressLogs.length > 0) {
+          <div class="progress-section">
+            @if (step.status === 'running') {
+              <mat-progress-bar mode="determinate" [value]="step.progressValue" class="step-progress-bar"></mat-progress-bar>
+            }
+            <div class="log-lines">
+              @for (log of step.progressLogs; track $index) {
+                <div class="log-line">{{ log }}</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</div>

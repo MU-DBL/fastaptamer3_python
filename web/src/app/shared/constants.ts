@@ -1,0 +1,18 @@
+export const GENETIC_CODES: string[] = [
+  'Standard',
+  'Vertebrate mitochondrial',
+  'Yeast mitochondrial',
+  'Mold, protozoan, and coelenterate mitochondrial + Mycoplasma / Spiroplasma',
+  'Invertebrate mitochondrial',
+  'Ciliate, dasycladacean and Hexamita nuclear',
+  'Echinoderm and flatworm mitochondrial',
+  'Euplotid nuclear',
+  'Alternative yeast nuclear',
+  'Ascidian mitochondrial',
+  'Alternative flatworm mitochondrial',
+  'Blepharisma nuclear',
+  'Chlorophycean mitochondrial',
+  'Trematode mitochondrial',
+  'Scenedesmus obliquus mitochondrial',
+  'Pterobranchia mitochondrial',
+];

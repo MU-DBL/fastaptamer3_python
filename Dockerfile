@@ -16,7 +16,7 @@ RUN npm run build -- --configuration production
 # ============================================
 # Stage 2: Builder - Install Python dependencies
 # ============================================
-FROM python:3.10-slim as backend-builder
+FROM python:3.10-slim AS backend-builder
 
 # Prevent prompts; speed up pip
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -46,7 +46,7 @@ RUN pip install --upgrade pip setuptools wheel "Cython<3.0"
 COPY backend/requirements.txt .
 RUN pip install -r requirements.txt uvicorn
 
-# Download MUSCLE5
+# Download MUSCLE5 (linux_intel64 runs on both amd64 and arm64 via emulation)
 RUN wget https://github.com/rcedgar/muscle/releases/download/v5.1/muscle5.1.linux_intel64 -O /tmp/muscle \
     && chmod +x /tmp/muscle
 

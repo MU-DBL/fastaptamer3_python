@@ -23,7 +23,7 @@ class PosEnrichInput(BaseModel):
     cluster_selection: int = 1
     seq_type: Literal["dna", "protein"] = "dna"
     output_format: str = "csv"
-    max_sequences: int = 500  # Add this to control sampling
+    max_sequences: int = 2000  # Add this to control sampling
 
 class PosEnrichResponse(BaseModel):
     status: str

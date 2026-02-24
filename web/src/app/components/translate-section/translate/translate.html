@@ -1,3 +1,6 @@
+<div class="page-note">
+  Translates DNA sequences from a counted FASTA file into amino acid sequences using a selected genetic code or custom codon table, and open reading frame, optionally merging identical translations, customizing translation table. Outputs a ranked table of translated amino acid sequences.
+</div>
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Choose data to translate*:</h3>
@@ -40,8 +43,8 @@
       <mat-form-field appearance="outline" class="full-width">
         <input matInput [(ngModel)]="translateInputChangesCodons" placeholder="e.g., AAA, TTT, GGG">
       </mat-form-field>
-      <mat-label><i>These alphanumeric codons will have altered translations</i></mat-label>
-
+      <p><i>These alphanumeric codons will have altered translations</i></p>
+      
       <mat-label>Comma-separated translations</mat-label>
       <mat-form-field appearance="outline" class="full-width">
         <input matInput [(ngModel)]="translateInputChangesOutputs" placeholder="e.g., Z, X, Y">
@@ -209,13 +212,6 @@
 
   <!-- Table Display -->
   <div class="right-subsection">
-    @if (translateData.length > 0) {
     <app-table [config]="tableConfig" [data]="translateData"></app-table>
-    } @else {
-    <div class="no-data-message">
-      <mat-icon>info</mat-icon>
-      <p>No data to display. Please upload a file and click Start.</p>
-    </div>
-    }
   </div>
 </div>

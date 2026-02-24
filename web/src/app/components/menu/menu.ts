@@ -23,6 +23,7 @@ activeRoute: string = 'Start';
     { label: 'Sequence Enrichment', route: '/sequence-enrichment' },
     { label: 'Differential Analysis', route: '/diff-analysis' },
     { label: 'Cluster', route: '/cluster' },
+    { label: 'Pipeline', route: '/pipeline' },
     { label: 'About', route: '/about' }
   ];
 

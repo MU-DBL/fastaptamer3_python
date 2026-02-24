@@ -1,3 +1,6 @@
+<div class="page-note">
+  Computes the Levenshtein Edit Distance between a user-supplied query sequence and every sequence in a counted FASTA file. Outputs a table of all sequences ranked by distance to the query.
+</div>
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data *</h3>
@@ -93,13 +96,6 @@
 
   <!-- Table Display -->
   <div class="right-subsection">
-    @if (distanceData.length > 0) {
     <app-table [config]="tableConfig" [data]="distanceData"></app-table>
-    } @else {
-    <div class="no-data-message">
-      <mat-icon>info</mat-icon>
-      <p>No data to display. Please upload a FASTA file, enter a query sequence, and click Start.</p>
-    </div>
-    }
   </div>
 </div>

@@ -9,6 +9,7 @@ import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 import { PlotModalService } from '../../../shared/plot-modal.service';
+import { GENETIC_CODES } from '../../../shared/constants';
 
 export interface CodonChange {
   Codon: string;
@@ -92,25 +93,7 @@ export class Translate {
   histBarFill: string = '#87CEEB';
   histBarFill2: string = '#FFA500';
 
-  // Available genetic codes
-  geneticCodes: string[] = [
-    'Standard',
-    'Vertebrate mitochondrial',
-    'Yeast mitochondrial',
-    'Mold, protozoan, and coelenterate mitochondrial + Mycoplasma / Spiroplasma',
-    'Invertebrate mitochondrial',
-    'Ciliate, dasycladacean and Hexamita nuclear',
-    'Echinoderm and flatworm mitochondrial',
-    'Euplotid nuclear',
-    'Alternative yeast nuclear',
-    'Ascidian mitochondrial',
-    'Alternative flatworm mitochondrial',
-    'Blepharisma nuclear',
-    'Chlorophycean mitochondrial',
-    'Trematode mitochondrial',
-    'Scenedesmus obliquus mitochondrial',
-    'Pterobranchia mitochondrial'
-  ];
+  readonly geneticCodes = GENETIC_CODES;
 
   // ========================================================================
   // FILE HANDLING

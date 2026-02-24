@@ -28,7 +28,6 @@ interface UploadingFile {
   imports: [ 
     CommonModule,
     FormsModule,
-    Upload,
     Table,
     TrackerPlot,
     DragDropModule,

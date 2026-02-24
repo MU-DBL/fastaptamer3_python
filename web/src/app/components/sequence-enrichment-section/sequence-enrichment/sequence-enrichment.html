@@ -1,3 +1,6 @@
+<div class="page-note">
+  Compares RPU values for shared sequences between two counted FASTA populations and computes log2 enrichment, providing a quantitative measure of sequence selection. Outputs an enrichment table.
+</div>
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data 1 *</h3>
@@ -204,13 +207,6 @@
 
   <!-- Table Display -->
   <div class="right-subsection">
-    @if (enrichmentData.length > 0) {
-      <app-table [config]="tableConfig" [data]="enrichmentData"></app-table>
-    } @else {
-      <div class="no-data-message">
-        <mat-icon>info</mat-icon>
-        <p>No data to display. Please upload both FASTA files and click Start.</p>
-      </div>
-    }
+    <app-table [config]="tableConfig" [data]="enrichmentData"></app-table>
   </div>
 </div>

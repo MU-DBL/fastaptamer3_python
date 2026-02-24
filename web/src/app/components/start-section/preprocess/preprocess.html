@@ -1,3 +1,7 @@
+
+<div class="page-note">
+  Trims constant 5' and 3' region from sequences in a FASTQ or FASTA file, then filters sequences by length range and maximum average error thresholds. Outputs a cleaned FASTA file ready for counting.
+</div>
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Choose data to preprocess *</h3>
@@ -38,7 +42,7 @@
 
 
     <label class="section-label">Maximum allowed average error probability per sequence: <mat-icon class="info-icon"
-        matTooltip="Sequences with an average error probability above this threshold will be filtered out.">help_outline</mat-icon></label>
+        matTooltip="Sets the maximum tolerance for sequencing noise. This filter calculates the mean error probability across each read using Phred quality scores; any sequence exceeding this average is discarded to ensure data integrity.">help_outline</mat-icon></label>
 
     <div class="slider-group">
       <div class="slider-header">

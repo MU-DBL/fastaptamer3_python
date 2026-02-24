@@ -1,6 +1,12 @@
+<div class="page-note">
+  Performs differential expression analysis between two experimental conditions (each with 2+ counted FASTA files).
+  Sequences are compared using statistics: <strong>logFC</strong> (log₂ fold change between conditions),
+  <strong>logCPM</strong> (log₂ counts per million, a measure of overall abundance), and a
+  <strong>p-value</strong> to control for false discoveries across multiple sequences.
+</div>
 <div class="section-container">
   <div class="left-subsection">
-    
+
     <!-- CONDITION 1 FILE UPLOAD -->
     <h3 class="section-title">
       Condition 1 files *
@@ -223,14 +229,6 @@
 
   <!-- RIGHT SIDE - DATA TABLE -->
   <div class="right-subsection">
-    @if (diffAnalysisData.length > 0) {
-      <app-table [data]="diffAnalysisData" [config]="tableConfig"></app-table>
-    } @else {
-      <div class="empty-state">
-        <mat-icon>science</mat-icon>
-        <p>No differential analysis results yet</p>
-        <p class="hint">Upload files for both conditions and click Start to run the analysis</p>
-      </div>
-    }
+    <app-table [data]="diffAnalysisData" [config]="tableConfig"></app-table>
   </div>
 </div>
