@@ -121,8 +121,7 @@ export class ApiService {
 
   // Recount
   recount(params: {
-    input_path_1: string;
-    input_path_2: string;
+    input_paths: string[];
     scaling_factor: number;
     output_format: string;
   }): Observable<any> {

@@ -12,23 +12,25 @@ router = APIRouter()
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 
 class RecountInput(BaseModel):
-    input_path_1: str="" 
-    input_path_2: str=""
+    input_paths: list[str]  # 2 to 5 files
     scaling_factor: float = 1e6
-    output_format: str=""
+    output_format: str = "fasta"
 
 @router.post("/recount")
-async def recount(params:RecountInput):
-    filepath_1 = f"{UPLOAD_DIR}/{params.input_path_1}"
-    filepath_2 = f"{UPLOAD_DIR}/{params.input_path_2}"
-    base_name_1 = os.path.splitext(os.path.basename(params.input_path_1))[0]
-    base_name_2 = os.path.splitext(os.path.basename(params.input_path_2))[0]
-    output_format=params.output_format
-    output_path=f"{UPLOAD_DIR}/combine_{base_name_1}_{base_name_2}.{output_format}"
-    
+async def recount(params: RecountInput):
+    if len(params.input_paths) < 2 or len(params.input_paths) > 5:
+        raise HTTPException(
+            status_code=400,
+            detail="Recount requires between 2 and 5 input files."
+        )
+    filepaths = [f"{UPLOAD_DIR}/{p}" for p in params.input_paths]
+    base_names = [os.path.splitext(os.path.basename(p))[0] for p in params.input_paths]
+    output_format = params.output_format
+    combined_name = "_".join(base_names)
+    output_path = f"{UPLOAD_DIR}/combine_{combined_name}.{output_format}"
+
     output_path = recount_service.run_recount(
-        input_path_1=filepath_1,
-        input_path_2=filepath_2,
+        input_paths=filepaths,
         output_path=output_path,
         output_format=output_format,
         scaling_factor=params.scaling_factor

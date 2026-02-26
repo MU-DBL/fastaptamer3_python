@@ -1,52 +1,58 @@
-import { Component, inject, signal, output } from '@angular/core';
+import { Component, inject, signal, output, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
-import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 
+const MAX_RECOUNT_FILES = 5;
+
+interface UploadingFile {
+  name: string;
+  progress: number;
+  isComplete: boolean;
+  savedFileName?: string;
+}
+
 @Component({
   selector: 'app-recount',
-  imports: [ 
-    CommonModule, 
+  imports: [
+    CommonModule,
     FormsModule,
-    Upload,
     Table,
-    ...MATERIAL_IMPORTS],
+    ...MATERIAL_IMPORTS
+  ],
   templateUrl: './recount.html',
   styleUrl: './recount.scss'
 })
 export class Recount {
   private apiService = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
+
   tableConfig: TableConfig = {
-      columns: [
-        { key: 'id', label: 'id' },
-        { key: 'rank', label: 'Rank' },
-        { key: 'reads', label: 'Reads' },
-        { key: 'rpm', label: 'RPU' },
-        { key: 'length', label: 'Length' },
-        { key: 'seqs', label: 'Sequence' }
-      ],
-      initialPageSize: 10,
-      pageSizeOptions: [10, 25, 50, 100]
-    };
+    columns: [
+      { key: 'id', label: 'id' },
+      { key: 'rank', label: 'Rank' },
+      { key: 'reads', label: 'Reads' },
+      { key: 'rpm', label: 'RPM' },
+      { key: 'length', label: 'Length' },
+      { key: 'seqs', label: 'Sequence' }
+    ],
+    initialPageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100]
+  };
 
   // Output events to emit to parent component
   resultsReady = output<any[]>();
   showReadsPerRankModal = output<{ data: any[], params: any }>();
   showSeqLengthModal = output<{ data: any, params: any }>();
 
-  // File upload states for two FASTA files
-  selectedFile1: File | null = null;
-  savedFileName1: string = '';
-  uploadComplete1: boolean = false;
-
-  selectedFile2: File | null = null;
-  savedFileName2: string = '';
-  uploadComplete2: boolean = false;
+  // Multi-file upload (2 to 5 files)
+  uploadedFiles: string[] = [];
+  uploadingFiles: UploadingFile[] = [];
+  isUploading = false;
 
   // Form values
   normalizeValue: string = '1e+06';
@@ -89,50 +95,83 @@ export class Recount {
     return `${value}`;
   }
 
-  // File 1 upload handlers
-  onFile1Selected(result: FileUploadResult): void {
-    this.selectedFile1 = result.file;
-    this.processedFileName.set('');
-    this.tableData = [];
-    console.log('File 1 selected:', result.fileName);
-  }
+  // ========================================================================
+  // FILE MANAGEMENT (2 to 5 files)
+  // ========================================================================
 
-  onUpload1Complete(result: FileUploadResult): void {
-    if (result.uploadComplete && result.savedFileName) {
-      this.uploadComplete1 = true;
-      this.savedFileName1 = result.savedFileName;
-      console.log('Upload 1 complete:', result.savedFileName);
-    } else if (result.error) {
-      console.error('Upload 1 failed:', result.error);
-    }
-  }
+  onMultipleFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
+    if (!files || files.length === 0) return;
 
-  // File 2 upload handlers
-  onFile2Selected(result: FileUploadResult): void {
-    this.selectedFile2 = result.file;
-    this.processedFileName.set('');
-    this.tableData = [];
-    console.log('File 2 selected:', result.fileName);
-  }
+    const fileList = Array.from(files);
+    const currentTotal = this.uploadedFiles.length;
+    const newTotal = currentTotal + fileList.length;
 
-  onUpload2Complete(result: FileUploadResult): void {
-    if (result.uploadComplete && result.savedFileName) {
-      this.uploadComplete2 = true;
-      this.savedFileName2 = result.savedFileName;
-      console.log('Upload 2 complete:', result.savedFileName);
-    } else if (result.error) {
-      console.error('Upload 2 failed:', result.error);
-    }
-  }
-
-  onStart(): void {
-    if (!this.uploadComplete1 || !this.savedFileName1) {
-      console.warn('Please upload the first FASTA file!');
+    if (newTotal > MAX_RECOUNT_FILES) {
+      alert(
+        `You can have at most ${MAX_RECOUNT_FILES} files. You already have ${currentTotal} and selected ${fileList.length}. ` +
+        `Please select at most ${MAX_RECOUNT_FILES - currentTotal} more file(s).`
+      );
+      input.value = '';
       return;
     }
 
-    if (!this.uploadComplete2 || !this.savedFileName2) {
-      console.warn('Please upload the second FASTA file!');
+    this.processedFileName.set('');
+    this.tableData = [];
+    this.uploadingFiles = fileList.map(file => ({
+      name: file.name,
+      progress: 0,
+      isComplete: false
+    }));
+    this.isUploading = true;
+    this.uploadFilesSequentially(fileList, 0);
+  }
+
+  uploadFilesSequentially(files: File[], index: number): void {
+    if (index >= files.length) {
+      this.isUploading = false;
+      setTimeout(() => this.cdr.markForCheck(), 0);
+      return;
+    }
+    const file = files[index];
+    const uploadingFile = this.uploadingFiles[index];
+    const progressInterval = setInterval(() => {
+      if (uploadingFile.progress < 90) uploadingFile.progress += 10;
+    }, 50);
+
+    this.apiService.uploadFile(file).subscribe({
+      next: (response) => {
+        clearInterval(progressInterval);
+        uploadingFile.progress = 100;
+        uploadingFile.isComplete = true;
+        uploadingFile.savedFileName = response.saved_filename;
+        this.uploadedFiles.push(response.saved_filename);
+        setTimeout(() => this.uploadFilesSequentially(files, index + 1), 200);
+      },
+      error: (error) => {
+        clearInterval(progressInterval);
+        uploadingFile.progress = 0;
+        uploadingFile.isComplete = false;
+        alert(`Failed to upload ${file.name}`);
+        setTimeout(() => this.uploadFilesSequentially(files, index + 1), 200);
+      }
+    });
+  }
+
+  get canStart(): boolean {
+    const list = this.uploadedFiles;
+    return list.length >= 2 && list.length <= MAX_RECOUNT_FILES && !this.isUploading;
+  }
+
+  onStart(): void {
+    const list = this.uploadedFiles;
+    if (list.length < 2) {
+      alert('Please include at least 2 files for recount.');
+      return;
+    }
+    if (list.length > MAX_RECOUNT_FILES) {
+      alert(`Please include at most ${MAX_RECOUNT_FILES} files.`);
       return;
     }
 
@@ -141,15 +180,13 @@ export class Recount {
     this.tableData = [];
 
     const params = {
-      input_path_1: this.savedFileName1,
-      input_path_2: this.savedFileName2,
+      input_paths: list,
       scaling_factor: parseFloat(this.normalizeValue),
       output_format: this.downloadFormat
     };
 
     console.log('Starting recount with parameters:', params);
 
-    // Chain the operations using RxJS operators
     this.apiService.recount(params).pipe(
       tap(response => {
         if (response.status === 'ok' && response.result) {
