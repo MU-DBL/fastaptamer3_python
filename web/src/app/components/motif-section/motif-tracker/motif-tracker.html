@@ -1,6 +1,9 @@
+<div class="page-note">
+  Monitor how motifs or exact sequences rise or fall across multiple FASTA populations. Upload multiple counted FASTA populations in order, specify your motifs, and get a line plot of frequency per round plus a summary table with enrichment values.
+</div>
 <div class="section-container">
   <div class="left-subsection">
-    
+
     <!-- FILE UPLOAD SECTION -->
     <h3 class="section-title">Upload Multiple FASTA Files *</h3>
     
@@ -134,7 +137,7 @@
     }
 
     <!-- QUERY INPUT -->
-    <mat-label class="section-label">Motif or Sequence List (one per line) *</mat-label>
+    <mat-label class="section-title">Motif or Sequence List (one per line) *</mat-label>
     <mat-form-field appearance="outline" class="full-width">
       <textarea 
         matInput 
@@ -144,7 +147,7 @@
     </mat-form-field>
 
     <!-- ALIAS INPUT -->
-    <mat-label class="section-label">Alias List (one per line, optional)</mat-label>
+    <mat-label class="section-title">Alias List (one per line, optional)</mat-label>
     <mat-form-field appearance="outline" class="full-width">
       <textarea 
         matInput 
@@ -183,28 +186,28 @@
       [(ngModel)]="adjustPlotSettings"
       (change)="onAdjustPlotSettingsChange()"
       class="radio-group">
-      <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>
+      <mat-radio-button value="yes">Yes</mat-radio-button>
     </mat-radio-group>
 
-    @if (adjustPlotSettings === 'yes') {
+     @if (adjustPlotSettings === 'yes') {
       <div class="customization-panel">
-        <mat-label class="section-label">X-axis - represents uploaded populations</mat-label>
+        <mat-label>X-axis - represents uploaded populations</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="plotXAxis">
         </mat-form-field>
 
-        <mat-label class="section-label">Y-axis - represents percentage for motifs or total RPU for sequences</mat-label>
+        <mat-label>Y-axis - represents percentage for motifs or total RPU for sequences</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="plotYAxis">
         </mat-form-field>
 
-        <mat-label class="section-label">Plot title</mat-label>
+        <mat-label>Plot title</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="plotTitle">
         </mat-form-field>
 
-        <mat-label class="section-label">Color palette</mat-label>
+        <mat-label>Color palette</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <mat-select [(ngModel)]="plotColorPalette">
             <mat-option value="Accent">Accent</mat-option>

@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
+from routers import motif_discovery, motif_track, sequence_enrichment, translate
 from routers import position_enrichment, recluster
 from routers import cluster_msa,cluster_phmm, cluster_list
 from routers import preprocess,count,recount,filehandler,progress, cluster, cluster_diversity
+from routers import motif_search, distance, mutation_network, data_merge, differential_analysis
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -37,6 +40,16 @@ app.include_router(cluster_phmm.router, prefix="/api/v1", tags=["cluster_phmm"])
 app.include_router(cluster_list.router, prefix="/api/v1", tags=["cluster_list"])
 app.include_router(recluster.router, prefix="/api/v1", tags=["recluster"])
 app.include_router(position_enrichment.router, prefix="/api/v1", tags=["position_enrichment"])
+app.include_router(motif_search.router, prefix="/api/v1", tags=["motif_search"])
+app.include_router(motif_search.router, prefix="/api/v1", tags=["motif_search"])
+app.include_router(motif_discovery.router, prefix="/api/v1", tags=["motif_discovery"])
+app.include_router(motif_track.router, prefix="/api/v1", tags=["motif_track"])
+app.include_router(sequence_enrichment.router, prefix="/api/v1", tags=["sequence_enrichment"])
+app.include_router(translate.router, prefix="/api/v1", tags=["translate"])
+app.include_router(distance.router, prefix="/api/v1", tags=["distance"])
+app.include_router(mutation_network.router, prefix="/api/v1", tags=["mutation_network"])
+app.include_router(data_merge.router, prefix="/api/v1", tags=["data_merge"])
+app.include_router(differential_analysis.router, prefix="/api/v1", tags=["data_merge"])
 
 @app.get("/")
 async def root():

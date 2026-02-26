@@ -32,13 +32,18 @@
   padding-bottom: 0 !important;
 }
 
+::ng-deep .mat-mdc-form-field.full-width {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 // Section titles and labels
 .section-title {
   font-size: 16px;
   font-weight: 500;
   color: #333;
-  margin-bottom: 15px;
-  margin-top: 25px;
+  margin-bottom: 12px;
+  margin-top: 24px;
 }
 
 .section-title:first-child {
@@ -50,6 +55,8 @@
   font-size: 14px;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.87);
+  margin-bottom: 10px;
+  margin-top: 24px;
 }
 
 // Links
@@ -333,7 +340,6 @@
   padding: 20px; // Added padding around the container
   box-sizing: border-box;
   position: relative;
-  background-color: #f5f5f5; // Subtle background to distinguish from subsections
 }
 
 .left-subsection {
@@ -410,13 +416,11 @@
   margin: 20px 0;
 }
 
-// Label for inputs
 .input-label {
   display: block;
   font-size: 14px;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.87);
-  margin-bottom: 8px;
   margin-top: 15px;
   
   &:first-child {
@@ -424,26 +428,30 @@
   }
 }
 
-// Customization panel (shared for translate, motif-tracker, motif-discovery, sequence-enrichment, etc.)
+.note-box{
+  font-size: 14px;
+  color: #444;
+  background-color: #f5f7fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+// Customization panel
 .customization-panel {
-  background: #f5f5f5;
-  padding: 1rem;
+  background-color: #fafafa;
+  padding: 15px;
   border-radius: 4px;
-  margin: 1rem 0;
-
-  .section-label {
-    display: block;
-    margin-bottom: 6px;
-  }
-
+  margin: 15px 0;
+  
   mat-form-field {
     margin-bottom: 10px;
-
+    
     ::ng-deep .mat-mdc-text-field-wrapper {
       background-color: white;
     }
   }
-
+  
   .input-label:first-child {
     margin-top: 0;
   }

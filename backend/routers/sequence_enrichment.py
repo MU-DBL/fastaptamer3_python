@@ -9,9 +9,11 @@ from services.constants import ColumnName
 from numba import jit, prange
 from typing import Any, Optional, List, Tuple
 import numpy as np
+from typing import Dict, Any
 
 router = APIRouter()
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
+EPSILON = 0.001
 
 class EnrichInput(BaseModel):
     fadf1_cluster_path: str = ""
@@ -22,8 +24,8 @@ class EnrichInput(BaseModel):
 class EnrichResponse(BaseModel):
     status: str
     result: str
-    num_sequences: int
-    enrichment_stats: Dict[str, Any]
+    num_sequences: int = 0
+    enrichment_stats: Dict[str, Any] = {}
 
 @router.post("/sequence-enrich", response_model=EnrichResponse)
 async def fa_enrich_endpoint(params: EnrichInput):
@@ -53,17 +55,28 @@ async def fa_enrich_endpoint(params: EnrichInput):
             keep_na=params.keep_na
         )
         
+        result_df = result_df.copy()
+
+        # add epsilon
+        result_df["RPU_a_adj"] = result_df["RPU.a"] + EPSILON
+        result_df["RPU_b_adj"] = result_df["RPU.b"] + EPSILON
+
+        result_df["R"] = np.log2(result_df["RPU_b_adj"] / result_df["RPU_a_adj"])
+        result_df["A"] = 0.5 * np.log2(result_df["RPU_b_adj"] * result_df["RPU_a_adj"])
+        
         # Save output
         save_sequences(result_df, str(output_path), params.output_format)
-        
-        # Calculate enrichment statistics
-        enrichment_stats = calculate_enrichment_stats(result_df)
-        
+    
         return EnrichResponse(
             status="ok",
             result=output_path.name,
             num_sequences=len(result_df),
-            enrichment_stats=enrichment_stats
+            enrichment_stats={
+                "mean_enrichment": float(result_df["Enrichment"].mean()),
+                "median_enrichment": float(result_df["Enrichment"].median()),
+                "mean_log2E": float(result_df["log2E"].mean()),
+                "median_log2E": float(result_df["log2E"].median())
+            }
         )
     
     except Exception as e:
@@ -78,18 +91,7 @@ def fa_enrich(
     fadf2: pd.DataFrame,
     keep_na: bool = False
 ) -> pd.DataFrame:
-    """
-    Calculate enrichment between two populations.
-    
-    Args:
-        fadf1: First population dataframe (baseline)
-        fadf2: Second population dataframe (enriched)
-        keep_na: If True, keeps sequences present in only one population (full join)
-                 If False, only keeps sequences present in both (inner join)
-    
-    Returns:
-        DataFrame with enrichment metrics
-    """
+
     # Rename columns for population 1 (add .a suffix)
     population1_rename = {
         ColumnName.ID: "ID.a",
@@ -128,32 +130,34 @@ def fa_enrich(
     )
     
     # Calculate enrichment and log2(enrichment)
-    # Handle division by zero and NaN values
-    rpu_a = merge_df["RPU.a"].fillna(0)
-    rpu_b = merge_df["RPU.b"].fillna(0)
+    # Following R script logic: calculate first, then handle NaN
+    # R does: Enrichment = round(RPU.b / RPU.a, 3)
+    #         log2E = round(log2(RPU.b / RPU.a), 3)
+    #         then replace(is.na(), 0)
     
-    # Calculate enrichment (avoid division by zero)
-    enrichment = np.where(
-        rpu_a > 0,
-        rpu_b / rpu_a,
-        np.where(rpu_b > 0, np.inf, 0)  # inf if only in pop2, 0 if both are 0
-    )
+    rpu_a = merge_df["RPU.a"]
+    rpu_b = merge_df["RPU.b"]
     
-    # Calculate log2 enrichment (handle inf and 0)
-    log2_enrichment = np.where(
-        enrichment > 0,
-        np.log2(enrichment),
-        np.where(enrichment == 0, -np.inf, np.inf)
-    )
+    # Calculate enrichment directly (like R does)
+    # This will naturally produce NaN for missing sequences and inf for division by zero
+    enrichment = rpu_b / rpu_a
+    log2_enrichment = np.log2(enrichment)
     
     merge_df["Enrichment"] = np.round(enrichment, 3)
     merge_df["log2E"] = np.round(log2_enrichment, 3)
     
-    # Replace inf with a large number for practical purposes (optional)
+    # R's replace(is.na(), 0) only replaces NA/NaN, not Inf
+    # However, for practical CSV export and display, we convert inf to large numbers
+    # This prevents issues with CSV parsing and provides meaningful display values
+    merge_df["Enrichment"] = merge_df["Enrichment"].replace([np.nan], 0)
+    merge_df["log2E"] = merge_df["log2E"].replace([np.nan], 0)
+    
+    # Replace inf values with large but finite numbers (for CSV compatibility)
+    # Note: R would keep Inf, but this causes issues in downstream processing
     merge_df["Enrichment"] = merge_df["Enrichment"].replace([np.inf, -np.inf], [999.999, -999.999])
     merge_df["log2E"] = merge_df["log2E"].replace([np.inf, -np.inf], [20.0, -20.0])
     
-    # Fill remaining NaN values with 0
+    # Fill remaining NaN values in other columns with 0 (matching R's behavior)
     merge_df = merge_df.fillna(0)
     
     # Move Sequences column to first position and sort by Rank.a
@@ -164,34 +168,3 @@ def fa_enrich(
     merge_df = merge_df.sort_values("Rank.a", na_position='last')
     
     return merge_df
-
-
-def calculate_enrichment_stats(df: pd.DataFrame) -> Dict[str, Any]:
-    """Calculate summary statistics for enrichment analysis."""
-    # Filter out inf values for statistics
-    enrichment_values = df["Enrichment"].replace([np.inf, -np.inf], np.nan).dropna()
-    log2e_values = df["log2E"].replace([np.inf, -np.inf], np.nan).dropna()
-    
-    stats = {
-        "enrichment": {
-            "min": float(enrichment_values.min()) if len(enrichment_values) > 0 else 0,
-            "max": float(enrichment_values.max()) if len(enrichment_values) > 0 else 0,
-            "mean": float(enrichment_values.mean()) if len(enrichment_values) > 0 else 0,
-            "median": float(enrichment_values.median()) if len(enrichment_values) > 0 else 0,
-            "std": float(enrichment_values.std()) if len(enrichment_values) > 0 else 0
-        },
-        "log2_enrichment": {
-            "min": float(log2e_values.min()) if len(log2e_values) > 0 else 0,
-            "max": float(log2e_values.max()) if len(log2e_values) > 0 else 0,
-            "mean": float(log2e_values.mean()) if len(log2e_values) > 0 else 0,
-            "median": float(log2e_values.median()) if len(log2e_values) > 0 else 0,
-            "std": float(log2e_values.std()) if len(log2e_values) > 0 else 0
-        },
-        "sequences_only_in_pop1": int((df["RPU.b"] == 0).sum()),
-        "sequences_only_in_pop2": int((df["RPU.a"] == 0).sum()),
-        "sequences_in_both": int(((df["RPU.a"] > 0) & (df["RPU.b"] > 0)).sum()),
-        "highly_enriched_count": int((df["Enrichment"] > 10).sum()),
-        "highly_depleted_count": int((df["Enrichment"] < 0.1).sum())
-    }
-    
-    return stats

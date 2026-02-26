@@ -1,1 +1,130 @@
-<p>position-enrichment works!</p>
+<div class="page-note">
+  Calculates per-position nucleotide or amino acid enrichment within a reclustered CSV file, revealing which positions are most variable or conserved. Produces a positional enrichment bar plot and heatmap.
+</div>
+<div class="section-container">
+    <div class="left-subsection">
+        <div>
+            <h3 class="section-title">Recluster CSV file:</h3>
+            <app-upload [acceptedFileTypes]="'.csv'" [buttonText]="'Browse...'" [placeholderText]="'Recluster CSV file'"
+                [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+                (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
+            </app-upload>
+
+            <h3 class="section-title">Perform analysis for which cluster?</h3>
+            <mat-form-field appearance="outline" style="width: 98%;">
+                <mat-select [(ngModel)]="selectedCluster" class="cluster-select">
+                    <mat-option *ngFor="let cluster of availableClusters" [value]="cluster">
+                        {{ cluster }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <h3 class="section-title">Type of sequences?</h3>
+            <mat-radio-group [(ngModel)]="sequenceType" class="radio-group">
+                <mat-radio-button value="nucleotide">Nucleotide</mat-radio-button>
+                <mat-radio-button value="aminoacid">AminoAcid</mat-radio-button>
+            </mat-radio-group>
+
+            <div class="action-buttons">
+                <button mat-raised-button color="primary" class="start-button"
+                    [disabled]="!uploadComplete || isProcessing()" (click)="onStart()">
+                    <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+                    {{ isProcessing() ? 'Processing...' : 'Start' }}
+                </button>
+
+                <button mat-raised-button color="accent" class="download-button"
+                    [class.download-ready]="processedFileName()" [disabled]="!processedFileName()"
+                    (click)="onDownload()">
+                    <mat-icon>download</mat-icon>
+                    Download
+                </button>
+            </div>
+            <p class="note-box">Position enrichment analysis with multiple sequence alignment is computationally intensive and may take some time to
+                complete. Please wait while processing.</p>
+        </div>
+        <hr class="section-divider">
+        <div>
+            <h3 class="section-title">Adjust default bar plot?</h3>
+            <mat-radio-group [(ngModel)]="adjustPositionEnrichmentPlot" class="radio-group">
+                <mat-radio-button value="yes">Yes</mat-radio-button>
+                <mat-radio-button value="no">No</mat-radio-button>
+            </mat-radio-group>
+
+            <div *ngIf="adjustPositionEnrichmentPlot === 'yes'" class="customization-panel">
+                <label>X-axis - represents position in alignment.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="posEnrichXAxis" rows="2"></textarea>
+                </mat-form-field>
+
+                <label>Y-axis - represents mean enrichment at the position.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="posEnrichYAxis" rows="2"></textarea>
+                </mat-form-field>
+
+                <label>Plot title.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="posEnrichPlotTitle" rows="2"></textarea>
+                </mat-form-field>
+
+                <div class="color-picker-field">
+                    <label>Color for bar outline.</label>
+                    <input type="color" [(ngModel)]="posEnrichBarOutlineColor" class="color-input">
+                </div>
+
+                <div class="color-picker-field">
+                    <label>Color for bar fill.</label>
+                    <input type="color" [(ngModel)]="posEnrichBarFillColor" class="color-input">
+                </div>
+            </div>
+
+            <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="onPosEnrichPlot()">
+                <mat-icon></mat-icon>
+                Position Enrichment
+            </button>
+        </div>
+        <hr class="section-divider">
+        <div>
+            <h3 class="section-title">Adjust default heat plot?</h3>
+            <mat-radio-group [(ngModel)]="adjustHeatPlot" class="radio-group">
+                <mat-radio-button value="yes">Yes</mat-radio-button>
+                <mat-radio-button value="no">No</mat-radio-button>
+            </mat-radio-group>
+
+            <div *ngIf="adjustHeatPlot === 'yes'" class="customization-panel">
+                <label>X-axis - represents position in alignment.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="heatmapXAxis" rows="2"></textarea>
+                </mat-form-field>
+
+                <label>Y-axis - represents possible enrichment at the position.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="heatmapYAxis" rows="2"></textarea>
+                </mat-form-field>
+
+                <label>Legend title - represents mean enrichment at the position.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="heatmapLegendTitle" rows="2"></textarea>
+                </mat-form-field>
+
+                <label>Plot title.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <textarea matInput [(ngModel)]="heatmapPlotTitle" rows="2"></textarea>
+                </mat-form-field>
+
+                <label>Fill palette.</label>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-select [(ngModel)]="heatPalletteColor">
+                        <mat-option *ngFor="let palette of availablePalettes" [value]="palette">
+                            {{ palette }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="onHeatPlot()">
+                <mat-icon></mat-icon>
+                Heatmap
+            </button>
+        </div>
+    </div>
+</div>

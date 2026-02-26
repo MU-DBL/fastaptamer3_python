@@ -39,7 +39,6 @@
     "@types/plotly.js": "^3.0.8",
     "angular-plotly.js": "^20.0.0",
     "express": "^5.1.0",
-    "plotly.js-dist": "^3.3.0",
     "plotly.js-dist-min": "^3.3.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

@@ -1,5 +1,4 @@
-@import '../../../shared/shared-styles.scss';
-
+@use '../../../shared/shared-styles.scss';
 .container {
   padding: 20px;
   max-width: 1200px;
@@ -62,19 +61,6 @@
   padding: 20px;
   border-radius: 8px;
   margin: 16px 0;
-  
-  .input-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    margin-top: 16px;
-    color: #555;
-
-    &:first-child {
-      margin-top: 0;
-    }
-  }
 
   .color-picker-field {
     margin: 16px 0;

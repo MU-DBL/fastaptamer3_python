@@ -1,0 +1,234 @@
+<div class="page-note">
+  Performs differential expression analysis between two experimental conditions (each with 2+ counted FASTA files).
+  Sequences are compared using statistics: <strong>logFC</strong> (log₂ fold change between conditions),
+  <strong>logCPM</strong> (log₂ counts per million, a measure of overall abundance), and a
+  <strong>p-value</strong> to control for false discoveries across multiple sequences.
+</div>
+<div class="section-container">
+  <div class="left-subsection">
+
+    <!-- CONDITION 1 FILE UPLOAD -->
+    <h3 class="section-title">
+      Condition 1 files *
+      <mat-icon 
+        class="info-icon" 
+        matTooltip="Holding Ctrl (Windows) or Command (Mac) allows multiple file selection"
+        matTooltipPosition="right">help_outline</mat-icon>
+    </h3>
+    
+    <div class="file-upload-section">
+      <input 
+        type="file" 
+        #cond1FileInput
+        multiple
+        accept=".fasta,.fa"
+        (change)="onCondition1FilesSelected($event)"
+        style="display: none;">
+      
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="cond1FileInput.click()"
+        [disabled]="isUploadingCond1"
+        class="browse-button">
+        Browse...
+      </button>
+      
+      <span class="upload-status">
+        @if (uploadingFilesCond1.length === 0) {
+          <span>FASTA files</span>
+        } @else if (isUploadingCond1) {
+          <span>Uploading {{ uploadingFilesCond1.length }} file(s)...</span>
+        } @else {
+          <span class="upload-complete">{{ uploadedFilesCond1.length }} file(s) uploaded</span>
+        }
+      </span>
+    </div>
+
+    <!-- Condition 1 Upload Progress -->
+    @if (uploadingFilesCond1.length > 0) {
+      <div class="upload-progress-section">
+        @for (file of uploadingFilesCond1; track file.name) {
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="progress-percentage">{{ file.progress }}%</span>
+            </div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="file.progress"
+              [class.complete]="file.isComplete">
+            </mat-progress-bar>
+            @if (file.isComplete) {
+              <span class="complete-text">Upload complete</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- CONDITION 2 FILE UPLOAD -->
+    <h3 class="section-title">
+      Condition 2 files *
+      <mat-icon 
+        class="info-icon" 
+        matTooltip="Holding Ctrl (Windows) or Command (Mac) allows multiple file selection"
+        matTooltipPosition="right">help_outline</mat-icon>
+    </h3>
+    
+    <div class="file-upload-section">
+      <input 
+        type="file" 
+        #cond2FileInput
+        multiple
+        accept=".fasta,.fa"
+        (change)="onCondition2FilesSelected($event)"
+        style="display: none;">
+      
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="cond2FileInput.click()"
+        [disabled]="isUploadingCond2"
+        class="browse-button">
+        Browse...
+      </button>
+      
+      <span class="upload-status">
+        @if (uploadingFilesCond2.length === 0) {
+          <span>FASTA files</span>
+        } @else if (isUploadingCond2) {
+          <span>Uploading {{ uploadingFilesCond2.length }} file(s)...</span>
+        } @else {
+          <span class="upload-complete">{{ uploadedFilesCond2.length }} file(s) uploaded</span>
+        }
+      </span>
+    </div>
+
+    <!-- Condition 2 Upload Progress -->
+    @if (uploadingFilesCond2.length > 0) {
+      <div class="upload-progress-section">
+        @for (file of uploadingFilesCond2; track file.name) {
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="progress-percentage">{{ file.progress }}%</span>
+            </div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="file.progress"
+              [class.complete]="file.isComplete">
+            </mat-progress-bar>
+            @if (file.isComplete) {
+              <span class="complete-text">Upload complete</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- P-VALUE CUTOFF SLIDER -->
+    <h3 class="section-title">
+      Cutoff for p-value:
+      <mat-icon 
+        class="info-icon" 
+        matTooltip="Maximum BH-corrected p-value to consider as significant"
+        matTooltipPosition="right">help_outline</mat-icon>
+    </h3>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">0.01</span>
+        <span class="value-chip">{{ pCutoff.toFixed(2) }}</span>
+        <span class="value-chip range-max">0.50</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="0.01" [max]="0.5" [step]="0.01" discrete class="range-slider">
+          <input matSliderThumb [(ngModel)]="pCutoff">
+        </mat-slider>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="uploadedFilesCond1.length < 2 || uploadedFilesCond2.length < 2 || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <!-- EDGER PLOT CUSTOMIZATION -->
+    <h3 class="section-title">Adjust default edgeR plot?</h3>
+    <mat-radio-group 
+      [(ngModel)]="adjustEdgeRPlot"
+      (change)="onAdjustEdgeRPlotChange()"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustEdgeRPlot === 'yes') {
+      <div class="customization-panel">
+        <mat-label>X-axis - represents log(counts per million)</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="edgeRPlotXAxis" />
+        </mat-form-field>
+
+        <mat-label>Y-axis - represents log(fold-change)</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="edgeRPlotYAxis" />
+        </mat-form-field>
+
+        <mat-label>Plot title</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="edgeRPlotTitle" />
+        </mat-form-field>
+
+        <div class="color-picker-field">
+          <label>Color for significant points:</label>
+          <input type="color" [(ngModel)]="edgeRPlotSigColor" class="color-input" />
+          <span class="color-value">{{ edgeRPlotSigColor }}</span>
+        </div>
+
+        <div class="color-picker-field">
+          <label>Color for insignificant points:</label>
+          <input type="color" [(ngModel)]="edgeRPlotInsigColor" class="color-input" />
+          <span class="color-value">{{ edgeRPlotInsigColor }}</span>
+        </div>
+      </div>
+    }
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      class="plot-button"
+      [disabled]="diffAnalysisData.length === 0"
+      (click)="edgeRPlot()">
+      <mat-icon>scatter_plot</mat-icon>
+      edgeR plot
+    </button>
+
+  </div>
+
+  <!-- RIGHT SIDE - DATA TABLE -->
+  <div class="right-subsection">
+    <app-table [data]="diffAnalysisData" [config]="tableConfig"></app-table>
+  </div>
+</div>

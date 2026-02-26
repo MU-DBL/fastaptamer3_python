@@ -39,6 +39,8 @@ export class AbundancePlot implements AfterViewInit, OnChanges {
   @Input() colorLight = '#ADD8E6'; // Light blue for low values
   @Input() colorDark = '#FF6B6B';  // Red/coral for high values
 
+  private Plotly: any;
+
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.drawChart();
@@ -62,7 +64,8 @@ export class AbundancePlot implements AfterViewInit, OnChanges {
 
     try {
       // Dynamically import Plotly only in the browser
-      const Plotly = await import('plotly.js-dist-min');
+      const { default: Plotly } = await import('plotly.js-dist-min');
+      this.Plotly = Plotly;
 
       const xValues = this.data.map(d => d.bin);
       const yValues = this.data.map(d => d.fraction);

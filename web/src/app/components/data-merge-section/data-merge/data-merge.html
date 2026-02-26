@@ -1,0 +1,297 @@
+<div class="page-note">
+  Combine 2 to 26 counted FASTA files into a single merged table, tracking sequence persistence across populations. Choose union (all sequences), intersection (shared sequences only), or left-join (sequences from the first file) to control which sequences are included. Outputs a merged CSV.
+</div>
+<div class="section-container">
+  <div class="left-subsection">
+
+    <!-- FILE UPLOAD SECTION -->
+    <h3 class="section-title">Choose data to merge*:</h3>
+    <p class="instruction-text">
+      <mat-icon>info</mat-icon>
+      Please select at least 2 FASTA files to merge
+    </p>
+    
+    <div class="file-upload-section">
+      <input 
+        type="file" 
+        #multiFileInput
+        multiple
+        accept=".fasta,.fa"
+        (change)="onMultipleFilesSelected($event)"
+        style="display: none;">
+      
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="multiFileInput.click()"
+        [disabled]="isUploading"
+        class="browse-button">
+        Browse...
+      </button>
+      
+      <span class="upload-status">
+        @if (uploadingFiles.length === 0) {
+          <span>FASTA files</span>
+        } @else if (isUploading) {
+          <span>Uploading {{ uploadingFiles.length }} file(s)...</span>
+        } @else {
+          <span class="upload-complete">{{ uploadedFiles.length }} file(s) uploaded</span>
+        }
+      </span>
+    </div>
+
+    <!-- Upload Progress Bars -->
+    @if (uploadingFiles.length > 0) {
+      <div class="upload-progress-section">
+        @for (file of uploadingFiles; track file.name) {
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="progress-percentage">{{ file.progress }}%</span>
+            </div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="file.progress"
+              [class.complete]="file.isComplete">
+            </mat-progress-bar>
+            @if (file.isComplete) {
+              <span class="complete-text">✓ Upload complete</span>
+            }
+          </div>
+        }
+      </div>
+
+      @if (!isUploading) {
+        <p class="notice">
+          *All files uploaded successfully. You can now select and order them below.
+        </p>
+      } @else {
+        <p class="notice">
+          *Please wait while files are being uploaded...
+        </p>
+      }
+    }
+
+    <!-- FILE SELECTION AND ORDERING -->
+    <h3 class="section-title">Select file order ({{ fileSelections.length }} files)</h3>
+    <p class="instruction-text">
+      <mat-icon>reorder</mat-icon>
+      Holding ctrl (Windows) or command (Mac) allows you to select multiple files
+    </p>
+    
+    @if (fileSelections.length === 0) {
+      <div class="empty-state-box">
+        <mat-icon>reorder</mat-icon>
+        <p>Upload files above and they will appear here for ordering</p>
+      </div>
+    } @else {
+      <p class="instruction-text">
+        <mat-icon>drag_indicator</mat-icon>
+        Drag and drop files to reorder, or use arrow buttons. Uncheck to exclude files from merging.
+      </p>
+      
+      <div class="file-ordering-section">
+        <div 
+          class="file-selection-list"
+          cdkDropList
+          (cdkDropListDropped)="onFileDrop($event)">
+          
+          @for (selection of fileSelections; track selection.fileName; let i = $index) {
+            <mat-card 
+              class="file-selection-card"
+              [class.excluded]="!selection.include"
+              cdkDrag>
+              <div class="drag-placeholder" *cdkDragPlaceholder></div>
+              
+              <mat-card-content>
+                <div class="file-selection-row">
+                  <mat-checkbox 
+                    [(ngModel)]="selection.include"
+                    color="primary"
+                    matTooltip="Include in merge">
+                  </mat-checkbox>
+
+                  <mat-icon class="drag-handle" cdkDragHandle>drag_indicator</mat-icon>
+                  
+                  <div class="order-badge">{{ selection.order }}</div>
+                  
+                  <div class="file-info">
+                    <span class="file-name" [title]="selection.fileName">{{ selection.fileName }}</span>
+                  </div>
+
+                  <div class="action-buttons">
+                    <button 
+                      mat-icon-button
+                      [disabled]="i === 0"
+                      (click)="moveFileUp(i)"
+                      matTooltip="Move up">
+                      <mat-icon>arrow_upward</mat-icon>
+                    </button>
+                    
+                    <button 
+                      mat-icon-button
+                      [disabled]="i === fileSelections.length - 1"
+                      (click)="moveFileDown(i)"
+                      matTooltip="Move down">
+                      <mat-icon>arrow_downward</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- MERGE TYPE SELECTION -->
+    <h3 class="section-title">How should the data be joined?</h3>
+    <mat-radio-group [(ngModel)]="mergeType" class="radio-group">
+      <mat-radio-button value="Union" matTooltip="Include all sequences from all files">
+        Union
+      </mat-radio-button>
+      <mat-radio-button value="Intersection" matTooltip="Include only sequences present in all files">
+        Intersection
+      </mat-radio-button>
+      <mat-radio-button value="Left" matTooltip="Include only sequences from the first file">
+        Left
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="fileSelections.length < 2 || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="mergedFileName()"
+        [disabled]="!mergedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+
+    <!-- PLOTTING SECTION -->
+    <hr class="section-divider">
+
+    <!-- PERSISTENCE PLOT CUSTOMIZATION -->
+    <h3 class="section-title">Adjust default persistence plot?</h3>
+    <mat-radio-group 
+      [(ngModel)]="adjustPersistencePlot"
+      (change)="onAdjustPersistencePlotChange()"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustPersistencePlot === 'yes') {
+      <div class="customization-panel">
+        <mat-label>X-axis - represents number of populations with sequence</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="persistencePlotXAxis">
+        </mat-form-field>
+
+        <mat-label>Y-axis - represents unique sequence count</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="persistencePlotYAxis">
+        </mat-form-field>
+
+        <mat-label>Plot title</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="persistencePlotTitle">
+        </mat-form-field>
+
+        <div class="color-picker-field">
+          <label>Bar outline color:</label>
+          <input type="color" [(ngModel)]="persistenceBarOutline" class="color-input">
+          <span class="color-value">{{ persistenceBarOutline }}</span>
+        </div>
+
+        <div class="color-picker-field">
+          <label>Bar fill color:</label>
+          <input type="color" [(ngModel)]="persistenceBarFill" class="color-input">
+          <span class="color-value">{{ persistenceBarFill }}</span>
+        </div>
+      </div>
+    }
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      class="plot-button"
+      [disabled]="!mergedFileName() || isGeneratingPlot()"
+      (click)="persistencePlot()"
+      matTooltip="Shows the number of populations in which sequences are found">
+      <mat-icon [class.spinning]="isGeneratingPlot()">{{ isGeneratingPlot() ? 'sync' : 'show_chart' }}</mat-icon>
+      {{ isGeneratingPlot() ? 'Generating...' : 'Persistence plot' }}
+    </button>
+
+    <hr class="section-divider">
+
+    <!-- UPSET PLOT CUSTOMIZATION -->
+    <h3 class="section-title">Adjust default UpSet plot?</h3>
+    <mat-radio-group 
+      [(ngModel)]="adjustUpSetPlot"
+      (change)="onAdjustUpSetPlotChange()"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustUpSetPlot === 'yes') {
+      <div class="customization-panel">
+        <mat-label>X-axis - represents number of unique sequences in set</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="upsetPlotXAxis">
+        </mat-form-field>
+
+        <mat-label>Y-axis - represents sets</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="upsetPlotYAxis">
+        </mat-form-field>
+
+        <div class="color-picker-field">
+          <label>Bar fill color:</label>
+          <input type="color" [(ngModel)]="upsetBarFill" class="color-input">
+          <span class="color-value">{{ upsetBarFill }}</span>
+        </div>
+      </div>
+    }
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      class="plot-button"
+      [disabled]="!mergedFileName() || isGeneratingPlot()"
+      (click)="upsetPlot()"
+      matTooltip="Shows the sequence intersections between populations">
+      <mat-icon [class.spinning]="isGeneratingPlot()">{{ isGeneratingPlot() ? 'sync' : 'show_chart' }}</mat-icon>
+      {{ isGeneratingPlot() ? 'Generating...' : 'UpSet plot' }}
+    </button>
+
+  </div>
+
+  <!-- MAIN PANEL - MERGED DATA TABLE -->
+  <div class="right-subsection">
+    <h3 class="section-title">Merged Data</h3>
+    @if (mergedData.length > 0) {
+      <app-table [data]="mergedData" [config]="tableConfig"></app-table>
+    } @else {
+      <div class="empty-state">
+        <mat-icon>table_chart</mat-icon>
+        <p>Merged data will appear here after processing</p>
+      </div>
+    }
+  </div>
+</div>

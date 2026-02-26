@@ -1,3 +1,7 @@
+
+<div class="page-note">
+  Trims constant 5' and 3' region from sequences in a FASTQ or FASTA file, then filters sequences by length range and maximum average error thresholds. Outputs a cleaned FASTA file ready for counting.
+</div>
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Choose data to preprocess *</h3>
@@ -37,10 +41,9 @@
     </div>
 
 
-    <label class="section-label">Max allowed error for sequences:
-      <mat-icon class="info-icon"
-        matTooltip="Maximum average base error per sequence (errors derived from Phred scores)">help_outline</mat-icon>
-    </label>
+    <label class="section-label">Maximum allowed average error probability per sequence: <mat-icon class="info-icon"
+        matTooltip="Sets the maximum tolerance for sequencing noise. This filter calculates the mean error probability across each read using Phred quality scores; any sequence exceeding this average is discarded to ensure data integrity.">help_outline</mat-icon></label>
+
     <div class="slider-group">
       <div class="slider-header">
         <span class="value-chip range-min">Min 0.001</span>
@@ -73,22 +76,14 @@
     <h4>Processing logs</h4>
     <hr class="section-divider">
     @if (isProcessing() || logs.length > 0) {
-    <div class="progress-header">
-      <!-- If currentStage and currentMessage are regular properties (not signals) -->
-      <h3>{{ currentStage | titlecase }} - {{ currentMessage }}</h3>
-    </div>
-
     <!-- Live Logs -->
     <div class="logs-container" #logContainer>
       @for (log of logs; track log.timestamp) {
-      <div class="log-entry" [class]="'log-' + log.stage">
+      <div class="log-row" [ngClass]="log.stage">
         <span class="log-icon">{{ getStageIcon(log.stage) }}</span>
         <span class="log-time">{{ log.timestamp * 1000 | date:'HH:mm:ss' }}</span>
         <span class="log-stage">[{{ log.stage | uppercase }}]</span>
         <span class="log-message">{{ log.message }}</span>
-        @if (log.data) {
-        <span class="log-data">{{ log.data | json }}</span>
-        }
       </div>
       }
     </div>

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-menu',
@@ -9,7 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './menu.scss'
 })
 
-export class Menu {
+export class Menu implements OnInit {
 activeRoute: string = 'Start';
 
   menuItems = [
@@ -20,14 +21,24 @@ activeRoute: string = 'Start';
     { label: 'Distance', route: '/distance' },
     { label: 'Data Merge', route: '/data-merge' },
     { label: 'Sequence Enrichment', route: '/sequence-enrichment' },
-    { label: 'Differential Analysis', route: '/differential-analysis' },
+    { label: 'Differential Analysis', route: '/diff-analysis' },
     { label: 'Cluster', route: '/cluster' },
+    { label: 'Pipeline', route: '/pipeline' },
     { label: 'About', route: '/about' }
   ];
 
-  constructor(private router: Router) {
+  constructor(private router: Router) {}
+
+  ngOnInit(): void {
     // Set active route based on current URL
     this.activeRoute = this.getCurrentRoute();
+
+    // Subscribe to router events to update active route on navigation
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.activeRoute = this.getCurrentRoute();
+    });
   }
 
   navigateTo(item: any): void {

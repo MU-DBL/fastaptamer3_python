@@ -230,6 +230,182 @@ export class ApiService {
   getClusterList(params: { input_path: string }): Observable<any>  {
     return this.http.post(`${this.baseUrl}/cluster-list`, params);
   }
+
+  getPositionEnrichment(params: {
+    fadf_recluster_path: string;
+    output_format: string;
+    seq_type: string;
+    cluster_selected: number;
+  }): Observable<any>  {
+    return this.http.post(`${this.baseUrl}/position-enrichment`, params);
+  }
+
+  // Recluster two populations
+  recluster(params: {
+    fadf1_cluster_path: string;
+    fadf2_cluster_path: string;
+    led_threshold: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/recluster`, params);
+  }
+
+  // Get LED matrix between two populations
+  getReclusterLedMatrix(params: {
+    fadf1_cluster_path: string;
+    fadf2_cluster_path: string;
+    led_threshold?: number;
+    use_parallel?: boolean;
+    n_jobs?: number;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/recluster-led-matrix`, params);
+  }
+
+  // Motif Search
+  motifSearch(params: {
+    input_path: string;
+    motif: string;
+    highlight: boolean;
+    partial: boolean;
+    motif_type: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-search`, params);
+  }
+
+  // Motif Omit
+  motifOmit(params: {
+    input_path: string;
+    motif: string;
+    partial: boolean;
+    motif_type: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-omit`, params);
+  }
+
+  // Motif Tracker
+  motifTracker(params: {
+    input_paths: string[];
+    population_names: string[];
+    query_list: string[];
+    query_aliases?: string[];
+    motif_type: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-tracker`, params);
+  }
+
+  // Sequence Tracker
+  sequenceTracker(params: {
+    input_paths: string[];
+    population_names: string[];
+    query_list: string[];
+    query_aliases?: string[];
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/sequence-tracker`, params);
+  }
+
+  // Motif Discovery
+  motifDiscovery(params: {
+    input_path: string;
+    min_reads: number;
+    length_range: number[];
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/motif-discovery`, params);
+  }
+
+  // Translate
+  translate(params: {
+    input_path: string;
+    orf: number;
+    converge: boolean;
+    input_changes: Array<{Codon: string, Translation: string}> | null;
+    translate_selection: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/translate`, params);
+  }
+
+  // Distance
+  sequenceDistance(params: {
+    input_path: string;
+    query_sequence: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/sequence-distance`, params);
+  }
+
+  // Differential Analysis
+  differentialAnalysis(params: {
+    cond1_paths: string[];
+    cond2_paths: string[];
+    p_cutoff: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/differential-expression`, params);
+  }
+
+  // Mutation network
+  mutationNetwork(params: {
+    input_path: string;
+    start_node: string;
+    end_node: string;
+    max_cost: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/mutation-network`, params);
+  }
+
+  // Data Merge
+  dataMerge(params: {
+    input_paths: string[];
+    merge_type: string;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/data-merge`, params);
+  }
+
+  // Sequence Persistence
+  sequencePersistence(params: {
+    merged_file_path: string;
+  }): Observable<{
+    status: string;
+    data: Array<{ freq: number; seqCount: number }>;
+  }> {
+    return this.http.post<{
+      status: string;
+      data: Array<{ freq: number; seqCount: number }>;
+    }>(`${this.baseUrl}/sequence-persistence`, params);
+  }
+
+  // UpSet Data
+  upSetData(params: {
+    merged_file_path: string;
+    fasta_names?: string[];
+  }): Observable<{
+    status: string;
+    sets: string[];
+    set_sizes: { [key: string]: number };
+    intersections: Array<{
+      sets: string[];
+      size: number;
+      sequences: string[];
+    }>;
+    total_unique_sequences: number;
+  }> {
+    return this.http.post<{
+      status: string;
+      sets: string[];
+      set_sizes: { [key: string]: number };
+      intersections: Array<{
+        sets: string[];
+        size: number;
+        sequences: string[];
+      }>;
+      total_unique_sequences: number;
+    }>(`${this.baseUrl}/upset-data`, params);
+  }
 }
 
 

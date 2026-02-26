@@ -1,21 +1,10 @@
-@import '../../../shared/shared-styles.scss';
+@use '../../../shared/shared-styles.scss';
 
-.section-container {
-  display: flex;
-  gap: 2rem;
+.customization-panel {
+  background: #f5f5f5;
   padding: 1rem;
-  height: 100%;
-}
-
-.left-subsection {
-  flex: 0 0 400px;
-  overflow-y: auto;
-  padding-right: 1rem;
-}
-
-.right-subsection {
-  flex: 1;
-  overflow-y: auto;
+  border-radius: 4px;
+  margin: 1rem 0;
 }
 
 .custom-translation-panel {

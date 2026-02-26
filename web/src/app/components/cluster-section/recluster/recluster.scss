@@ -1,0 +1,50 @@
+@use '../../../shared/shared-styles.scss';
+
+.customization-panel {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.color-picker-group {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  label {
+    font-size: 0.9rem;
+    color: #666;
+    min-width: 150px;
+  }
+
+  .color-input {
+    width: 60px;
+    height: 35px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    
+    &:hover {
+      border-color: #999;
+    }
+  }
+}
+
+.section-divider {
+  border: none;
+  border-top: 2px solid #e0e0e0;
+  margin: 1.5rem 0;
+}
+
+.plot-button {
+  width: 100%;
+  margin-top: 0.5rem;
+}

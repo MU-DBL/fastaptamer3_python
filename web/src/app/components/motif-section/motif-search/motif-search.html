@@ -1,0 +1,85 @@
+<div class="page-note">
+  Searches a counted FASTA file for sequences containing one or more motifs (nucleotide, amino acid, or arbitrary string), with AND/OR logic for multiple patterns. Outputs a filtered FASTA or CSV containing only the matching sequences.
+</div>
+<div class="section-container">
+  <div class="left-subsection">
+    <h3 class="section-title">Choose FASTA file to search *</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="200"
+      (fileSelected)="onFileSelected($event)"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
+
+    <mat-label class="section-label">Comma-separated patterns *</mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput [(ngModel)]="motifPattern" placeholder="E.g., AAA,GTG,UUCG" />
+    </mat-form-field>
+
+    <h3 class="section-title">Place patterns in parentheses in output?</h3>
+    <mat-radio-group 
+      [(ngModel)]="highlightMotifs"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">If multiple patterns, return partial matches?</h3>
+    <mat-radio-group 
+      [(ngModel)]="partialMatch"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">Type of pattern?</h3>
+    <mat-radio-group 
+      [(ngModel)]="motifType"
+      class="radio-group">
+      <mat-radio-button value="Nucleotide">Nucleotide</mat-radio-button>
+      <mat-radio-button value="AminoAcid">AminoAcid</mat-radio-button>
+      <mat-radio-button value="String">String</mat-radio-button>
+    </mat-radio-group>
+
+    <h3 class="section-title">FASTA or CSV download?</h3>
+    <mat-radio-group 
+      [(ngModel)]="downloadFormat"
+      class="radio-group">
+      <mat-radio-button value="fasta">FASTA</mat-radio-button>
+      <mat-radio-button value="csv">CSV</mat-radio-button>
+    </mat-radio-group>
+
+    <div class="action-buttons">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="start-button"
+        [disabled]="!uploadComplete || isProcessing()"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+
+      <button 
+        mat-raised-button 
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+  </div>
+
+  <div class="right-subsection">
+    <app-table
+      [config]="tableConfig"
+      [data]="tableData">
+    </app-table>
+  </div>
+</div>

@@ -10,11 +10,15 @@ export enum ColumnName {
   RPU = 'RPU',
   SEQUENCES = 'sequences',
   LENGTH = 'length',
+  UNIQUE_NTS = 'Unique_Nts',
 
   // Cluster columns
   CLUSTER = 'Cluster',
   RANK_IN_CLUSTER = 'RankInCluster',
   LED = 'LED',
+
+  // Distance columns
+  DISTANCE = 'Distance',
 
   ORIGINAL_ID = 'OriginalID',
 
@@ -23,7 +27,24 @@ export enum ColumnName {
   TOTAL_READS = 'TotalReads',
   TOTAL_RPU = 'TotalRPU',
   AVERAGE_LED = 'AverageLED',
-  SID = 'SID'
+  SID = 'SID',
+
+  // Recluster columns
+  ID_A = 'ID.a',
+  RANK_A = 'Rank.a',
+  READS_A = 'Reads.a',
+  RPU_A = 'RPU.a',
+  ID_B = 'ID.b',
+  RANK_B = 'Rank.b',
+  READS_B = 'Reads.b',
+  RPU_B = 'RPU.b',
+  ENRICHMENT = 'Enrichment',
+  LOG2E = 'log2E',
+  POPULATION = 'Population',
+
+  FROM_SEQUENCE = 'From_Sequence',
+  TO_SEQUENCE = 'To_Sequence' ,
+  TRANSITION_COST = 'Transition_Cost'
 }
 
 
@@ -138,11 +159,14 @@ export class FileService {
       ColumnName.CLUSTER,
       ColumnName.RANK_IN_CLUSTER,
       ColumnName.LED,
+      ColumnName.DISTANCE,
       ColumnName.TOTAL_SEQUENCES,
       ColumnName.TOTAL_READS,
       ColumnName.TOTAL_RPU,
       ColumnName.AVERAGE_LED,
       ColumnName.SID,
+      ColumnName.UNIQUE_NTS,
+      ColumnName.LENGTH,
     ];
 
     // Define which columns are Floats

@@ -32,6 +32,8 @@ export class SeqLengthHistogram implements AfterViewInit, OnChanges {
   @Input() title = 'Distribution of Sequence Lengths';
   @Input() uniqueColor = '#87CEEB';
   @Input() totalColor = '#FFA500';
+  
+  private Plotly: any;
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -56,7 +58,8 @@ export class SeqLengthHistogram implements AfterViewInit, OnChanges {
 
     try {
       // Dynamically import Plotly only in the browser
-      const Plotly = await import('plotly.js-dist-min');
+      const { default: Plotly } = await import('plotly.js-dist-min');
+      this.Plotly = Plotly;
 
       const lengths = this.data.unique.map(d => d.length);
       const uniqueValues = this.data.unique.map(d => d.count);

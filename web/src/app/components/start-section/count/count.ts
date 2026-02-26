@@ -26,7 +26,7 @@ export class Count {
       { key: 'id', label: 'id' },
       { key: 'rank', label: 'Rank' },
       { key: 'reads', label: 'Reads' },
-      { key: 'rpm', label: 'RPM' },
+      { key: 'rpm', label: 'RPU' },
       { key: 'length', label: 'Length' },
       { key: 'seqs', label: 'Sequence' }
     ],

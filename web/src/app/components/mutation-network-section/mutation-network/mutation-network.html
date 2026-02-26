@@ -1,0 +1,83 @@
+<div class="page-note">
+  Finds the shortest mutational path between a start sequence and an end sequence through sequences in a FASTA file, constrained by a maximum allowed edit distance per step. Outputs the ordered sequence path as a table.
+</div>
+<div class="section-container">
+  <div class="left-subsection">
+    <h3 class="section-title">Input data:</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="200"
+      (fileSelected)="onFileSelected($event)"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
+
+    <mat-label class="section-title">Start sequence:</mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input
+        matInput
+        [(ngModel)]="startSequence"/>
+    </mat-form-field>
+
+    <mat-label class="section-title">End sequence:</mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input
+        matInput
+        [(ngModel)]="endSequence" />
+    </mat-form-field>
+
+    <label class="section-title">Maximum allowable distance:
+      <mat-icon class="info-icon"
+        matTooltip="Maximum average base error per sequence (errors derived from Phred scores)">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">Min 1</span>
+        <span class="value-chip">{{ maxDistance}}</span>
+        <span class="value-chip range-max">Max 5</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="1" [max]="5" [step]="1" discrete
+          class="range-slider">
+          <input matSliderThumb [(ngModel)]="maxDistance">
+        </mat-slider>
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error-text">{{ errorMessage() }}</p>
+    }
+
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        color="primary"
+        class="start-button"
+        [disabled]="!canStart"
+        (click)="onStart()">
+        <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Start' }}
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        class="download-button"
+        [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()"
+        (click)="onDownload()">
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+    </div>
+    <p class="note-box">Please wait while the process completes. This may take a few moments.</p>
+  </div>
+
+  <div class="right-subsection">
+    <app-table
+      [config]="tableConfig"
+      [data]="tableData">
+    </app-table>
+  </div>
+</div>

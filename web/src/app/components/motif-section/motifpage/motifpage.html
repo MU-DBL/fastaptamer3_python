@@ -1,0 +1,24 @@
+<div class="motif-page-container">
+  <div class="left-section">
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+      <mat-tab label="Search">
+        <app-motif-search 
+          (resultsReady)="onResultsReady($event)">
+        </app-motif-search>
+      </mat-tab>
+      
+      <mat-tab label="Omit">
+        <app-motif-omit></app-motif-omit>
+      </mat-tab>
+      
+      <mat-tab label="Tracker">
+        <app-motif-tracker></app-motif-tracker>
+      </mat-tab>
+      
+      <mat-tab label="Discovery">
+        <app-motif-discovery></app-motif-discovery>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+

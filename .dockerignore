@@ -1,0 +1,24 @@
+# Ignore files directory (user uploaded data)
+backend/files/
+backend/test/
+
+documents/
+
+# Ignore IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+.git/
+.gitignore
+
+frontend/node_modules
+frontend/dist
+frontend/.angular
+backend/__pycache__
+backend/*.pyc
+backend/.pytest_cache
+
+.env

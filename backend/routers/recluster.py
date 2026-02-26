@@ -397,17 +397,10 @@ def calculate_led_to_seeds_fast(df: pd.DataFrame) -> pd.DataFrame:
     sequences = df[ColumnName.SEQUENCES].values
     seed_seqs = df["_seed_seq"].values
 
-    # Parallel LED calculation for large datasets
-    if len(df) > 10000:
-        led_values = compute_led_array_parallel(sequences, seed_seqs)
-    else:
-        led_values = np.array(
-            [
-                Levenshtein.distance(seq, seed)
-                for seq, seed in zip(sequences, seed_seqs)
-            ],
-            dtype=np.int16,
-        )
+    led_values = np.array(
+        [Levenshtein.distance(seq, seed) for seq, seed in zip(sequences, seed_seqs)],
+        dtype=np.int16,
+    )
 
     df[ColumnName.LED] = led_values
     df = df.drop(columns=["_seed_seq"])
