@@ -1,29 +1,69 @@
-<div class="page-note">
-  Merges two previously counted FASTA files into a single combined count file, recalculating RPU values across the union of sequences. Accepts two FASTA count files and produces a unified ranked output.
-</div>
 <div class="section-container">
   <div class="left-subsection">
-    <h3 class="section-title">Choose 1st FASTA to recount:</h3>
-    <app-upload
-      [acceptedFileTypes]="'.fasta,.fa'"
-      [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'"
-      [showUploadNote]="false"
-      [uploadSpeed]="200"
-      (fileSelected)="onFile1Selected($event)"
-      (uploadComplete)="onUpload1Complete($event)">
-    </app-upload>
 
-    <h3 class="section-title">Choose 2nd FASTA to recount:</h3>
-    <app-upload
-      [acceptedFileTypes]="'.fasta,.fa'"
-      [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'"
-      [showUploadNote]="false"
-      [uploadSpeed]="200"
-      (fileSelected)="onFile2Selected($event)"
-      (uploadComplete)="onUpload2Complete($event)">
-    </app-upload>
+    <!-- FILE UPLOAD SECTION -->
+    <h3 class="section-title">Upload FASTA files to recount (2 to 5 files) *</h3>
+    <p class="instruction-text">
+      <mat-icon>info</mat-icon>
+      Select 2 to 5 FASTA files in one go, or add them one at a time by clicking Browse again after each upload.
+    </p>
+    <div class="file-upload-section">
+      <input
+        type="file"
+        #multiFileInput
+        multiple
+        accept=".fasta,.fa"
+        (change)="onMultipleFilesSelected($event); multiFileInput.value = ''"
+        style="display: none;">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="multiFileInput.click()"
+        [disabled]="isUploading"
+        class="browse-button">
+        Browse...
+      </button>
+      <span class="upload-status">
+        @if (uploadingFiles.length === 0) {
+          <span>FASTA files</span>
+        } @else if (isUploading) {
+          <span>Uploading {{ uploadingFiles.length }} file(s)...</span>
+        } @else {
+          <span class="upload-complete">{{ uploadedFiles.length }} file(s) uploaded</span>
+        }
+      </span>
+    </div>
+
+    <!-- Upload Progress Bars -->
+    @if (uploadingFiles.length > 0) {
+      <div class="upload-progress-section">
+        @for (file of uploadingFiles; track file.name) {
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="progress-percentage">{{ file.progress }}%</span>
+            </div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="file.progress"
+              [class.complete]="file.isComplete">
+            </mat-progress-bar>
+            @if (file.isComplete) {
+              <span class="complete-text">Upload complete</span>
+            }
+          </div>
+        }
+      </div>
+      @if (!isUploading) {
+        <p class="notice">
+          *All files uploaded. Click Start to run recount.
+        </p>
+      } @else {
+        <p class="notice">
+          *Please wait while files are being uploaded...
+        </p>
+      }
+    }
 
     <h3 class="section-title">What value should be used to normalize read counts?</h3>
     <mat-radio-group 
@@ -51,7 +91,7 @@
         mat-raised-button 
         color="primary"
         class="start-button"
-        [disabled]="!uploadComplete1 || !uploadComplete2 || isProcessing()"
+        [disabled]="!canStart || isProcessing()"
         (click)="onStart()">
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Start' }}

@@ -1,6 +1,254 @@
 // Import shared styles for all startpage components
 @use '../../../shared/shared-styles.scss';
 
+// File upload section (same as motif-tracker / data-merge)
+.file-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .browse-button {
+    min-width: 120px;
+  }
+
+  .upload-status {
+    font-size: 14px;
+    color: #666;
+
+    .upload-complete {
+      color: #4caf50;
+      font-weight: 500;
+    }
+  }
+}
+
+.upload-progress-section {
+  margin: 20px 0;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+
+  .progress-item {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+
+      .file-name {
+        font-size: 13px;
+        color: #333;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+      }
+
+      .progress-percentage {
+        font-size: 12px;
+        color: #666;
+        margin-left: 12px;
+      }
+    }
+
+    mat-progress-bar {
+      height: 8px;
+      border-radius: 4px;
+
+      &.complete {
+        ::ng-deep .mdc-linear-progress__bar-inner {
+          border-color: #4caf50 !important;
+        }
+      }
+    }
+
+    .complete-text {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #4caf50;
+      font-weight: 500;
+    }
+  }
+}
+
+.notice {
+  font-size: 13px;
+  color: #666;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.instruction-text {
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0 16px 0;
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #2196f3;
+  }
+}
+
+.empty-state-box {
+  text-align: center;
+  padding: 60px 20px;
+  margin: 20px 0;
+  background-color: #fafafa;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.file-ordering-section {
+  margin: 24px 0;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+
+  .file-selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .file-selection-card {
+    margin: 0;
+    transition: box-shadow 0.2s ease, opacity 0.2s ease;
+    cursor: move;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    &.excluded {
+      opacity: 0.5;
+      background-color: #f5f5f5;
+
+      .order-badge {
+        background-color: #9e9e9e;
+      }
+
+      .file-name {
+        text-decoration: line-through;
+        color: #999;
+      }
+    }
+
+    &.cdk-drag-preview {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      opacity: 0.9;
+    }
+
+    &.cdk-drag-animating {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    mat-card-content {
+      padding: 16px;
+    }
+
+    .file-selection-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      mat-checkbox {
+        flex-shrink: 0;
+      }
+
+      .drag-handle {
+        cursor: grab;
+        color: #9e9e9e;
+        flex-shrink: 0;
+
+        &:hover {
+          color: #2196f3;
+        }
+
+        &:active {
+          cursor: grabbing;
+        }
+      }
+
+      .order-badge {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background-color: #2196f3;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+
+      .file-info {
+        flex: 1;
+        min-width: 0;
+
+        .file-name {
+          font-size: 14px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .drag-placeholder {
+    background: #e3f2fd;
+    border: 2px dashed #2196f3;
+    border-radius: 8px;
+    min-height: 68px;
+  }
+
+  .cdk-drop-list-dragging .file-selection-card:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
 // Stats display
 .stats-display {
   margin-top: 20px;
