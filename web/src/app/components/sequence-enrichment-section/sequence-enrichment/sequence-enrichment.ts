@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +23,7 @@ import { of } from 'rxjs';
   styleUrl: './sequence-enrichment.scss',
   standalone: true
 })
-export class SequenceEnrichment {
+export class SequenceEnrichment implements OnDestroy {
   // Services
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
@@ -124,7 +124,12 @@ export class SequenceEnrichment {
 
   // File 1 handlers
   onFile1Selected(result: FileUploadResult): void {
+    if (this.savedFileName1) {
+      this.apiService.deleteFile(this.savedFileName1).subscribe();
+    }
     this.selectedFile1 = result.file;
+    this.savedFileName1 = '';
+    this.uploadComplete1 = false;
   }
 
   onFile1UploadComplete(result: FileUploadResult): void {
@@ -134,7 +139,24 @@ export class SequenceEnrichment {
 
   // File 2 handlers
   onFile2Selected(result: FileUploadResult): void {
+    if (this.savedFileName2) {
+      this.apiService.deleteFile(this.savedFileName2).subscribe();
+    }
     this.selectedFile2 = result.file;
+    this.savedFileName2 = '';
+    this.uploadComplete2 = false;
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName1) {
+      this.apiService.deleteFile(this.savedFileName1).subscribe();
+    }
+    if (this.savedFileName2) {
+      this.apiService.deleteFile(this.savedFileName2).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onFile2UploadComplete(result: FileUploadResult): void {
@@ -177,8 +199,8 @@ export class SequenceEnrichment {
         throw new Error('No result file returned from enrichment analysis');
       }),
       catchError(error => {
-        console.error('Enrichment error:', error);
-        alert(`Enrichment failed: ${error.message || 'Unknown error'}`);
+        const errorMessage = error.error?.detail || error.message || 'Unknown error';
+        alert(`Enrichment failed: ${errorMessage}`);
         return of(null);
       }),
       finalize(() => {

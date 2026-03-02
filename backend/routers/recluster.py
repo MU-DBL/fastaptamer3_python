@@ -65,7 +65,7 @@ async def fa_recluster_endpoint(params: ReclusterInput):
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Reclustering failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Reclustering failed ({type(e).__name__}): {str(e)}")
 
 
 class LEDMatrixInput(BaseModel):
@@ -161,7 +161,7 @@ async def get_led_matrix_endpoint(params: LEDMatrixInput):
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"LED matrix computation failed: {str(e)}"
+            status_code=500, detail=f"LED matrix computation failed ({type(e).__name__}): {str(e)}"
         )
 
 

@@ -65,6 +65,13 @@
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
+      @if (isProcessing()) {
+      <button mat-raised-button color="accent" class="cancel-button" (click)="cancelProcessing()">
+        <mat-icon>stop</mat-icon>
+        Cancel
+      </button>
+      }
+
       <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
         [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
@@ -72,13 +79,17 @@
       </button>
     </div>
   </div>
-  <div div class="right-subsection">
+  <div class="right-subsection">
     <h4>Processing logs</h4>
     <hr class="section-divider">
-    @if (isProcessing() || logs.length > 0) {
+    @if (isProcessing() || logs().length > 0) {
     <!-- Live Logs -->
+    <div class="progress-container" *ngIf="isProcessing()">
+      <mat-progress-bar mode="determinate" [value]="progress" [class.complete]="currentStage === 'complete'"></mat-progress-bar>
+      <div class="progress-text">{{ progress }}%</div>
+    </div>
     <div class="logs-container" #logContainer>
-      @for (log of logs; track log.timestamp) {
+      @for (log of logs(); track log.timestamp) {
       <div class="log-row" [ngClass]="log.stage">
         <span class="log-icon">{{ getStageIcon(log.stage) }}</span>
         <span class="log-time">{{ log.timestamp * 1000 | date:'HH:mm:ss' }}</span>

@@ -174,5 +174,5 @@ async def motif_discovery(params: MotifDiscoveryInput):
         raise
     except Exception as e:
         raise HTTPException(
-            500, f"Motif discovery failed: {str(e)}"
+            500, f"Motif discovery failed ({type(e).__name__}): {str(e)}"
         )

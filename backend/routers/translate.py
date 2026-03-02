@@ -278,7 +278,7 @@ async def translate_sequences(params: TranslateInput):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Translation failed: {str(e)}"
+            detail=f"Translation failed ({type(e).__name__}): {str(e)}"
         )
         
         

@@ -1,3 +1,4 @@
+import asyncio
 import os
 from pathlib import Path
 from routers import motif_discovery, motif_track, sequence_enrichment, translate
@@ -5,9 +6,12 @@ from routers import position_enrichment, recluster
 from routers import cluster_msa,cluster_phmm, cluster_list
 from routers import preprocess,count,recount,filehandler,progress, cluster, cluster_diversity
 from routers import motif_search, distance, mutation_network, data_merge, differential_analysis
+from routers import cancel
 
-from fastapi import FastAPI
+import state
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 app = FastAPI(
     title="Fastaptamer3",
@@ -26,6 +30,24 @@ app.add_middleware(
 
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 UPLOAD_DIR.mkdir(exist_ok=True)
+
+# Paths that should NOT trigger cancellation (file I/O, progress streaming, health)
+_NO_CANCEL_PREFIXES = ('/health','/')
+
+@app.middleware("http")
+async def cancel_running_processes(request: Request, call_next):
+    if request.method == "POST" and not any(request.url.path.startswith(p) for p in _NO_CANCEL_PREFIXES):
+        # Kill active subprocess (cutadapt, muscle, etc.)
+        if state.current_process is not None and state.current_process.poll() is None:
+            state.current_process.kill()
+            state.current_process = None
+
+        # Cancel active asyncio background task (preprocess, etc.)
+        if state.current_task is not None and not state.current_task.done():
+            state.current_task.cancel()
+            state.current_task = None
+
+    return await call_next(request)
 
 # Include routers
 app.include_router(recount.router, prefix="/api/v1", tags=["recount"])
@@ -50,6 +72,14 @@ app.include_router(distance.router, prefix="/api/v1", tags=["distance"])
 app.include_router(mutation_network.router, prefix="/api/v1", tags=["mutation_network"])
 app.include_router(data_merge.router, prefix="/api/v1", tags=["data_merge"])
 app.include_router(differential_analysis.router, prefix="/api/v1", tags=["data_merge"])
+app.include_router(cancel.router, prefix="/api/v1", tags=["cancel"])
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"{type(exc).__name__}: {str(exc)}"}
+    )
 
 @app.get("/")
 async def root():

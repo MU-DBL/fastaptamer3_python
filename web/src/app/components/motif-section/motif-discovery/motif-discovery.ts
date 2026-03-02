@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -21,7 +21,7 @@ import { Table, TableConfig } from '../../common/table/table';
   templateUrl: './motif-discovery.html',
   styleUrl: './motif-discovery.scss'
 })
-export class MotifDiscovery {
+export class MotifDiscovery implements OnDestroy {
 
   tableConfig: TableConfig = {
     columns: [
@@ -87,10 +87,27 @@ export class MotifDiscovery {
   }
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
     this.tableData = [];
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {
@@ -249,7 +266,7 @@ export class MotifDiscovery {
         color: this.tableData.map(d => d.motif_length),
         colorscale: this.getColorscale(colorPalette),
         colorbar: {
-          title: this.plotLegend
+          title: { text: this.plotLegend }
         },
         line: {
           color: 'black',

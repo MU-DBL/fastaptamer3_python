@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +23,7 @@ import { of } from 'rxjs';
   styleUrl: './distance.scss',
   standalone: true
 })
-export class Distance {
+export class Distance implements OnDestroy {
   // Services
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
@@ -84,7 +84,25 @@ export class Distance {
 
   // File handlers
   onFileSelected(result: FileUploadResult): void {
-    // File selection handled by upload component
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
+    this.savedFileName = '';
+    this.uploadComplete = false;
+    this.processedFileName.set('');
+    this.distanceData = [];
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onFileUploadComplete(result: FileUploadResult): void {
@@ -143,8 +161,8 @@ export class Distance {
         return of(null);
       }),
       catchError(error => {
-        console.error('Distance error:', error);
-        alert(`Distance calculation failed: ${error.message || 'Unknown error'}`);
+        const errorMessage = error.error?.detail || error.message || 'Unknown error';
+        alert(`Distance calculation failed: ${errorMessage}`);
         return of(null);
       }),
       finalize(() => {

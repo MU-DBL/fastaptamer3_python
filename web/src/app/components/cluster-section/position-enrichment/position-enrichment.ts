@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Table, TableConfig } from '../../common/table/table';
@@ -20,7 +20,7 @@ import { ColumnName, FileService } from '../../../shared/file-service';
   templateUrl: './position-enrichment.html',
   styleUrl: './position-enrichment.scss',
 })
-export class PositionEnrichment {
+export class PositionEnrichment implements OnDestroy {
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
   private plotModalService = inject(PlotModalService);
@@ -61,11 +61,29 @@ export class PositionEnrichment {
   avg_enrichment: any;
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
+    this.clusterData = [];
     this.availableClusters = [];
     this.selectedCluster = null;
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {
@@ -139,14 +157,19 @@ export class PositionEnrichment {
         return of(null);
       }),
       catchError(error => {
-        let errorMessage = 'Position enrichment analysis failed!';
-        alert(errorMessage);
+        const errorMessage = error.error?.detail || error.message || 'Position enrichment analysis failed';
+        alert(`Position enrichment failed: ${errorMessage}`);
         return of(null);
       }),
       finalize(() => {
         this.isProcessing.set(false);
       })
     ).subscribe();
+  }
+
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
   }
 
   onDownload(): void {
@@ -180,13 +203,13 @@ export class PositionEnrichment {
     }];
 
     const layout = {
-      title: this.posEnrichPlotTitle,
+      title: { text: this.posEnrichPlotTitle },
       xaxis: {
-        title: this.posEnrichXAxis,
+        title: { text: this.posEnrichXAxis },
         type: 'linear'
       },
       yaxis: {
-        title: this.heatmapYAxis
+        title: { text: this.posEnrichYAxis }
       },
       showlegend: false,
       hovermode: 'closest'
@@ -222,19 +245,19 @@ export class PositionEnrichment {
       colorscale: this.heatPalletteColor || 'Magma',
       showscale: true,
       colorbar: {
-        title: this.heatmapLegendTitle
+        title: { text: this.heatmapLegendTitle }
       },
       hovertemplate: 'Position: %{x}<br>Residue: %{y}<br>Enrichment: %{z:.3f}<extra></extra>'
     }];
 
     const layout = {
-      title: this.heatmapPlotTitle,
+      title: { text: this.heatmapPlotTitle },
       xaxis: {
-        title: this.heatmapXAxis,
+        title: { text: this.heatmapXAxis },
         type: 'linear'
       },
       yaxis: {
-        title: this.heatmapYAxis,
+        title: { text: this.heatmapYAxis },
         type: 'category'
       }
     };

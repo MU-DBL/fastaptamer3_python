@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -28,7 +28,7 @@ export interface CodonChange {
   templateUrl: './translate.html',
   styleUrl: './translate.scss'
 })
-export class Translate {
+export class Translate implements OnDestroy {
 
   // Services
   private apiService = inject(ApiService);
@@ -131,10 +131,27 @@ export class Translate {
   }
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
     this.translateData = [];
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {
@@ -215,8 +232,8 @@ export class Translate {
         return of(null);
       }),
       catchError(error => {
-        console.error('Translation error:', error);
-        alert('Translation failed!');
+        const errorMessage = error.error?.detail || error.message || 'Translation failed';
+        alert(`Translation failed: ${errorMessage}`);
         return of(null);
       }),
       finalize(() => {

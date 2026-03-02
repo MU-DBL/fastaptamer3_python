@@ -1,4 +1,4 @@
-import { Component, inject, signal, output, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, output, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +26,7 @@ export interface ClusterResultsEvent {
   styleUrl: './cluster.scss',
 })
 
-export class Cluster {
+export class Cluster implements OnDestroy {
 
   private cdr = inject(ChangeDetectorRef);
   private apiService = inject(ApiService);
@@ -66,9 +66,27 @@ export class Cluster {
   number_of_cluster: number = 20;
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
+    this.clusterData = [];
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {
@@ -121,9 +139,8 @@ export class Cluster {
       return of(null);
     }),
     catchError(error => {
-        console.error('Clustering failed:', error);
-        let errorMessage = 'Clustering failed!';
-        alert(errorMessage);
+        const errorMessage = error.error?.detail || error.message || 'Clustering failed';
+        alert(`Clustering failed: ${errorMessage}`);
         return of(null);
       }),
       finalize(() => {

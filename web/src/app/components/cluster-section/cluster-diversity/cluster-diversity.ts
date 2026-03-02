@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, inject, signal, output, computed } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject, signal, output, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
@@ -33,7 +33,7 @@ export interface DiversityResultsEvent {
   templateUrl: './cluster-diversity.html',
   styleUrl: './cluster-diversity.scss',
 })
-export class ClusterDiversity {
+export class ClusterDiversity implements OnDestroy {
 
   constructor(private cdr: ChangeDetectorRef, private plotModalService: PlotModalService) { }
   // Services
@@ -114,12 +114,29 @@ export class ClusterDiversity {
   // ========================================================================
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
     this.diversityData = [];
     this.availableClusters = signal<number[]>([]); // All clusters from file
     this.selectedClusters = signal<number[]>([]);
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {
@@ -176,7 +193,8 @@ export class ClusterDiversity {
         return of(null);
       }),
       catchError(error => {
-        alert('Clustering diversity failed!');
+        const errorMessage = error.error?.detail || error.message || 'Clustering diversity failed';
+        alert(`Clustering diversity failed: ${errorMessage}`);
         return of(null);
       }),
       finalize(() => this.isProcessing.set(false))
@@ -420,11 +438,11 @@ export class ClusterDiversity {
           x: 0.5
         },
         xaxis: {
-          title: this.kmerPlotXAxis,
+          title: { text: this.kmerPlotXAxis },
           tickfont: { size: 12 }
         },
         yaxis: {
-          title: this.kmerPlotYAxis,
+          title: { text: this.kmerPlotYAxis },
           tickfont: { size: 12 }
         },
         legend: {

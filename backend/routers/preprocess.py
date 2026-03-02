@@ -7,6 +7,7 @@ from fastapi import APIRouter, BackgroundTasks
 from pydantic import BaseModel
 from services import preprocess_service
 import json
+import state
 from state import progress_queues
 
 router = APIRouter()
@@ -43,7 +44,7 @@ async def preprocess(params: PreprocessInput, background_tasks: BackgroundTasks)
             output_format=output_format
         )
     
-    asyncio.create_task(delayed_start())
+    state.current_task = asyncio.create_task(delayed_start())
     # background_tasks.add_task(delayed_start)
     
     return {"status": "ok", "result": job_id, "output_path": os.path.basename(output_path)}

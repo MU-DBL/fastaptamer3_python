@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +26,7 @@ interface UploadingFile {
   styleUrl: './diff-analysis.scss',
   standalone: true
 })
-export class DiffAnalysis {
+export class DiffAnalysis implements OnDestroy {
   // Services
   private apiService = inject(ApiService);
   private plotModalService = inject(PlotModalService);
@@ -99,7 +99,8 @@ export class DiffAnalysis {
     const files: FileList = event.target.files;
     if (!files || files.length === 0) return;
 
-    // Clear previous uploads
+    // Delete previous uploads from server
+    this.uploadedFilesCond1.forEach(f => this.apiService.deleteFile(f).subscribe());
     this.uploadedFilesCond1 = [];
     this.uploadingFilesCond1 = [];
 
@@ -125,7 +126,8 @@ export class DiffAnalysis {
     const files: FileList = event.target.files;
     if (!files || files.length === 0) return;
 
-    // Clear previous uploads
+    // Delete previous uploads from server
+    this.uploadedFilesCond2.forEach(f => this.apiService.deleteFile(f).subscribe());
     this.uploadedFilesCond2 = [];
     this.uploadingFilesCond2 = [];
 
@@ -216,6 +218,14 @@ export class DiffAnalysis {
   // DIFFERENTIAL ANALYSIS
   // ========================================================================
   
+  ngOnDestroy(): void {
+    this.uploadedFilesCond1.forEach(f => this.apiService.deleteFile(f).subscribe());
+    this.uploadedFilesCond2.forEach(f => this.apiService.deleteFile(f).subscribe());
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
+  }
+
   onStart(): void {
     if (this.uploadedFilesCond1.length < 2) {
       alert('Please upload at least 2 files for Condition 1.');

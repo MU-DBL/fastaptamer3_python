@@ -44,7 +44,7 @@ async def cluster_diversity(params: DiversityInput):
         }
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Diversity analysis failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Diversity analysis failed ({type(e).__name__}): {str(e)}")
 
 @router.post("/cluster-kmer-analysis")
 async def cluster_kmer_analysis(params: KmerAnalysisInput):
@@ -89,4 +89,4 @@ async def cluster_kmer_analysis(params: KmerAnalysisInput):
         }
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"K-mer analysis failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"K-mer analysis failed ({type(e).__name__}): {str(e)}")

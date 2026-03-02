@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 import numpy as np
 import subprocess
+import state
 
 
 def perform_msa(
@@ -41,11 +42,17 @@ def perform_msa(
 
         # Run MUSCLE5 using subprocess
         # MUSCLE5 uses different syntax than MUSCLE3
-        process = subprocess.run(
+        proc = subprocess.Popen(
             ["muscle", "-super5", input_path, "-output", temp_output],
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
         )
+        state.current_process = proc
+        _, stderr_output = proc.communicate()
+        state.current_process = None
+        if proc.returncode != 0:
+            raise subprocess.CalledProcessError(proc.returncode, proc.args, stderr=stderr_output)
 
         # Read aligned sequences
         alignment = AlignIO.read(temp_output, "fasta")

@@ -82,7 +82,7 @@ async def fa_enrich_endpoint(params: EnrichInput):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Enrichment analysis failed: {str(e)}"
+            detail=f"Enrichment analysis failed ({type(e).__name__}): {str(e)}"
         )
 
 

@@ -1,4 +1,4 @@
-import { Component, inject, signal, PLATFORM_ID, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, PLATFORM_ID, Inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
@@ -24,7 +24,7 @@ import { PlotModalService } from '../../../shared/plot-modal.service';
   templateUrl: './recluster.html',
   styleUrl: './recluster.scss',
 })
-export class Recluster {
+export class Recluster implements OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
@@ -135,8 +135,25 @@ export class Recluster {
   // ========================================================================
   // FILE UPLOAD HANDLERS - FILE 1
   // ========================================================================
+  ngOnDestroy(): void {
+    if (this.savedFileName1) {
+      this.apiService.deleteFile(this.savedFileName1).subscribe();
+    }
+    if (this.savedFileName2) {
+      this.apiService.deleteFile(this.savedFileName2).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
+  }
+
   onFile1Selected(result: FileUploadResult): void {
+    if (this.savedFileName1) {
+      this.apiService.deleteFile(this.savedFileName1).subscribe();
+    }
     this.selectedFile1 = result.file;
+    this.savedFileName1 = '';
+    this.uploadComplete1 = false;
     this.processedFileName.set('');
   }
 
@@ -153,7 +170,12 @@ export class Recluster {
   // FILE UPLOAD HANDLERS - FILE 2
   // ========================================================================
   onFile2Selected(result: FileUploadResult): void {
+    if (this.savedFileName2) {
+      this.apiService.deleteFile(this.savedFileName2).subscribe();
+    }
     this.selectedFile2 = result.file;
+    this.savedFileName2 = '';
+    this.uploadComplete2 = false;
     this.processedFileName.set('');
   }
 

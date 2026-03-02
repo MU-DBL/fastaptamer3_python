@@ -94,7 +94,7 @@ async def phmm_create_and_simulate(params: PHMMInput):
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PHMM simulation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"PHMM simulation failed ({type(e).__name__}): {str(e)}")
 
 def create_phmm_from_msa(df_msa: pd.DataFrame, pseudocount_method: str = "laplace") -> tuple:
 

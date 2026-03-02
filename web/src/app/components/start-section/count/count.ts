@@ -1,4 +1,4 @@
-import { Component, inject, signal, output } from '@angular/core';
+import { Component, inject, signal, output, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -19,7 +19,7 @@ import { Table, TableConfig } from '../../common/table/table';
   templateUrl: './count.html',
   styleUrl: './count.scss'
 })
-export class Count {
+export class Count implements OnDestroy {
 
   tableConfig: TableConfig = {
     columns: [
@@ -101,10 +101,27 @@ export class Count {
   }
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
     this.tableData = [];
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {
@@ -154,8 +171,8 @@ export class Count {
         return of(null);
       }),
       catchError(error => {
-        const errorMsg = error.error?.detail || 'Count failed';
-        console.error('Count error:', errorMsg);
+        const errorMsg = error.error?.detail || error.message || 'Count failed';
+        alert(`Count failed: ${errorMsg}`);
         return of(null);
       }),
       finalize(() => {

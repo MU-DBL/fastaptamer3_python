@@ -42,6 +42,13 @@
                     {{ isProcessing() ? 'Processing...' : 'Start' }}
                 </button>
 
+                @if (isProcessing()) {
+                <button mat-raised-button color="warn" class="cancel-button" (click)="cancelProcessing()">
+                    <mat-icon>stop</mat-icon>
+                    Cancel
+                </button>
+                }
+
                 <button mat-raised-button color="accent" class="download-button"
                     [class.download-ready]="processedFileName()" [disabled]="!processedFileName()"
                     (click)="onMSADownload()">
@@ -50,6 +57,14 @@
                 </button>
             </div>
             <p class="note-box">Multiple sequence alignment is computationally intensive and may take some time to complete. Please wait while the process finishes.</p>
+        </div>
+        <hr class="section-divider">
+        <div>
+            <button mat-raised-button class="plot-button" [disabled]="!processedFileName() || clusterData.length === 0"
+                (click)="onAlignmentPlot()">
+                <mat-icon>stacked_bar_chart</mat-icon>
+                MSA alignment chart
+            </button>
         </div>
         <hr class="section-divider">
         <div>

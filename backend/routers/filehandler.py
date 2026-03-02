@@ -34,7 +34,7 @@ async def upload(file: UploadFile = File(...)):
         }
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"File upload failed ({type(e).__name__}): {str(e)}")
     
     finally:
         file.file.close()
@@ -98,4 +98,4 @@ async def delete_file(filename: str):
         return {"message": f"File '{filename}' deleted successfully"}
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete file ({type(e).__name__}): {str(e)}")

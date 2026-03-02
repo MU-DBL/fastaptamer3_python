@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { ApiService, ProgressEvent } from '../../../shared/api.service';
 import { finalize } from 'rxjs/operators';
 
@@ -17,7 +17,7 @@ import { finalize } from 'rxjs/operators';
   styleUrl: './preprocess.scss'
 })
 
-export class Preprocess {
+export class Preprocess implements OnDestroy {
   private apiService = inject(ApiService);
 
   selectedFile: File | null = null;
@@ -35,7 +35,7 @@ export class Preprocess {
   progress = 0;
   currentStage = '';
   currentMessage = '';
-  logs: ProgressEvent[] = [];
+  logs = signal<ProgressEvent[]>([]);
 
   constant5Region: string = '';
   constant3Region: string = '';
@@ -47,7 +47,18 @@ export class Preprocess {
   progressSubscription: any;
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
+    if (this.isProcessing()) {
+      this.cancelProcessing();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
     console.log('File selected:', result.fileName);
   }
@@ -69,7 +80,8 @@ export class Preprocess {
     }
 
     this.isProcessing.set(true);
-    this.logs = [];
+    // reset log signal
+    this.logs.set([{ stage: 'connected', message: 'Connecting to server...', progress: null, timestamp: Date.now() / 1000 }]);
     this.progress = 0;
 
     const params = {
@@ -103,8 +115,7 @@ export class Preprocess {
       .subscribeToProgress(jobId)
       .subscribe({
         next: (event: ProgressEvent) => {
-          // Immutable update for Angular change detection
-          this.logs = [...this.logs, event];
+          this.logs.update(logs => [...logs, event]);
 
           // Update stage / message / progress
           this.currentStage = event.stage ?? '';
@@ -122,8 +133,7 @@ export class Preprocess {
             console.error('SSE error:', event.message);
           }
 
-          // Debug log
-          console.log('Progress event:', this.logs.length);
+          console.log('Progress event:', this.logs().length);
         },
         error: (error) => {
           console.error('Progress stream error:', error);
@@ -139,20 +149,24 @@ export class Preprocess {
 
 
   cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.cleanup();
+  }
+
+  private cleanup(): void {
     if (this.currentJobId) {
       this.apiService.cancelJob(this.currentJobId);
-
-      // Unsubscribe from SSE to stop updates
-      this.progressSubscription?.unsubscribe();
-      this.progressSubscription = undefined;
-
-      // Reset flags
-      this.isProcessing.set(false);
-      this.currentJobId = null;
-      this.currentStage = '';
-      this.currentMessage = '';
-      this.progress = 0;
     }
+
+    this.progressSubscription?.unsubscribe();
+    this.progressSubscription = undefined;
+
+    this.isProcessing.set(false);
+    this.currentJobId = null;
+    this.currentStage = '';
+    this.currentMessage = '';
+    this.progress = 0;
+    this.logs.set([]);
   }
 
   getStageIcon(stage: string): string {
@@ -168,7 +182,13 @@ export class Preprocess {
   }
 
   ngOnDestroy(): void {
-    this.cancelProcessing();
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
+    this.cleanup();
   }
 
   onDownload(): void {

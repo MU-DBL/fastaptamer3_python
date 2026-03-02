@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
@@ -25,7 +25,7 @@ export class Upload implements OnDestroy{
   @Input() placeholderText: string = 'FASTQ or FASTA file';
   @Input() showUploadNote: boolean = true;
   @Input() uploadNotePath: string = '#';
-  @Input() uploadSpeed: number = 20; // milliseconds per 10%
+  @Input() uploadSpeed: number = 200; // milliseconds per 10%
   @Input() buttonClass: string = 'browse-button';
   
   @Output() fileSelected = new EventEmitter<FileUploadResult>();
@@ -33,6 +33,7 @@ export class Upload implements OnDestroy{
   @Output() uploadProgress = new EventEmitter<number>();
 
   private apiService = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
 
   selectedFile: File | null = null;
   fileName: string = '';
@@ -82,10 +83,11 @@ export class Upload implements OnDestroy{
       });
 
       // Start visual progress simulation
-      const progressInterval = setInterval(() => {
+      this.progressInterval = setInterval(() => {
         if (this.progress < 90) {
-          this.progress += 10;
+          this.progress += 1;
           this.uploadProgress.emit(this.progress);
+          this.cdr.markForCheck();
         }
       }, this.uploadSpeed);
 

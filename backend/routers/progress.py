@@ -20,6 +20,7 @@ async def send_progress(job_id, stage, message, progress=None, data=None):
             "data": data,
         }
         await progress_queues[job_id].put(event_data)
+        await asyncio.sleep(0)  # Yield to event loop so SSE generator can drain queue
         print(f"📤 Progress sent: {job_id} - {stage} - {message}", flush=True)
 
 

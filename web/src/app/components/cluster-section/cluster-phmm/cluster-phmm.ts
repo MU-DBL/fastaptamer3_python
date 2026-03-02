@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { ApiService, ProgressEvent } from '../../../shared/api.service';
 import { FileService } from '../../../shared/file-service';
 
@@ -18,7 +18,7 @@ import { FileService } from '../../../shared/file-service';
   styleUrl: './cluster-phmm.scss',
 })
 
-export class ClusterPhmm {
+export class ClusterPhmm implements OnDestroy {
 
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
@@ -40,13 +40,35 @@ export class ClusterPhmm {
   sequenceLength: number = 50;
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.phmmResultFile()) {
+      this.apiService.deleteFile(this.phmmResultFile()).subscribe();
+    }
+    if (this.simulationResultFile()) {
+      this.apiService.deleteFile(this.simulationResultFile()).subscribe();
+    }
     this.selectedFile = result.file;
-    
+    this.savedFileName = '';
+    this.uploadComplete = false;
     // --- CHANGED: Reset both result signals when a new file is picked ---
     this.phmmResultFile.set('');
     this.simulationResultFile.set('');
-    
+
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.phmmResultFile()) {
+      this.apiService.deleteFile(this.phmmResultFile()).subscribe();
+    }
+    if (this.simulationResultFile()) {
+      this.apiService.deleteFile(this.simulationResultFile()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {

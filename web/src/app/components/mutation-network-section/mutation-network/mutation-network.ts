@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -23,7 +23,7 @@ import { FileService } from '../../../shared/file-service';
 })
 
 
-export class MutationNetwork {
+export class MutationNetwork implements OnDestroy {
 
   tableData: any[] = [];
 
@@ -61,11 +61,28 @@ export class MutationNetwork {
   }
 
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
+    this.uploadComplete = false;
     this.processedFileName.set('');
     this.errorMessage.set('');
     this.tableData = [];
     console.log('File selected:', result.fileName);
+  }
+
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
   }
 
   onUploadComplete(result: FileUploadResult): void {
@@ -127,15 +144,19 @@ export class MutationNetwork {
         return of(null);
       }),
       catchError(error => {
-        console.error('Clustering failed:', error);
-        let errorMessage = 'Clustering failed!';
-        alert(errorMessage);
+        const errorMessage = error.error?.detail || error.message || 'Mutation network failed';
+        alert(`Mutation network failed: ${errorMessage}`);
         return of(null);
       }),
       finalize(() => {
         this.isProcessing.set(false);
       })
     ).subscribe();
+  }
+
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
   }
 
   onDownload(): void {

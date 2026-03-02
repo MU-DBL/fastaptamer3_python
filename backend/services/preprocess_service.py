@@ -1,3 +1,4 @@
+import asyncio
 import shutil
 import time
 import numpy as np
@@ -6,8 +7,9 @@ from Bio import SeqIO
 import regex
 import os
 from routers.progress import send_progress
-from services import file_service 
+from services import file_service
 import subprocess
+import state
 from numba import jit
 
 @jit(nopython=True)
@@ -223,15 +225,26 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
         
         await send_progress(job_id, 'trimming', 'Running adapter trimming...', 10)
         cutadapt_start = time.time()
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        state.current_process = proc
+
+        # Poll until cutadapt finishes, sending heartbeat updates so SSE stays live
+        while proc.poll() is None:
+            await asyncio.sleep(5)
+            elapsed = int(time.time() - cutadapt_start)
+            await send_progress(job_id, 'trimming', f'Adapter trimming in progress... ({elapsed}s)', min(10 + elapsed, 35))
+
+        stdout = proc.stdout.read() if proc.stdout else ''
+        stderr = proc.stderr.read() if proc.stderr else ''
+        state.current_process = None
         cutadapt_time = time.time() - cutadapt_start
-        
-        if result.returncode != 0:
-            error_msg = result.stderr or result.stdout
+
+        if proc.returncode != 0:
+            error_msg = stderr or stdout
             await send_progress(job_id, 'error', f'Cutadapt failed: {error_msg}', None)
             raise RuntimeError(f"Cutadapt failed: {error_msg}") 
         
-        await send_progress(job_id, 'trimming', f'Adapter trimming completed', 40, {'time': cutadapt_time, 'output': result.stdout})
+        await send_progress(job_id, 'trimming', f'Adapter trimming completed', 40, {'time': cutadapt_time, 'output': stdout})
         
         # Fast quality filtering
         if file_format == 'fastq':

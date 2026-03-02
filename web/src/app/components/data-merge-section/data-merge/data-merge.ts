@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +36,7 @@ interface UploadingFile {
   styleUrl: './data-merge.scss',
   standalone: true
 })
-export class DataMerge {
+export class DataMerge implements OnDestroy {
   // Services
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
@@ -82,6 +82,13 @@ export class DataMerge {
   // ========================================================================
   // FILE UPLOAD AND MANAGEMENT
   // ========================================================================
+
+  ngOnDestroy(): void {
+    this.uploadedFiles.forEach(f => this.apiService.deleteFile(f).subscribe());
+    if (this.mergedFileName()) {
+      this.apiService.deleteFile(this.mergedFileName()).subscribe();
+    }
+  }
 
   onMultipleFilesSelected(event: any): void {
     const files: FileList = event.target.files;

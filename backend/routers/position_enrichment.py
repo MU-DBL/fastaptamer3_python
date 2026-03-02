@@ -126,7 +126,7 @@ async def fa_pos_enrich_endpoint(params: PosEnrichInput):
         
         raise HTTPException(
             status_code=500,
-            detail=f"Positional enrichment analysis failed: {str(e)}"
+            detail=f"Positional enrichment analysis failed ({type(e).__name__}): {str(e)}"
         )
 
 

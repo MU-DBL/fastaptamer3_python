@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # ============================================
 # Stage 1: Build Angular frontend
 # ============================================
@@ -7,7 +8,8 @@ WORKDIR /app/frontend
 
 # Copy package files and install dependencies
 COPY web/package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
 # Copy frontend source and build
 COPY web/ ./
@@ -18,33 +20,35 @@ RUN npm run build -- --configuration production
 # ============================================
 FROM python:3.10-slim AS backend-builder
 
-# Prevent prompts; speed up pip
+# Prevent prompts
 ENV DEBIAN_FRONTEND=noninteractive \
-    PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PYTHONUNBUFFERED=1
 
 # Install build dependencies (only needed for compiling)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     python3-dev \
     zlib1g-dev \
     libbz2-dev \
     liblzma-dev \
     libffi-dev \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
+    wget
 
 # Create virtual environment to isolate dependencies
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Upgrade core build tools
-RUN pip install --upgrade pip setuptools wheel "Cython<3.0"
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip setuptools wheel "Cython<3.0"
 
 # Copy and install Python dependencies
 COPY backend/requirements.txt .
-RUN pip install -r requirements.txt uvicorn
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install -r requirements.txt uvicorn
 
 # Download MUSCLE5 (linux_intel64 runs on both amd64 and arm64 via emulation)
 RUN wget https://github.com/rcedgar/muscle/releases/download/v5.1/muscle5.1.linux_intel64 -O /tmp/muscle \
@@ -60,14 +64,15 @@ ENV PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH"
 
 # Install runtime dependencies including nginx and supervisor
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
     zlib1g \
     libbz2-1.0 \
     liblzma5 \
     libgomp1 \
     nginx \
-    supervisor \
-    && rm -rf /var/lib/apt/lists/*
+    supervisor
 
 # Copy virtual environment from backend-builder
 COPY --from=backend-builder /opt/venv /opt/venv

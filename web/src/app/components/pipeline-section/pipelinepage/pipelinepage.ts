@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { lastValueFrom, map } from 'rxjs';
@@ -228,7 +228,7 @@ const OPERATION_DEFS: OperationDef[] = [
   styleUrl: './pipelinepage.scss'
 })
 
-export class Pipelinepage {
+export class Pipelinepage implements OnDestroy {
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
 
@@ -238,9 +238,29 @@ export class Pipelinepage {
   isRunning = signal(false);
 
   onInitialUpload(result: FileUploadResult): void {
+    if (this.initialFileName) {
+      this.apiService.deleteFile(this.initialFileName).subscribe();
+    }
+
     if (result.uploadComplete && result.savedFileName) {
       this.initialFileName = result.savedFileName;
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.initialFileName) {
+      this.apiService.deleteFile(this.initialFileName).subscribe();
+    }
+    
+    this.steps.forEach(step => {
+      if (step.inputFile) {
+        this.apiService.deleteFile(step.inputFile).subscribe();
+      }
+
+      if (step.outputFile) {
+        this.apiService.deleteFile(step.outputFile).subscribe();
+      }
+    });
   }
 
   // Preserve OPERATION_DEFS insertion order in keyvalue pipe

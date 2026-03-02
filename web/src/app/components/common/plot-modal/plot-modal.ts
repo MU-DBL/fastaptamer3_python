@@ -57,6 +57,7 @@ export class PlotModal implements AfterViewInit, OnDestroy {
       )
       .subscribe(([isOpen, config]) => {
         this.plotConfig = config;
+        this.cdr.detectChanges();
 
         // ✅ Create plot outside Angular zone
         this.ngZone.runOutsideAngular(() => {
@@ -138,12 +139,13 @@ export class PlotModal implements AfterViewInit, OnDestroy {
     const safeWidth = Math.max(300, containerWidth);
     const safeHeight = Math.max(200, containerHeight);
 
+    const defaultMargin = { l: 80, r: 40, t: 60, b: 80 };
     const layout = {
       ...this.plotConfig.layout,
       autosize: true,
       width: containerWidth,
       height: containerHeight,
-      margin: { l: 60, r: 40, t: 60, b: 60 },
+      margin: { ...defaultMargin, ...(this.plotConfig.layout?.margin || {}) },
     };
 
     const defaultConfig = {

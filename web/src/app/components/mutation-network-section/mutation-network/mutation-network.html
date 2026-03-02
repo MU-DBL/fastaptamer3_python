@@ -60,6 +60,12 @@
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
+      @if (isProcessing()) {
+      <button mat-raised-button color="warn" class="cancel-button" (click)="cancelProcessing()">
+        <mat-icon>stop</mat-icon>
+        Cancel
+      </button>
+      }
       <button
         mat-raised-button
         color="accent"

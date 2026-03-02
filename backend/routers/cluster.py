@@ -43,4 +43,4 @@ async def cluster(params:ClusterInput):
         return {"status": "ok", "result": os.path.basename(output_path)}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Clustering failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Clustering failed ({type(e).__name__}): {str(e)}")

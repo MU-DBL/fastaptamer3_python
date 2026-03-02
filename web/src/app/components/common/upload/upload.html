@@ -1,35 +1,63 @@
 <div class="file-upload-wrapper">
   <div class="file-upload-section">
-    <button 
-      mat-raised-button 
+    <button
+      mat-raised-button
       [class]="buttonClass"
       (click)="triggerFileInput()">
       {{ buttonText }}
     </button>
     <span class="file-name" [class.file-selected]="selectedFile">{{ fileName }}</span>
-    <input 
-      type="file" 
-      [id]="uploadId" 
+    <input
+      type="file"
+      [id]="uploadId"
       (change)="onFileSelected($event)"
       [accept]="acceptedFileTypes"
       style="display: none;">
   </div>
 
-  <!-- Upload Progress Bar -->
-  @if (isUploading || isComplete) {
-    <div class="progress-container">
-      <mat-progress-bar
-        mode="determinate"
-        [value]="progress"
-        [class.complete]="isComplete">
-      </mat-progress-bar>
-      <span class="progress-text" [class.complete]="isComplete">
-        {{ isComplete ? 'Upload complete' : 'Uploading... ' + progress + '%' }}
-      </span>
+  <!-- Step-by-step upload progress -->
+  @if (selectedFile) {
+    <div class="upload-steps">
+
+      <div class="step done">
+        <div class="step-circle"><mat-icon>check</mat-icon></div>
+        <span class="step-label">Selected</span>
+      </div>
+
+      <div class="step-connector" [class.active]="isUploading || isComplete"></div>
+
+      <div class="step" [class.active]="isUploading && !isComplete" [class.done]="isComplete" [class.error]="uploadError">
+        <div class="step-circle">
+          @if (isComplete) { <mat-icon>check</mat-icon> }
+          @else if (uploadError) { <mat-icon>close</mat-icon> }
+          @else if (isUploading) { <mat-icon class="spinning">sync</mat-icon> }
+          @else { <span>2</span> }
+        </div>
+        <span class="step-label">
+          @if (isComplete) { Uploaded }
+          @else if (uploadError) { Failed }
+          @else if (isUploading) { Uploading {{ progress }}% }
+          @else { Uploading }
+        </span>
+      </div>
+
+      <div class="step-connector" [class.active]="isComplete"></div>
+
+      <div class="step" [class.done]="isComplete">
+        <div class="step-circle">
+          @if (isComplete) { <mat-icon>check</mat-icon> }
+          @else { <span>3</span> }
+        </div>
+        <span class="step-label">Ready</span>
+      </div>
+
     </div>
+    @if (uploadError) {
+      <p class="upload-error">{{ uploadError }}</p>
+    }
   }
 
   <p class="notice">
-    *Do not start until loading bar shows 'Upload complete'.<br>
+    *Do not start until step 3 shows 'Ready'.<br>
   </p>
 </div>

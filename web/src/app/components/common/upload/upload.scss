@@ -35,35 +35,106 @@
   color: #333;
 }
 
-/* Progress Bar Styles */
-.progress-container {
-  margin-top: 15px;
-  margin-bottom: 10px;
+/* Step progress */
+.upload-steps {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  margin-bottom: 8px;
 }
 
-.progress-container ::ng-deep .mat-mdc-progress-bar {
-  height: 8px;
-  border-radius: 4px;
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
 }
 
-.progress-container ::ng-deep .mdc-linear-progress__bar-inner {
-  border-color: #1976d2;
-}
-
-.progress-container ::ng-deep .mat-mdc-progress-bar.complete .mdc-linear-progress__bar-inner {
-  border-color: #4caf50;
-}
-
-.progress-text {
-  display: block;
-  margin-top: 8px;
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e0e0;
+  color: #999;
   font-size: 13px;
-  color: #666;
+  font-weight: 600;
+  transition: background 0.3s ease, color 0.3s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+}
+
+.step.active .step-circle {
+  background: #1976d2;
+  color: white;
+}
+
+.step.done .step-circle {
+  background: #4caf50;
+  color: white;
+}
+
+.step.error .step-circle {
+  background: #d32f2f;
+  color: white;
+}
+
+.step-label {
+  font-size: 11px;
+  color: #bbb;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.step.active .step-label {
+  color: #1976d2;
   font-weight: 500;
 }
 
-.progress-text.complete {
+.step.done .step-label {
   color: #4caf50;
+  font-weight: 500;
+}
+
+.step.error .step-label {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: #e0e0e0;
+  margin: 0 6px;
+  margin-bottom: 18px;
+  transition: background 0.3s ease;
+}
+
+.step-connector.active {
+  background: #4caf50;
+}
+
+.upload-error {
+  font-size: 12px;
+  color: #d32f2f;
+  margin: 4px 0 0;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .link {

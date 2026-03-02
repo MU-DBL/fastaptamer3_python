@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, NgZone } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -19,7 +19,7 @@ export class ApiService {
   private baseUrl = environment.apiUrl;
   private eventSources = new Map<string, EventSource>();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private zone: NgZone) {}
 
   startPreprocessing(params: {
     input_path: string;
@@ -48,24 +48,28 @@ export class ApiService {
       this.eventSources.set(jobId, eventSource);
 
       eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          observer.next(data);
-          // console.log('✅ Parsed event:', data);
-          // Complete stream if job is done
-          if (data.stage === 'complete' || data.stage === 'error') {
-            observer.complete();
-            this.closeConnection(jobId);
+        this.zone.run(() => {
+          try {
+            const data = JSON.parse(event.data);
+            observer.next(data);
+            if (data.stage === 'complete' || data.stage === 'error') {
+              observer.complete();
+              this.closeConnection(jobId);
+            }
+          } catch (error) {
+            console.error('Error parsing SSE data:', error);
           }
-        } catch (error) {
-          console.error('Error parsing SSE data:', error);
-        }
+        });
       };
 
-      eventSource.onerror = (error) => {
-        console.error('SSE error:', error);
-        observer.error(error);
-        this.closeConnection(jobId);
+      eventSource.onerror = (_error) => {
+        if (eventSource.readyState === EventSource.CLOSED) {
+          this.zone.run(() => {
+            observer.error(new Error('SSE connection closed'));
+            this.closeConnection(jobId);
+          });
+        }
+        // readyState === CONNECTING means browser is auto-reconnecting — ignore
       };
 
       // Cleanup function
@@ -85,6 +89,10 @@ export class ApiService {
 
   cancelJob(jobId: string): void {
     this.closeConnection(jobId);
+  }
+
+  cancelProcesses(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/cancel`, {});
   }
 
   // Upload file
@@ -121,8 +129,7 @@ export class ApiService {
 
   // Recount
   recount(params: {
-    input_path_1: string;
-    input_path_2: string;
+    input_paths: string[];
     scaling_factor: number;
     output_format: string;
   }): Observable<any> {

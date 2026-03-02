@@ -40,4 +40,4 @@ async def get_cluster_list(params: ClusterListInput):
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to read clusters: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to read clusters ({type(e).__name__}): {str(e)}")

@@ -73,7 +73,7 @@ async def cluster_msa_endpoint(params: ClusterMSAInput):
         }
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Cluster MSA failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Cluster MSA failed ({type(e).__name__}): {str(e)}")
 
 
 
@@ -129,7 +129,7 @@ async def calculate_msa_entropy(params: MSAAnalysisInput):
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Entropy calculation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Entropy calculation failed ({type(e).__name__}): {str(e)}")
 
 
 # ============= Mutual Information API =============
@@ -183,7 +183,7 @@ async def calculate_msa_mutual_info(params: MSAAnalysisInput):
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Mutual information calculation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Mutual information calculation failed ({type(e).__name__}): {str(e)}")
 
 
 def sequences_to_matrix(df: pd.DataFrame):
