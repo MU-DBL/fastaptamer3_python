@@ -26,6 +26,7 @@ interface OperationDef {
   defaultParams: Record<string, any>;
   paramLabels: Record<string, string>;
   paramOptions?: Record<string, any[]>;  // fixed choices → renders as <mat-select>
+  paramOptionLabels?: Record<string, Record<string, string>>;  // value → display label
   possibleNextSteps?: string[];
 }
 
@@ -134,12 +135,20 @@ const OPERATION_DEFS: OperationDef[] = [
       min_reads: 10,
       length_min: 5,
       length_max: 10,
+      alphabet: 'dna',
     },
     paramLabels: {
       min_reads: 'Min Reads',
       length_min: 'Min Motif Length',
       length_max: 'Max Motif Length',
-    }
+      alphabet: 'Sequence Alphabet',
+    },
+    paramOptions: {
+      alphabet: ['dna', 'protein'],
+    },
+    paramOptionLabels: {
+      alphabet: { dna: 'Nucleotide', protein: 'AminoAcid' },
+    },
   },
   {
     key: 'mutation-network',
@@ -198,6 +207,9 @@ const OPERATION_DEFS: OperationDef[] = [
     },
     paramOptions: {
       seq_type: ['dna', 'protein'],
+    },
+    paramOptionLabels: {
+      seq_type: { dna: 'Nucleotide', protein: 'AminoAcid' },
     },
     possibleNextSteps: ['cluster-phmm'],
   },
@@ -306,6 +318,11 @@ export class Pipelinepage implements OnDestroy {
     return OPERATION_DEFS.find(d => d.key === opKey)?.paramOptions?.[paramKey] ?? null;
   }
 
+  getParamOptionLabel(opKey: string, paramKey: string, value: any): string {
+    const label = OPERATION_DEFS.find(d => d.key === opKey)?.paramOptionLabels?.[paramKey]?.[value];
+    return label ?? String(value);
+  }
+
   getStepError(index: number): string | null {
     if (index === 0) return null;
     const prevDef = OPERATION_DEFS.find(d => d.key === this.steps[index - 1].operationKey);
@@ -373,6 +390,7 @@ export class Pipelinepage implements OnDestroy {
           min_reads: step.params['min_reads'],
           length_range: [step.params['length_min'], step.params['length_max']],
           output_format: 'csv',
+          alphabet: step.params['alphabet'],
         }).pipe(map((r: any) => r.result)));
       case 'mutation-network':
         return lastValueFrom(this.apiService.mutationNetwork(p('csv')).pipe(map((r: any) => r.result)));

@@ -318,6 +318,7 @@ export class ApiService {
     min_reads: number;
     length_range: number[];
     output_format: string;
+    alphabet: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-discovery`, params);
   }

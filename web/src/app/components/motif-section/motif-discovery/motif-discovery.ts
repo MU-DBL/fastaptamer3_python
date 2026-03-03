@@ -48,6 +48,7 @@ export class MotifDiscovery implements OnDestroy {
   minLength: number = 5;
   maxLength: number = 10;
   uploadComplete: boolean = false;
+  alphabet: string = 'dna';
   
   // Plot customization options
   showPlotCustomization: string = 'no';
@@ -140,7 +141,8 @@ export class MotifDiscovery implements OnDestroy {
       input_path: this.savedFileName,
       min_reads: this.minReads,
       length_range: [this.minLength, this.maxLength],
-      output_format: 'csv'
+      output_format: 'csv',
+      alphabet: this.alphabet
     };
 
     console.log('Starting motif discovery with parameters:', params);

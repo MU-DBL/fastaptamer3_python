@@ -67,7 +67,7 @@
                     [disabled]="isRunning()"
                     class="param-select">
                     @for (opt of options; track opt) {
-                      <mat-option [value]="opt">{{ opt }}</mat-option>
+                      <mat-option [value]="opt">{{ getParamOptionLabel(step.operationKey, entry.key, opt) }}</mat-option>
                     }
                   </mat-select>
                 } @else {

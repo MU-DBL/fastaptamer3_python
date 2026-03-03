@@ -16,7 +16,7 @@ class MotifTrackerInput(BaseModel):
     population_names: List[str]
     query_list: List[str]  # List of motif patterns
     query_aliases: Optional[List[str]] = None
-    motif_type: str = "Nucleotide"
+    motif_type: str = "Nucleotide"  # "Nucleotide", "AminoAcid", or "String"
     output_format: str = "csv"
 
 

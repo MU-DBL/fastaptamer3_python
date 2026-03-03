@@ -14,11 +14,15 @@ from services.constants import ColumnName
 router = APIRouter()
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 
+DNA_ALPHABET = "ACGT"
+PROTEIN_ALPHABET = "ACDEFGHIKLMNPQRSTVWY"
+
 class MotifDiscoveryInput(BaseModel):
     input_path: str
     min_reads: int = Field(default=10, ge=1)
     length_range: List[int] = Field(default_factory=lambda: [5, 10])
     output_format: str = "csv"
+    alphabet: str = "dna"  # "dna" or "protein"
 
 
 def calculate_subsequence_frequencies(sequences: List[str]) -> Counter:
@@ -30,13 +34,14 @@ def calculate_subsequence_frequencies(sequences: List[str]) -> Counter:
                 freq[seq[i:j]] += 1
     return freq
 
-def calculate_base_frequencies(sequences: List[str]) -> dict:
+def calculate_base_frequencies(sequences: List[str], alphabet: str) -> dict:
     counts = Counter("".join(sequences))
-    total = sum(counts[b] for b in "ACGT")
+    total = sum(counts[b] for b in alphabet)
+    uniform = 1.0 / len(alphabet)
 
     return {
-        b: counts.get(b, 0) / total if total else 0.25
-        for b in "ACGT"
+        b: counts.get(b, 0) / total if total else uniform
+        for b in alphabet
     }
 
 def expected_motif_probability(motif: str, base_freqs: dict) -> float:
@@ -123,8 +128,9 @@ async def motif_discovery(params: MotifDiscoveryInput):
 
         sequences = df[ColumnName.SEQUENCES].tolist()
 
+        alphabet = PROTEIN_ALPHABET if params.alphabet == "protein" else DNA_ALPHABET
         subseq_freq = calculate_subsequence_frequencies(sequences)
-        base_freqs = calculate_base_frequencies(sequences)
+        base_freqs = calculate_base_frequencies(sequences, alphabet)
 
         motif_df = discover_enriched_motifs(
             sequences,

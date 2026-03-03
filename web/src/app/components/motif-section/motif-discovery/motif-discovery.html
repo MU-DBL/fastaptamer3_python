@@ -9,8 +9,14 @@
       (uploadComplete)="onUploadComplete($event)">
     </app-upload>
 
-    <p class="info-note">*This currently only supports DNA characters, but alternative alphabets will be supported soon!
-    </p>
+    <label class="section-label">Sequence alphabet:
+      <mat-icon class="info-icon"
+        matTooltip="Select the alphabet matching your input sequences">help_outline</mat-icon>
+    </label>
+    <mat-radio-group [(ngModel)]="alphabet" class="radio-group">
+      <mat-radio-button value="dna">Nucleotide</mat-radio-button>
+      <mat-radio-button value="protein">AminoAcid</mat-radio-button>
+    </mat-radio-group>
 
     <label class="section-label">Min. number of reads to consider:
       <mat-icon class="info-icon"
