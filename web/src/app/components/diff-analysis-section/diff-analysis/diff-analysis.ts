@@ -217,7 +217,12 @@ export class DiffAnalysis implements OnDestroy {
   // ========================================================================
   // DIFFERENTIAL ANALYSIS
   // ========================================================================
-  
+
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
+  }
+
   ngOnDestroy(): void {
     this.uploadedFilesCond1.forEach(f => this.apiService.deleteFile(f).subscribe());
     this.uploadedFilesCond2.forEach(f => this.apiService.deleteFile(f).subscribe());

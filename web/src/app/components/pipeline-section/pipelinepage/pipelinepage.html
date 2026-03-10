@@ -104,6 +104,13 @@
         <mat-icon [class.spinning]="isRunning()">{{ isRunning() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isRunning() ? 'Running...' : 'Run Pipeline' }}
       </button>
+
+      @if (isRunning()) {
+      <button mat-raised-button color="accent" class="cancel-button" (click)="cancelPipeline()">
+        <mat-icon>stop</mat-icon>
+        Cancel
+      </button>
+      }
     </div>
   </div>
 

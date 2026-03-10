@@ -35,7 +35,7 @@
     <div class="slider-group">
       <div class="slider-header">
         <span class="value-chip range-min">Min 1</span>
-        <span class="value-chip">{{ maxDistance}}</span>
+        <input type="number" [min]="1" [max]="5" [step]="1" [(ngModel)]="maxDistance">
         <span class="value-chip range-max">Max 5</span>
       </div>
       <div class="dual-range-container">

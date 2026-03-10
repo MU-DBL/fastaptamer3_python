@@ -17,6 +17,13 @@
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
+      @if (isProcessing()) {
+      <button mat-raised-button color="accent" class="cancel-button" (click)="cancelProcessing()">
+        <mat-icon>stop</mat-icon>
+        Cancel
+      </button>
+      }
+
       <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
         [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
@@ -180,6 +187,13 @@
         <mat-icon>scatter_plot</mat-icon>
         {{ selectedClusters().length === 0 ? 'Select clusters first' : 'k-mer plot' }}
       </button>
+
+      @if (isKmerProcessing()) {
+      <button mat-raised-button color="accent" class="cancel-button" (click)="cancelKmerProcessing()">
+        <mat-icon>stop</mat-icon>
+        Cancel
+      </button>
+      }
     </div>
 
     <p class="note-text">*Characters outside of [A,C,G,T,U] converted to 'X'.</p>

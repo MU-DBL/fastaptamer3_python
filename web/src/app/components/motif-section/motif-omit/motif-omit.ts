@@ -53,6 +53,11 @@ export class MotifOmit implements OnDestroy {
   // Table data
   tableData: any[] = [];
 
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
+  }
+
   ngOnDestroy(): void {
     if (this.savedFileName) {
       this.apiService.deleteFile(this.savedFileName).subscribe();

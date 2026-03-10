@@ -27,8 +27,8 @@
     <div class="slider-group">
       <div class="slider-header">
         <span class="value-chip range-min">Min 1</span>
-        <span class="value-chip">{{ sequenceLengthMin }}</span>
-        <span class="value-chip">{{ sequenceLengthMax }}</span>
+        <input type="number" [min]="1" [max]="sequenceLengthMax" [(ngModel)]="sequenceLengthMin" />
+        <input type="number" [min]="sequenceLengthMin" [max]="sequenceLengthRange" [(ngModel)]="sequenceLengthMax" />
         <span class="value-chip range-max">Max {{ sequenceLengthRange }}</span>
       </div>
       <div class="dual-range-container">
@@ -43,11 +43,10 @@
 
     <label class="section-label">Maximum allowed average error probability per sequence: <mat-icon class="info-icon"
         matTooltip="Sets the maximum tolerance for sequencing noise. This filter calculates the mean error probability across each read using Phred quality scores; any sequence exceeding this average is discarded to ensure data integrity.">help_outline</mat-icon></label>
-
     <div class="slider-group">
       <div class="slider-header">
         <span class="value-chip range-min">Min 0.001</span>
-        <span class="value-chip">{{ maxAllowedError.toFixed(3) }}</span>
+        <input type="number" [min]="0.001" [max]="maxErrorRange" [step]="0.001" [(ngModel)]="maxAllowedError" />
         <span class="value-chip range-max">Max {{ maxErrorRange }}</span>
       </div>
       <div class="dual-range-container">

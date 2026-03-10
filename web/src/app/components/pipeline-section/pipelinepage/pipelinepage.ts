@@ -176,7 +176,7 @@ const OPERATION_DEFS: OperationDef[] = [
   },
   {
     key: 'cluster',
-    label: 'Cluster (LED)',
+    label: 'Cluster',
     defaultParams: {
       min_reads: 10,
       max_led: 7,
@@ -249,6 +249,7 @@ export class Pipelinepage implements OnDestroy {
   steps: PipelineStep[] = [];
   initialFileName = '';
   isRunning = signal(false);
+  private cancelled = false;
 
   onInitialUpload(result: FileUploadResult): void {
     if (this.initialFileName) {
@@ -339,7 +340,20 @@ export class Pipelinepage implements OnDestroy {
     return !this.steps.some((_, i) => this.getStepError(i) !== null);
   }
 
+  cancelPipeline(): void {
+    this.cancelled = true;
+    this.apiService.cancelProcesses().subscribe();
+    const runningStep = this.steps.find(s => s.status === 'running');
+    if (runningStep) {
+      runningStep.status = 'error';
+      runningStep.error = 'Cancelled by user';
+      this.cdr.detectChanges();
+    }
+    this.isRunning.set(false);
+  }
+
   async runPipeline(): Promise<void> {
+    this.cancelled = false;
     for (const step of this.steps) {
       step.status = 'idle';
       step.outputFile = undefined;
@@ -352,20 +366,24 @@ export class Pipelinepage implements OnDestroy {
     let currentFile = this.initialFileName;
 
     for (const step of this.steps) {
+      if (this.cancelled) break;
       step.status = 'running';
       step.inputFile = currentFile;
       this.cdr.detectChanges();
       try {
         const outputFile = await this.executeStep(step, currentFile);
+        if (this.cancelled) break;
         if (!outputFile) throw new Error('Step returned no output file path');
         currentFile = outputFile;
         step.outputFile = currentFile;
         step.status = 'complete';
         this.cdr.detectChanges();
       } catch (err: any) {
-        step.status = 'error';
-        step.error = err?.error?.detail || err?.message || 'Processing failed';
-        this.cdr.detectChanges();
+        if (!this.cancelled) {
+          step.status = 'error';
+          step.error = err?.error?.detail || err?.message || 'Processing failed';
+          this.cdr.detectChanges();
+        }
         break;
       }
     }

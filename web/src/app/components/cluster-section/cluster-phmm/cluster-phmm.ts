@@ -59,6 +59,11 @@ export class ClusterPhmm implements OnDestroy {
     console.log('File selected:', result.fileName);
   }
 
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
+  }
+
   ngOnDestroy(): void {
     if (this.savedFileName) {
       this.apiService.deleteFile(this.savedFileName).subscribe();

@@ -25,7 +25,7 @@
     <div class="slider-group">
       <div class="slider-header">
         <span class="value-chip range-min">1</span>
-        <span class="value-chip">{{ ledThreshold }}</span>
+        <input type="number" [min]="1" [max]="20" [step]="1" [(ngModel)]="ledThreshold">
         <span class="value-chip range-max">20</span>
       </div>
       <div class="dual-range-container">
@@ -42,6 +42,13 @@
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Recluster' }}
       </button>
+
+      @if (isProcessing()) {
+      <button mat-raised-button color="accent" class="cancel-button" (click)="cancelProcessing()">
+        <mat-icon>stop</mat-icon>
+        Cancel
+      </button>
+      }
 
       <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
         [disabled]="!processedFileName()" (click)="onDownload()">

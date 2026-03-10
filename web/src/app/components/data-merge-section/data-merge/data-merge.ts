@@ -83,6 +83,11 @@ export class DataMerge implements OnDestroy {
   // FILE UPLOAD AND MANAGEMENT
   // ========================================================================
 
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
+  }
+
   ngOnDestroy(): void {
     this.uploadedFiles.forEach(f => this.apiService.deleteFile(f).subscribe());
     if (this.mergedFileName()) {

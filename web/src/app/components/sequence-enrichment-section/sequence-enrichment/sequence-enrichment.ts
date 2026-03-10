@@ -147,6 +147,11 @@ export class SequenceEnrichment implements OnDestroy {
     this.uploadComplete2 = false;
   }
 
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
+  }
+
   ngOnDestroy(): void {
     if (this.savedFileName1) {
       this.apiService.deleteFile(this.savedFileName1).subscribe();

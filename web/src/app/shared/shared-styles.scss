@@ -69,6 +69,15 @@
   text-decoration: underline;
 }
 
+.slider-header input {
+  width: 70px;
+  text-align: center;
+  border-radius: 20px;
+  border: 2px solid #1976d2;
+  padding: 4px 6px;
+  font-size: 14px;
+}
+
 // Radio groups
 .radio-group {
   display: flex;

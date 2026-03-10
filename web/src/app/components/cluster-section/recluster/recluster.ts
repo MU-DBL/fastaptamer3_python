@@ -135,6 +135,11 @@ export class Recluster implements OnDestroy {
   // ========================================================================
   // FILE UPLOAD HANDLERS - FILE 1
   // ========================================================================
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
+  }
+
   ngOnDestroy(): void {
     if (this.savedFileName1) {
       this.apiService.deleteFile(this.savedFileName1).subscribe();

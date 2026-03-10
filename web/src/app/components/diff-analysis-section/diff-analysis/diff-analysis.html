@@ -138,7 +138,7 @@
     <div class="slider-group">
       <div class="slider-header">
         <span class="value-chip range-min">0.01</span>
-        <span class="value-chip">{{ pCutoff.toFixed(2) }}</span>
+        <input type="number" [min]="0.01" [max]="0.5" [step]="0.01" [(ngModel)]="pCutoff">
         <span class="value-chip range-max">0.50</span>
       </div>
       <div class="dual-range-container">
@@ -160,8 +160,15 @@
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
-      <button 
-        mat-raised-button 
+      @if (isProcessing()) {
+      <button mat-raised-button color="accent" class="cancel-button" (click)="cancelProcessing()">
+        <mat-icon>stop</mat-icon>
+        Cancel
+      </button>
+      }
+
+      <button
+        mat-raised-button
         color="accent"
         class="download-button"
         [class.download-ready]="processedFileName()"

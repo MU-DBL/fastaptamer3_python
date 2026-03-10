@@ -297,6 +297,11 @@ export class Recount implements OnDestroy {
     });
   }
 
+  cancelProcessing(): void {
+    this.apiService.cancelProcesses().subscribe();
+    this.isProcessing.set(false);
+  }
+
   ngOnDestroy(): void {
     this.uploadedFiles.forEach(filename => {
       this.apiService.deleteFile(filename).subscribe();
