@@ -134,7 +134,7 @@ export class MotifDiscovery implements OnDestroy {
     }
 
     if (this.minLength > this.maxLength) {
-      alert('Minimum length must be less than or equal to maximum length!');
+      alert('Minimum length must be less than maximum length!');
       return;
     }
 

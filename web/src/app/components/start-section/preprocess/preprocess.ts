@@ -83,6 +83,11 @@ export class Preprocess implements OnDestroy {
     // reset log signal
     this.logs.set([{ stage: 'connected', message: 'Connecting to server...', progress: null, timestamp: Date.now() / 1000 }]);
     this.progress = 0;
+    
+    if (this.sequenceLengthMin > this.sequenceLengthMax) {
+      alert('Minimum length must be less than maximum length!');
+      return;
+    }
 
     const params = {
       input_path: this.savedFileName,
