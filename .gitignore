@@ -1,6 +1,7 @@
 .DS_Store
 /backend/files
 .venv/
+.claude/
 
 # Compiled output
 /web/dist

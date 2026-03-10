@@ -64,5 +64,3 @@ npm cache clean --force
 # Reinstall dependencies
 npm install
 
-# Build image
-docker build -f Dockerfile -t yongfangqin/fastaptamer3-frontend .

@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -20,7 +20,7 @@ import { Table, TableConfig } from '../../common/table/table';
   templateUrl: './motif-omit.html',
   styleUrl: './motif-omit.scss'
 })
-export class MotifOmit {
+export class MotifOmit implements OnDestroy {
 
   tableConfig: TableConfig = {
     columns: [
@@ -53,8 +53,24 @@ export class MotifOmit {
   // Table data
   tableData: any[] = [];
 
+  ngOnDestroy(): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
+  }
+
   onFileSelected(result: FileUploadResult): void {
+    if (this.savedFileName) {
+      this.apiService.deleteFile(this.savedFileName).subscribe();
+    }
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
     this.selectedFile = result.file;
+    this.savedFileName = '';
     this.processedFileName.set('');
     this.tableData = [];
     console.log('File selected:', result.fileName);

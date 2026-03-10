@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { lastValueFrom, map } from 'rxjs';
@@ -243,6 +243,7 @@ const OPERATION_DEFS: OperationDef[] = [
 export class Pipelinepage implements OnDestroy {
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
+  private cdr = inject(ChangeDetectorRef);
 
   operationDefs = OPERATION_DEFS;
   steps: PipelineStep[] = [];
@@ -353,15 +354,18 @@ export class Pipelinepage implements OnDestroy {
     for (const step of this.steps) {
       step.status = 'running';
       step.inputFile = currentFile;
+      this.cdr.detectChanges();
       try {
         const outputFile = await this.executeStep(step, currentFile);
         if (!outputFile) throw new Error('Step returned no output file path');
         currentFile = outputFile;
         step.outputFile = currentFile;
         step.status = 'complete';
+        this.cdr.detectChanges();
       } catch (err: any) {
         step.status = 'error';
         step.error = err?.error?.detail || err?.message || 'Processing failed';
+        this.cdr.detectChanges();
         break;
       }
     }

@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, OnDestroy, Output, inject, ChangeDetectorRef, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
+import { Subscription } from 'rxjs';
 
 export interface FileUploadResult {
   file: File;
@@ -34,6 +35,7 @@ export class Upload implements OnDestroy{
 
   private apiService = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
+  private readonly platformId = inject(PLATFORM_ID);
 
   selectedFile: File | null = null;
   fileName: string = '';
@@ -45,15 +47,30 @@ export class Upload implements OnDestroy{
   
   // Generate unique ID for each upload component instance
   readonly uploadId: string = `fileUpload-${Math.random().toString(36).substr(2, 9)}`;
-  private progressInterval: any = null
+  private progressInterval: any = null;
+  private uploadSubscription: Subscription | null = null;
+  private readonly onBeforeUnload = () => this.abortUpload();
 
   ngOnInit(): void {
     this.fileName = this.placeholderText;
+    if (isPlatformBrowser(this.platformId)) {
+      window.addEventListener('beforeunload', this.onBeforeUnload);
+    }
   }
 
   ngOnDestroy(): void {
-    // Clean up interval on component destroy
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('beforeunload', this.onBeforeUnload);
+    }
     this.clearProgressInterval();
+    this.abortUpload();
+  }
+
+  private abortUpload(): void {
+    if (this.uploadSubscription) {
+      this.uploadSubscription.unsubscribe();
+      this.uploadSubscription = null;
+    }
   }
 
   private clearProgressInterval(): void {
@@ -92,14 +109,15 @@ export class Upload implements OnDestroy{
       }, this.uploadSpeed);
 
       // Upload file to backend
-      this.apiService.uploadFile(file).subscribe({
+      this.uploadSubscription = this.apiService.uploadFile(file).subscribe({
         next: (response) => {
           this.clearProgressInterval();
+          this.uploadSubscription = null;
           this.progress = 100;
           this.isComplete = true;
           this.isUploading = false;
           this.savedFileName = response.saved_filename;
-          
+
           // Emit upload complete event
           this.uploadComplete.emit({
             file: file,
@@ -110,10 +128,11 @@ export class Upload implements OnDestroy{
         },
         error: (error) => {
           this.clearProgressInterval();
+          this.uploadSubscription = null;
           this.isUploading = false;
           this.progress = 0;
           this.uploadError = error.error?.detail || 'Upload failed';
-          
+
           this.uploadComplete.emit({
             file: file,
             fileName: file.name,
@@ -131,7 +150,8 @@ export class Upload implements OnDestroy{
   }
 
   resetUpload(): void {
-    this.clearProgressInterval(); // Clear interval on reset
+    this.clearProgressInterval();
+    this.abortUpload();
     this.selectedFile = null;
     this.fileName = this.placeholderText;
     this.savedFileName = '';

@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -36,7 +36,7 @@ interface UploadingFile {
   templateUrl: './motif-tracker.html',
   styleUrl: './motif-tracker.scss'
 })
-export class MotifTracker {
+export class MotifTracker implements OnDestroy {
   private apiService = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -124,10 +124,20 @@ export class MotifTracker {
   trackerData: any[] = [];
   enrichmentData: any[] = [];
 
+  ngOnDestroy(): void {
+    this.uploadedFiles.forEach(f => this.apiService.deleteFile(f).subscribe());
+    if (this.processedFileName()) {
+      this.apiService.deleteFile(this.processedFileName()).subscribe();
+    }
+    if (this.enrichmentFileName()) {
+      this.apiService.deleteFile(this.enrichmentFileName()).subscribe();
+    }
+  }
+
   // ========================================================================
   // FILE MANAGEMENT
   // ========================================================================
-  
+
   onMultipleFilesSelected(event: any): void {
     const files: FileList = event.target.files;
     if (!files || files.length === 0) return;

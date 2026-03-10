@@ -13,6 +13,30 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+# Paths that should NOT trigger cancellation (file I/O, progress streaming, health, upload)
+_NO_CANCEL_PREFIXES = ('/health', '/api/v1/upload', '/api/v1/clear-files', '/')
+
+class CancelMiddleware:
+    """Pure ASGI middleware — passes receive/send through unchanged to avoid
+    BaseHTTPMiddleware body-buffering deadlocks on large file uploads."""
+    def __init__(self, app):
+        self._app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            method = scope.get("method", "")
+            path = scope.get("path", "")
+            if method == "POST" and not any(path.startswith(p) for p in _NO_CANCEL_PREFIXES):
+                # Kill active subprocess (cutadapt, muscle, etc.)
+                if state.current_process is not None and state.current_process.poll() is None:
+                    state.current_process.kill()
+                    state.current_process = None
+                # Cancel active asyncio background task (preprocess, etc.)
+                if state.current_task is not None and not state.current_task.done():
+                    state.current_task.cancel()
+                    state.current_task = None
+        await self._app(scope, receive, send)
+
 app = FastAPI(
     title="Fastaptamer3",
     description="Fastaptamer3",
@@ -27,27 +51,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(CancelMiddleware)
 
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 UPLOAD_DIR.mkdir(exist_ok=True)
-
-# Paths that should NOT trigger cancellation (file I/O, progress streaming, health)
-_NO_CANCEL_PREFIXES = ('/health','/')
-
-@app.middleware("http")
-async def cancel_running_processes(request: Request, call_next):
-    if request.method == "POST" and not any(request.url.path.startswith(p) for p in _NO_CANCEL_PREFIXES):
-        # Kill active subprocess (cutadapt, muscle, etc.)
-        if state.current_process is not None and state.current_process.poll() is None:
-            state.current_process.kill()
-            state.current_process = None
-
-        # Cancel active asyncio background task (preprocess, etc.)
-        if state.current_task is not None and not state.current_task.done():
-            state.current_task.cancel()
-            state.current_task = None
-
-    return await call_next(request)
 
 # Include routers
 app.include_router(recount.router, prefix="/api/v1", tags=["recount"])
@@ -71,7 +78,7 @@ app.include_router(translate.router, prefix="/api/v1", tags=["translate"])
 app.include_router(distance.router, prefix="/api/v1", tags=["distance"])
 app.include_router(mutation_network.router, prefix="/api/v1", tags=["mutation_network"])
 app.include_router(data_merge.router, prefix="/api/v1", tags=["data_merge"])
-app.include_router(differential_analysis.router, prefix="/api/v1", tags=["data_merge"])
+app.include_router(differential_analysis.router, prefix="/api/v1", tags=["differential_analysis"])
 app.include_router(cancel.router, prefix="/api/v1", tags=["cancel"])
 
 @app.exception_handler(Exception)

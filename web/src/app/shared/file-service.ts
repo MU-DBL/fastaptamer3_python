@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 
 export enum ColumnName {
@@ -56,23 +57,10 @@ export class FileService {
   private apiService = inject(ApiService);
 
   downloadFile(filename: string): void {
-    console.log('Downloading file:', filename);
-    this.apiService.downloadFile(filename).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('Download started');
-      },
-      error: (error) => {
-        const errorMsg = error.error?.detail || 'Download failed';
-        console.error('Download error:', errorMsg);
-        alert(`Download failed: ${errorMsg}`);
-      }
-    });
+    const link = document.createElement('a');
+    link.href = `${environment.apiUrl}/download/${filename}`;
+    link.download = filename;
+    link.click();
   }
 
   parseClusterFile(blob: Blob, filename: string): Observable<any[]> {

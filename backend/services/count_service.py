@@ -1,49 +1,57 @@
 import pandas as pd
 import gzip
+from collections import Counter
 from pathlib import Path
-from Bio import SeqIO
 from Bio.Seq import Seq
 from services.constants import ColumnName
 from services import file_service
 
+
+def _read_fastq_sequences(handle):
+    """Read only sequence lines from FASTQ (every 2nd of 4 lines)."""
+    while True:
+        header = handle.readline()
+        if not header:
+            break
+        seq = handle.readline().rstrip('\n\r')
+        handle.readline()  # +
+        handle.readline()  # quality
+        yield seq
+
+
+def _read_fasta_sequences(handle):
+    """Read only sequence lines from FASTA (non-header lines)."""
+    seq_parts = []
+    for line in handle:
+        if line.startswith('>'):
+            if seq_parts:
+                yield ''.join(seq_parts)
+                seq_parts = []
+        else:
+            seq_parts.append(line.rstrip('\n\r'))
+    if seq_parts:
+        yield ''.join(seq_parts)
+
+
 def run_count(inputpath=None, reverseComplement=False, scaling_factor=1e6, output_format='fasta', output_path=None):
-    
-    # Get file extension
+
     file_path = Path(inputpath)
     ext = file_path.suffix.lower()
-    
-    # Read sequences based on file type
-    sequences = []
-    
-    if ext == '.gz':
-        # Handle gzipped files
-        stem_ext = file_path.stem.split('.')[-1].lower()
-        
-        if stem_ext == 'fastq':
-            with gzip.open(inputpath, 'rt') as handle:
-                sequences = [str(record.seq) for record in SeqIO.parse(handle, 'fastq')]
-        elif stem_ext == 'fasta':
-            with gzip.open(inputpath, 'rt') as handle:
-                sequences = [str(record.seq) for record in SeqIO.parse(handle, 'fasta')]
-        else:
-            return None
-            
-    elif ext == '.fastq':
-        with open(inputpath, 'r') as handle:
-            sequences = [str(record.seq) for record in SeqIO.parse(handle, 'fastq')]
-            
-    elif ext in ['.fasta', '.fa']:
-        with open(inputpath, 'r') as handle:
-            sequences = [str(record.seq) for record in SeqIO.parse(handle, 'fasta')]
-            
+
+    opener = gzip.open if ext == '.gz' else open
+    inner_ext = file_path.stem.split('.')[-1].lower() if ext == '.gz' else ext.lstrip('.')
+
+    if inner_ext in ('fastq', 'fq'):
+        reader = _read_fastq_sequences
+    elif inner_ext in ('fasta', 'fa'):
+        reader = _read_fasta_sequences
     else:
         return None
 
-    seq_counts = pd.Series(sequences).value_counts().reset_index()
-    seq_counts.columns = [ColumnName.SEQUENCES, ColumnName.READS]
-    
-    # Sort by reads (descending) and add rank
-    seq_counts = seq_counts.sort_values(ColumnName.READS, ascending=False).reset_index(drop=True)
+    with opener(inputpath, 'rt') as handle:
+        counter = Counter(reader(handle))
+
+    seq_counts = pd.DataFrame(counter.most_common(), columns=[ColumnName.SEQUENCES, ColumnName.READS])
     seq_counts[ColumnName.RANK] = seq_counts.index + 1
 
     total_reads = seq_counts[ColumnName.READS].sum()

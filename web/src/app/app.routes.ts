@@ -10,6 +10,7 @@ import { DiffAnalysispage } from './components/diff-analysis-section/diff-analys
 import { Distancepage } from './components/distance-section/distancepage/distancepage';
 import { MutationNetworkpage } from './components/mutation-network-section/mutation-networkpage/mutation-networkpage';
 import { Pipelinepage } from './components/pipeline-section/pipelinepage/pipelinepage';
+import { AboutPage } from './components/about/about';
 
 export const routes: Routes = [
   { path: '', component: Start },   // Default route
@@ -23,5 +24,6 @@ export const routes: Routes = [
   { path: 'distance', component: Distancepage },
   { path: 'mutation-network', component: MutationNetworkpage },
   { path: 'pipeline', component: Pipelinepage },
+  { path: 'about', component: AboutPage },
   { path: '**', component: NotFound }  // 404 - Must be last!
 ];

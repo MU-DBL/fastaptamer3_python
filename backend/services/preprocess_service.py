@@ -43,13 +43,14 @@ def run_preprocess_without_state(input_path, const5p="", const3p="",
         cmd.extend(['-a', f'{const3p}$'])
     
     cmd.extend([
+        '-j', '0',  # use all available cores
         '-m', str(length_range[0]),
         '-M', str(length_range[1]),
         '-e', '0.1',
         '-o', temp_trimmed,
         input_path
     ])
-    
+
     print("Running cutadapt...")
     result = subprocess.run(cmd, capture_output=True, text=True)
     
@@ -216,13 +217,14 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
             cmd.extend(['-a', f'{const3p}$'])
         
         cmd.extend([
+            '-j', '0',  # use all available cores
             '-m', str(length_range[0]),
             '-M', str(length_range[1]),
             '-e', '0.1',
             '-o', temp_trimmed,
             input_path
         ])
-        
+
         await send_progress(job_id, 'trimming', 'Running adapter trimming...', 10)
         cutadapt_start = time.time()
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
