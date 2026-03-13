@@ -9,6 +9,13 @@
       (uploadComplete)="onUploadComplete($event)">
     </app-upload>
 
+    <p>If your uploaded file is an already-processed translate result, click below to visualize it directly.</p>
+    <button mat-stroked-button class="visualize-result-button" (click)="onLoadResult()">
+      <mat-icon>bar_chart</mat-icon>
+      Visualize Results
+    </button>
+    <hr class="section-divider">
+
     <h3 class="section-title">Open reading frame:</h3>
     <mat-radio-group [(ngModel)]="orf" class="radio-group">
       <mat-radio-button [value]="1">1</mat-radio-button>

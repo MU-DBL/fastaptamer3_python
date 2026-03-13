@@ -16,35 +16,6 @@
   color: #333;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 16px;
-  margin: 20px 0;
-  align-items: center;
-
-  .start-button, .download-button {
-    min-width: 120px;
-    font-weight: 500;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    mat-icon {
-      margin-right: 8px;
-    }
-  }
-
-  .download-ready {
-    animation: pulse 2s infinite;
-  }
-}
-
-.section-divider {
-  margin: 32px 0;
-  border: none;
-  border-top: 1px solid #e0e0e0;
-}
 
 .radio-group {
   display: flex;

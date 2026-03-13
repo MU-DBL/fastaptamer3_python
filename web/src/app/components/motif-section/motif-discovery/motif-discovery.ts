@@ -102,6 +102,16 @@ export class MotifDiscovery implements OnDestroy {
     console.log('File selected:', result.fileName);
   }
 
+  onLoadResult(): void {
+    if (!this.savedFileName) return;
+    this.apiService.downloadFile(this.savedFileName).pipe(
+      tap(blob => {
+        this.parseFileBlob(blob, this.savedFileName);
+        this.processedFileName.set(this.savedFileName);
+      })
+    ).subscribe();
+  }
+
   cancelProcessing(): void {
     this.apiService.cancelProcesses().subscribe();
     this.isProcessing.set(false);

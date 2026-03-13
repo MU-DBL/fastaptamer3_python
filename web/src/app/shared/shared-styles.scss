@@ -263,6 +263,23 @@
   font-size: 16px;
 }
 
+
+.visualize-result-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #1e466e;
+  border-color: #1e466e;
+  font-weight: 600;
+  border-radius: 4px !important;
+  padding: 4px 14px;
+  transition: all 0.2s ease;
+}
+
+.visualize-result-button mat-icon {
+  font-size: 16px;
+}
+
 // Animations
 .spinning {
   animation: spin 1s linear infinite;

@@ -4,10 +4,17 @@
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data *</h3>
-    <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
+    <app-upload [acceptedFileTypes]="'.fasta,.csv'" [buttonText]="'Browse...'" [placeholderText]="'FASTA or CSV file'"
       [showUploadNote]="false" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
       (uploadComplete)="onFileUploadComplete($event)">
     </app-upload>
+
+    <p>If your uploaded file is an already-processed distance result, click below to visualize it directly.</p>
+    <button mat-stroked-button class="visualize-result-button" (click)="onLoadResult()">
+      <mat-icon>bar_chart</mat-icon>
+      Visualize Results
+    </button>
+    <hr class="section-divider">
 
     <mat-label class="section-title"
       matTooltip="Compute the LED between this sequence and all other sequences in the data."

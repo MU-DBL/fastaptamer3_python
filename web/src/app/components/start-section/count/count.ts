@@ -120,6 +120,15 @@ export class Count implements OnDestroy {
     this.isProcessing.set(false);
   }
 
+  onLoadResult(): void {
+    if (!this.savedFileName) return;
+    this.tableData = [];
+    this.apiService.downloadFile(this.savedFileName).pipe(
+      tap(blob => this.parseFileBlob(blob, this.savedFileName))
+    ).subscribe();
+    this.processedFileName.set(this.savedFileName);
+  }
+
   ngOnDestroy(): void {
     if (this.savedFileName) {
       this.apiService.deleteFile(this.savedFileName).subscribe();
@@ -204,8 +213,6 @@ export class Count implements OnDestroy {
     if (isCsv) {
       // Parse CSV
       const lines = content.split('\n').filter(line => line.trim());
-      const headers = lines[0].split(',');
-      
       for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',');
         if (values.length >= 6) {

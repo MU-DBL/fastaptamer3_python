@@ -188,6 +188,7 @@
   border: 1px dashed #1976d2 !important;
   color: #1976d2 !important;
   font-size: 14px;
+  border-radius: 4px 0 0 4px !important;
 
   mat-icon {
     font-size: 18px;
@@ -196,13 +197,21 @@
   }
 }
 
-// Run button
-.run-button {
-  width: 100%;
-  height: 44px;
-  font-size: 15px;
+// Run / Cancel buttons
+.run-button,
+.cancel-button {
+  flex: 1;
+  height: 42px;
+  font-size: 14px;
   font-weight: 500;
+  min-width: 100px;
+  border-radius: 4px 0 0 4px !important;
+}
+
+.run-button {
   letter-spacing: 0.5px;
+  color: #fff !important;
+  background-color: #1976d2 !important;
 }
 
 // ─── RIGHT PANEL: Results ─────────────────────────────────────────────────────

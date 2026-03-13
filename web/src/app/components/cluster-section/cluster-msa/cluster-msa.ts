@@ -111,6 +111,19 @@ export class ClusterMsa implements OnDestroy {
     }
   }
 
+  onLoadResult(): void {
+    if (!this.savedFileName) return;
+    this.clusterData = [];
+    this.apiService.downloadFile(this.savedFileName).pipe(
+      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+      tap(parsedData => {
+        this.clusterData = parsedData;
+        this.processedFileName.set(this.savedFileName);
+        this.cdr.detectChanges();
+      })
+    ).subscribe();
+  }
+
   loadClusterList(): void {
     this.isProcessing.set(true);
     this.apiService.getClusterList({ input_path: this.savedFileName }).subscribe({
@@ -128,7 +141,6 @@ export class ClusterMsa implements OnDestroy {
       error: (error) => {
         console.error('Failed to load clusters:', error);
         this.isProcessing.set(false);
-        alert('File uploaded, but failed to extract cluster list.');
       }
     });
   }
@@ -206,7 +218,7 @@ export class ClusterMsa implements OnDestroy {
 
     const seqLen = rows[0].seq.length;
     const positions = Array.from({ length: seqLen }, (_, i) => i + 1);
-    const ids = rows.map(r => r.id);
+    const rowNumbers = rows.map((_, i) => i + 1);
 
     const isProtein = this.sequenceType === 'aminoacid';
 
@@ -295,12 +307,13 @@ export class ClusterMsa implements OnDestroy {
       text: textMatrix,
       texttemplate: '%{text}',
       x: positions,
-      y: ids,
+      y: rowNumbers,
+      customdata: rows.map(r => Array(seqLen).fill(r.id)),
       colorscale,
       showscale: false,
       zmin: 0,
       zmax,
-      hovertemplate: `ID: %{y}<br>Position: %{x}<br>${hoverLabel}: %{text}<extra></extra>`
+      hovertemplate: `ID: %{customdata}<br>Position: %{x}<br>${hoverLabel}: %{text}<extra></extra>`
     };
 
     const legendEntries = isProtein ? [
@@ -339,7 +352,7 @@ export class ClusterMsa implements OnDestroy {
     const layout = {
       title: { text: 'MSA Alignment' },
       xaxis: { title: { text: 'MSA Position' }, automargin: true },
-      yaxis: { title: { text: 'Sequence ID' }, automargin: true, tickfont: { size: 10 } },
+      yaxis: { title: { text: 'Sequence' }, automargin: true, tickfont: { size: 10 } },
       height: plotHeight,
       showlegend: true,
       legend: {

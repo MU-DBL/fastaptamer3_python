@@ -159,6 +159,18 @@ export class Translate implements OnDestroy {
     }
   }
 
+  onLoadResult(): void {
+    if (!this.savedFileName) return;
+    this.translateData = [];
+    this.apiService.downloadFile(this.savedFileName).pipe(
+      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+      tap(parsedData => {
+        this.translateData = parsedData;
+        this.processedFileName.set(this.savedFileName);
+      })
+    ).subscribe();
+  }
+
   onUploadComplete(result: FileUploadResult): void {
     if (result.uploadComplete && result.savedFileName) {
       this.uploadComplete = true;

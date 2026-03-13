@@ -101,6 +101,18 @@ export class Distance implements OnDestroy {
     this.isProcessing.set(false);
   }
 
+  onLoadResult(): void {
+    if (!this.savedFileName) return;
+    this.distanceData = [];
+    this.apiService.downloadFile(this.savedFileName).pipe(
+      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+      tap(parsedData => {
+        this.distanceData = parsedData;
+        this.processedFileName.set(this.savedFileName);
+      })
+    ).subscribe();
+  }
+
   ngOnDestroy(): void {
     if (this.savedFileName) {
       this.apiService.deleteFile(this.savedFileName).subscribe();

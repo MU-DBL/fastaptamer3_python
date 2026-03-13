@@ -262,6 +262,10 @@ export class Pipelinepage implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.isRunning()) {
+      this.cancelPipeline();
+    }
+
     if (this.initialFileName) {
       this.apiService.deleteFile(this.initialFileName).subscribe();
     }

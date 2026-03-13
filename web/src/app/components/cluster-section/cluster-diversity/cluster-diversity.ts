@@ -140,6 +140,20 @@ export class ClusterDiversity implements OnDestroy {
     this.isKmerProcessing.set(false);
   }
 
+  onLoadResult(): void {
+    if (!this.savedFileName) return;
+    this.diversityData = [];
+    this.apiService.downloadFile(this.savedFileName).pipe(
+      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+      tap(parsedData => {
+        this.diversityData = parsedData;
+        const uniqueClusters = [...new Set(parsedData.map((r: any) => r[ColumnName.CLUSTER]))].sort((a: any, b: any) => a - b);
+        this.availableClusters.set(uniqueClusters as number[]);
+        this.processedFileName.set(this.savedFileName);
+      })
+    ).subscribe();
+  }
+
   ngOnDestroy(): void {
     if (this.savedFileName) {
       this.apiService.deleteFile(this.savedFileName).subscribe();

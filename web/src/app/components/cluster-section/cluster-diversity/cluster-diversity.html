@@ -5,10 +5,17 @@
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data:</h3>
-    <app-upload [acceptedFileTypes]="'.fasta'" [buttonText]="'Browse...'" [placeholderText]="'Clustered FASTA file'"
+    <app-upload [acceptedFileTypes]="'.fasta,.csv'" [buttonText]="'Browse...'" [placeholderText]="'Clustered FASTA file or Results CSV file'"
       [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
       (uploadComplete)="onUploadComplete($event)">
     </app-upload>
+
+    <p>If your uploaded file is an already-processed diversity result, click below to visualize it directly.</p>
+    <button mat-stroked-button class="visualize-result-button" (click)="onLoadResult()">
+      <mat-icon>bar_chart</mat-icon>
+      Visualize Results
+    </button>
+    <hr class="section-divider">
 
     <div class="action-buttons">
       <button mat-raised-button color="primary" class="start-button" [disabled]="!uploadComplete || isProcessing()"
