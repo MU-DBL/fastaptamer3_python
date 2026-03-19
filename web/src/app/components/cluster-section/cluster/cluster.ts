@@ -48,6 +48,8 @@ export class Cluster implements OnDestroy {
   };
 
   clusterData: any[] = [];
+  availableClusters: number[] = [];
+  extractClusterNumber: number | null = null;
 
   resultsReady = output<ClusterResultsEvent>();
 
@@ -137,6 +139,8 @@ export class Cluster implements OnDestroy {
           ),
           tap(parsedData => {
             this.clusterData = parsedData;
+            this.availableClusters = [...new Set(parsedData.map((r: any) => r[ColumnName.CLUSTER] as number))].sort((a, b) => a - b);
+            this.extractClusterNumber = this.availableClusters[0] ?? null;
             this.cdr.detectChanges();
           })
         );
@@ -152,6 +156,31 @@ export class Cluster implements OnDestroy {
         this.isProcessing.set(false);
       })
     ).subscribe();
+  }
+
+  onExtractCluster(): void {
+    if (this.extractClusterNumber === null || this.clusterData.length === 0) return;
+
+    const filtered = this.clusterData.filter(r => r[ColumnName.CLUSTER] === this.extractClusterNumber);
+    if (filtered.length === 0) {
+      alert(`No sequences found for cluster ${this.extractClusterNumber}.`);
+      return;
+    }
+
+    const lines: string[] = [];
+    filtered.forEach(r => {
+      const header = `rank=${r[ColumnName.RANK]};read=${r[ColumnName.READS]};RPU=${r[ColumnName.RPU]};cluster=${r[ColumnName.CLUSTER]};RankInCluster=${r[ColumnName.RANK_IN_CLUSTER]};LED=${r[ColumnName.LED]}`;
+      lines.push(`>${header}`);
+      lines.push(r[ColumnName.SEQUENCES]);
+    });
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cluster_${this.extractClusterNumber}.fasta`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   onDownload(): void {

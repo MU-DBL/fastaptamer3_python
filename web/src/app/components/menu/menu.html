@@ -2,9 +2,16 @@
   <div class="navbar-brand">
     FASTAptamer 3.0
   </div>
-  <ul class="navbar-menu">
-    <li *ngFor="let item of menuItems" 
-        class="navbar-item" 
+
+  <button class="hamburger" (click)="toggleMenu()" [class.open]="menuOpen" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <ul class="navbar-menu" [class.open]="menuOpen">
+    <li *ngFor="let item of menuItems"
+        class="navbar-item"
         [class.active]="isActive(item.label)"
         (click)="navigateTo(item)">
       {{ item.label }}

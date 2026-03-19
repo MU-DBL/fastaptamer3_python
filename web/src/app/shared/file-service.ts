@@ -22,6 +22,8 @@ export enum ColumnName {
   DISTANCE = 'Distance',
 
   ORIGINAL_ID = 'OriginalID',
+  ORIGINAL_CLUSTER_A = 'OriginalCluster.a',
+  ORIGINAL_CLUSTER_B = 'OriginalCluster.b',
 
   // Diversity analysis columns
   TOTAL_SEQUENCES = 'TotalSequences',

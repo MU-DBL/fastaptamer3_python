@@ -11,7 +11,12 @@ import { filter } from 'rxjs/operators';
 })
 
 export class Menu implements OnInit {
-activeRoute: string = 'Start';
+  activeRoute: string = 'Start';
+  menuOpen: boolean = false;
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
 
   menuItems = [
     { label: 'Start', route: '/start' },
@@ -20,7 +25,7 @@ activeRoute: string = 'Start';
     { label: 'Mutation Network', route: '/mutation-network' },
     { label: 'Distance', route: '/distance' },
     { label: 'Data Merge', route: '/data-merge' },
-    { label: 'Sequence Enrichment', route: '/sequence-enrichment' },
+    { label: 'Enrichment', route: '/enrichment' },
     { label: 'Differential Analysis', route: '/diff-analysis' },
     { label: 'Cluster', route: '/cluster' },
     { label: 'Pipeline', route: '/pipeline' },
@@ -43,6 +48,7 @@ activeRoute: string = 'Start';
 
   navigateTo(item: any): void {
     this.activeRoute = item.label;
+    this.menuOpen = false;
     this.router.navigate([item.route]);
   }
 

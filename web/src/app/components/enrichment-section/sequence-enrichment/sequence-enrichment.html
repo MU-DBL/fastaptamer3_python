@@ -1,13 +1,13 @@
 <div class="page-note">
-  Compares RPU values for shared sequences between two counted FASTA populations and computes log2 enrichment, providing a quantitative measure of sequence selection. Outputs an enrichment table.
+  Compares RPU values for shared sequences between two populations and computes log2 enrichment. Accepts counted FASTA files, clustered FASTA files, or extracted single-cluster FASTA files. Outputs an enrichment table.
 </div>
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data 1 *</h3>
     <app-upload
-      [acceptedFileTypes]="'.fasta,.fa'"
+      [acceptedFileTypes]="'.fasta,.fa,.csv'"
       [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'"
+      [placeholderText]="'Counted or clustered FASTA / CSV'"
       [showUploadNote]="false"
       [uploadSpeed]="200"
       (fileSelected)="onFile1Selected($event)"
@@ -16,9 +16,9 @@
 
     <h3 class="section-title">Input data 2 *</h3>
     <app-upload
-      [acceptedFileTypes]="'.fasta,.fa'"
+      [acceptedFileTypes]="'.fasta,.fa,.csv'"
       [buttonText]="'Browse...'"
-      [placeholderText]="'FASTA file'"
+      [placeholderText]="'Counted or clustered FASTA / CSV'"
       [showUploadNote]="false"
       [uploadSpeed]="200"
       (fileSelected)="onFile2Selected($event)"
@@ -201,14 +201,67 @@
       </div>
     }
 
-    <button 
-      mat-raised-button 
+    <button
+      mat-raised-button
       color="primary"
       class="plot-button"
       [disabled]="enrichmentData.length === 0"
       (click)="raPlot()">
       <mat-icon>show_chart</mat-icon>
       RA plot
+    </button>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <!-- Enrichment Box Plot Customization -->
+    <h3 class="section-title">Adjust default enrichment box plot?</h3>
+    <mat-radio-group
+      [(ngModel)]="adjustBoxPlot"
+      (change)="onAdjustBoxPlotChange()"
+      class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+
+    @if (adjustBoxPlot === 'yes') {
+      <div class="customization-panel">
+        <mat-label>X-axis - represents each cluster</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="boxPlotXAxis" />
+        </mat-form-field>
+
+        <mat-label>Y-axis - represents enrichment value</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="boxPlotYAxis" />
+        </mat-form-field>
+
+        <mat-label>Plot title</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input matInput [(ngModel)]="boxPlotTitle" />
+        </mat-form-field>
+
+        <div class="color-picker-field">
+          <label>Box outline color:</label>
+          <input type="color" [(ngModel)]="boxPlotOutline" class="color-input" />
+          <span class="color-value">{{ boxPlotOutline }}</span>
+        </div>
+
+        <div class="color-picker-field">
+          <label>Box fill color:</label>
+          <input type="color" [(ngModel)]="boxPlotFill" class="color-input" />
+          <span class="color-value">{{ boxPlotFill }}</span>
+        </div>
+      </div>
+    }
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="plot-button"
+      [disabled]="enrichmentData.length === 0"
+      (click)="enrichmentBoxPlot()">
+      <mat-icon>show_chart</mat-icon>
+      Enrichment box plot
     </button>
   </div>
 

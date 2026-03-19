@@ -35,6 +35,7 @@ export class PositionEnrichment implements OnDestroy {
 
   availableClusters: number[] = []; // Populates the mat-select
   selectedCluster: number | null = null;
+  detectedClusterColumn: string | null = null; // "Cluster", "Cluster.a", or null
   sequenceType: 'nucleotide' | 'aminoacid' = 'nucleotide';
   clusterData: any[] = [];
 
@@ -74,6 +75,7 @@ export class PositionEnrichment implements OnDestroy {
     this.clusterData = [];
     this.availableClusters = [];
     this.selectedCluster = null;
+    this.detectedClusterColumn = null;
     console.log('File selected:', result.fileName);
   }
 
@@ -102,19 +104,20 @@ export class PositionEnrichment implements OnDestroy {
     this.isProcessing.set(true);
     this.apiService.getClusterList({ input_path: this.savedFileName }).subscribe({
       next: (response) => {
-        if (response.status === 'ok' || response.clusters) {
-          this.availableClusters = response.clusters;
-          console.log('Available clusters loaded:', this.availableClusters);
-          if (this.availableClusters.length > 0) {
-            this.selectedCluster = this.availableClusters[0];
-          }
+        this.availableClusters = response.clusters ?? [];
+        this.detectedClusterColumn = response.cluster_column ?? null;
+        console.log('Available clusters loaded:', this.availableClusters, 'column:', this.detectedClusterColumn);
+        if (this.availableClusters.length > 0) {
+          this.selectedCluster = this.availableClusters[0];
+        } else {
+          this.selectedCluster = null;
         }
         this.isProcessing.set(false);
       },
       error: (error) => {
         console.error('Failed to load clusters:', error);
         this.isProcessing.set(false);
-        alert('File uploaded, but failed to extract cluster list.');
+        alert('File uploaded, but failed to read the file. Please check that it is a valid CSV.');
       }
     });
   }
@@ -125,7 +128,7 @@ export class PositionEnrichment implements OnDestroy {
       return;
     }
 
-    if (this.selectedCluster === null) {
+    if (this.detectedClusterColumn !== null && this.selectedCluster === null) {
       alert('Please select a cluster first.');
       return;
     }
@@ -133,12 +136,12 @@ export class PositionEnrichment implements OnDestroy {
     this.isProcessing.set(true);
     this.processedFileName.set('');
 
-    // Map the HTML values to API parameters
     const params = {
       fadf_recluster_path: this.savedFileName,
       output_format: 'csv',
-      seq_type: this.sequenceType === 'nucleotide' ? 'dna' : 'protein', // Mapping 'nucleotide' -> 'dna' based on your previous API definition
-      cluster_selected: this.selectedCluster
+      seq_type: this.sequenceType === 'nucleotide' ? 'dna' : 'protein',
+      cluster_selection: this.selectedCluster,
+      cluster_column: this.detectedClusterColumn
     };
 
     console.log('Starting with params:', params);

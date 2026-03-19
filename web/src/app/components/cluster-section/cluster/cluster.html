@@ -1,87 +1,78 @@
 <div class="page-note">
-  Groups sequences from a counted FASTA file into clusters using a greedy Levenshtein Edit Distance (LED) algorithm, seeded by the most abundant sequence. Outputs a clustered FASTA file with cluster membership labels.
+  Groups sequences from a counted FASTA file into clusters using a greedy Levenshtein Edit Distance (LED) algorithm,
+  seeded by the most abundant sequence. Outputs a clustered FASTA file with cluster membership labels.
 </div>
 <div class="section-container">
-    <div class="left-subsection">
-        <h3 class="section-title">Choose file to cluster *</h3>
-        <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'"
-            [placeholderText]="'FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
-            (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
-        </app-upload>
- 
-        <label class="section-label">Min. number of reads to cluster: 
-            <mat-icon class="info-icon" matTooltip="Min. number of reads for sequences to be clustered">help_outline</mat-icon>
-        </label>
-        <div class="slider-group">
-            <div class="slider-header">
-                <span class="value-chip range-min">0</span>
-                <input type="number" [min]="0" [max]="1000" [step]="5" [(ngModel)]="number_reads_to_cluster" />
-                <span class="value-chip range-max">1000</span>
-            </div>
-            <div class="dual-range-container">
-                <mat-slider [min]="0" [max]="1000" [step]="5" discrete
-                    class="range-slider">
-                    <input matSliderThumb [(ngModel)]="number_reads_to_cluster">
-                </mat-slider>
-            </div>
-        </div>
+  <div class="left-subsection">
+    <h3 class="section-title">Choose file to cluster *</h3>
+    <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
+      [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
 
-        <label class="section-label">Max. LED: 
-            <mat-icon class="info-icon" matTooltip="Max. edit distance from seed sequence">help_outline</mat-icon>
-        </label>
-        <div class="slider-group">
-            <div class="slider-header">
-                <span class="value-chip range-min">1</span>
-                <input type="number" [min]="1" [max]="20" [step]="1" [(ngModel)]="led">
-                <span class="value-chip range-max">20</span>
-            </div>
-            <div class="dual-range-container">
-                <mat-slider [min]="1" [max]="20" [step]="1" discrete
-                    class="range-slider">
-                    <input matSliderThumb [(ngModel)]="led">
-                </mat-slider>
-            </div>
-        </div>
+    <label class="section-label">Min. number of reads to cluster:
+      <mat-icon class="info-icon"
+        matTooltip="Min. number of reads for sequences to be clustered">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">0</span>
+        <input type="number" [min]="0" [max]="1000" [step]="5" [(ngModel)]="number_reads_to_cluster" />
+        <span class="value-chip range-max">1000</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="0" [max]="1000" [step]="5" discrete class="range-slider">
+          <input matSliderThumb [(ngModel)]="number_reads_to_cluster">
+        </mat-slider>
+      </div>
+    </div>
 
-        <label class="section-label">Max. number of clusters to generate:
-            <mat-icon class="info-icon" matTooltip="Total number of desired clusters">help_outline</mat-icon>
-        </label>
-        <div class="slider-group">
-            <div class="slider-header">
-                <span class="value-chip range-min">5</span>
-                <input type="number" [min]="5" [max]="1000" [step]="5" [(ngModel)]="number_of_cluster">
-                <span class="value-chip range-max">1000</span>
-            </div>
-            <div class="dual-range-container">
-                <mat-slider [min]="5" [max]="1000" [step]="5" discrete
-                    class="range-slider">
-                    <input matSliderThumb [(ngModel)]="number_of_cluster">
-                </mat-slider>
-            </div>
-        </div>
+    <label class="section-label">Max. LED:
+      <mat-icon class="info-icon" matTooltip="Max. edit distance from seed sequence">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">1</span>
+        <input type="number" [min]="1" [max]="20" [step]="1" [(ngModel)]="led">
+        <span class="value-chip range-max">20</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="1" [max]="20" [step]="1" discrete class="range-slider">
+          <input matSliderThumb [(ngModel)]="led">
+        </mat-slider>
+      </div>
+    </div>
+
+    <label class="section-label">Max. number of clusters to generate:
+      <mat-icon class="info-icon" matTooltip="Total number of desired clusters">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">5</span>
+        <input type="number" [min]="5" [max]="1000" [step]="5" [(ngModel)]="number_of_cluster">
+        <span class="value-chip range-max">1000</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="5" [max]="1000" [step]="5" discrete class="range-slider">
+          <input matSliderThumb [(ngModel)]="number_of_cluster">
+        </mat-slider>
+      </div>
+    </div>
 
     <h3 class="section-title">Keep non-clustered sequences?</h3>
-    <mat-radio-group 
-      [(ngModel)]="keepNonClusteredSequence"
-      class="radio-group">
+    <mat-radio-group [(ngModel)]="keepNonClusteredSequence" class="radio-group">
       <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>
     </mat-radio-group>
 
     <h3 class="section-title">FASTA or CSV download?</h3>
-    <mat-radio-group 
-      [(ngModel)]="downloadFormat"
-      class="radio-group">
+    <mat-radio-group [(ngModel)]="downloadFormat" class="radio-group">
       <mat-radio-button value="fasta">FASTA</mat-radio-button>
       <mat-radio-button value="csv">CSV</mat-radio-button>
     </mat-radio-group>
 
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="!uploadComplete || isProcessing()"
+      <button mat-raised-button color="primary" class="start-button" [disabled]="!uploadComplete || isProcessing()"
         (click)="onStart()">
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Start' }}
@@ -94,22 +85,41 @@
       </button>
       }
 
-      <button
-        mat-raised-button
-        color="accent"
-        class="download-button"
-        [class.download-ready]="processedFileName()"
-        [disabled]="!processedFileName()"
-        (click)="onDownload()">
+      <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
+        [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
         Download
       </button>
     </div>
+
+    @if (availableClusters.length > 0) {
+    <hr class="section-divider">
+    <h3 class="section-title">Extract a single cluster:</h3>
+    <div class="note-box">
+      <p style="margin: 0;">Download sequences from one cluster as a standalone FASTA — compatible with Sequence
+        Enrichment and Position Enrichment inputs.</p>
     </div>
-    <div class="right-subsection" >
-     <app-table 
-        [data]="clusterData" 
-        [config]="tableConfig">
-      </app-table>
+
+    <div class="form-section">
+      <label>Cluster</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-select [(ngModel)]="extractClusterNumber">
+          @for (c of availableClusters; track c) {
+          <mat-option [value]="c">{{ c }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button class="download-button" mat-raised-button color="accent" [disabled]="extractClusterNumber === null"
+        (click)="onExtractCluster()">
+        <mat-icon>filter_alt</mat-icon>
+        Extract Cluster
+      </button>
+    </div>
+    }
+
+  </div>
+  <div class="right-subsection">
+    <app-table [data]="clusterData" [config]="tableConfig">
+    </app-table>
   </div>
 </div>

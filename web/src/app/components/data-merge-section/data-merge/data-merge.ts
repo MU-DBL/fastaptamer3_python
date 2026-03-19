@@ -54,7 +54,8 @@ export class DataMerge implements OnDestroy {
 
   // Processing state
   isProcessing = signal(false);
-  isGeneratingPlot = signal(false);
+  isGeneratingPersistencePlot = signal(false);
+  isGeneratingUpsetPlot = signal(false);
   mergedFileName = signal('');
   mergedData: any[] = [];
 
@@ -349,7 +350,7 @@ export class DataMerge implements OnDestroy {
       return;
     }
 
-    this.isGeneratingPlot.set(true);
+    this.isGeneratingPersistencePlot.set(true);
 
     const params = {
       merged_file_path: this.mergedFileName()
@@ -367,7 +368,7 @@ export class DataMerge implements OnDestroy {
         alert(`Error: ${errorMsg}`);
       },
       complete: () => {
-        this.isGeneratingPlot.set(false);
+        this.isGeneratingPersistencePlot.set(false);
       }
     });
   }
@@ -449,7 +450,7 @@ export class DataMerge implements OnDestroy {
       return;
     }
 
-    this.isGeneratingPlot.set(true);
+    this.isGeneratingUpsetPlot.set(true);
 
     // Get original file names for set labels
     const orderedFiles = this.getOrderedFiles();
@@ -476,7 +477,7 @@ export class DataMerge implements OnDestroy {
         alert(`Error: ${errorMsg}`);
       },
       complete: () => {
-        this.isGeneratingPlot.set(false);
+        this.isGeneratingUpsetPlot.set(false);
       }
     });
   }

@@ -148,22 +148,22 @@ export class Table implements OnInit, OnChanges {
 
   // Filter methods
   onSearch(): void {
-    this.applyFilters(false);
+    this.applyFilters();
   }
 
-  applyColumnFilter(isExactMatch: boolean = false): void {
-    this.applyFilters(isExactMatch);
+  applyColumnFilter(): void {
+    this.applyFilters();
   }
 
-  applyFilters(exact_match: boolean): void {
+  applyFilters(): void {
     this.filteredData = this.data.filter(row => {
       // Global search
-      const matchesSearch = !this.searchText || 
-        Object.values(row).some(val => 
+      const matchesSearch = !this.searchText ||
+        Object.values(row).some(val =>
           String(val).toLowerCase().includes(this.searchText.toLowerCase())
         );
-      
-      // Column filters
+
+      // Column filters — each column uses its own exact_match setting
       const matchesColumns = Object.keys(this.columnFilters).every(key => {
         const filterValue = this.columnFilters[key];
         if (!filterValue) return true;
@@ -171,14 +171,13 @@ export class Table implements OnInit, OnChanges {
         const cellValue = String(row[key]).toLowerCase();
         const filterText = String(filterValue).toLowerCase();
 
-        // --- LOGIC CHANGE HERE ---
-        if (exact_match) {
-           return cellValue === filterText; 
+        const colDef = this.config.columns.find(c => c.key === key);
+        if (colDef?.exact_match) {
+          return cellValue === filterText;
         } else {
-           // Partial match (standard behavior)
-           return cellValue.includes(filterText);
+          return cellValue.includes(filterText);
         }
-      }); 
+      });
       return matchesSearch && matchesColumns;
     });
     

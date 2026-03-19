@@ -93,6 +93,14 @@ export class SequenceEnrichment implements OnDestroy {
   raPlotTitle: string = 'Enrichment RA plot';
   raPlotPointColor: string = '#87CEEB';
 
+  // Box plot customization
+  adjustBoxPlot: string = 'no';
+  boxPlotXAxis: string = 'Cluster';
+  boxPlotYAxis: string = 'Enrichment';
+  boxPlotTitle: string = 'Enrichment distribution per cluster';
+  boxPlotOutline: string = '#000000';
+  boxPlotFill: string = '#87ceeb';
+
   // Watch for changes in adjustment toggles
   onAdjustHistogramChange(): void {
     if (this.adjustHistogram === 'no') {
@@ -119,6 +127,16 @@ export class SequenceEnrichment implements OnDestroy {
       this.raPlotYAxis = 'Fold change';
       this.raPlotTitle = 'Enrichment RA plot';
       this.raPlotPointColor = '#87CEEB';
+    }
+  }
+
+  onAdjustBoxPlotChange(): void {
+    if (this.adjustBoxPlot === 'no') {
+      this.boxPlotXAxis = 'Cluster';
+      this.boxPlotYAxis = 'Enrichment';
+      this.boxPlotTitle = 'Enrichment distribution per cluster';
+      this.boxPlotOutline = '#000000';
+      this.boxPlotFill = '#87ceeb';
     }
   }
 
@@ -521,6 +539,71 @@ export class SequenceEnrichment implements OnDestroy {
 
     this.plotModalService.openPlot({
       data: [trace],
+      layout: layout,
+      config: { responsive: true }
+    });
+  }
+
+  async enrichmentBoxPlot(): Promise<void> {
+    if (this.enrichmentData.length === 0) {
+      alert('No enrichment data available for plotting. Please run the analysis first.');
+      return;
+    }
+
+    // Check if cluster data exists
+    const hasCluster = this.enrichmentData.some(row => row['Cluster.a'] !== undefined && row['Cluster.a'] !== null && row['Cluster.a'] !== 0 && row['Cluster.a'] !== '');
+
+    let traces: any[];
+
+    if (hasCluster) {
+      // Group enrichment values by Cluster.a
+      const clusterGroups = new Map<string, number[]>();
+      this.enrichmentData.forEach(row => {
+        const cluster = String(row['Cluster.a'] ?? 'N/A');
+        const enrichment = parseFloat(row['Enrichment']);
+        if (!isNaN(enrichment) && isFinite(enrichment)) {
+          if (!clusterGroups.has(cluster)) clusterGroups.set(cluster, []);
+          clusterGroups.get(cluster)!.push(enrichment);
+        }
+      });
+
+      const sortedClusters = Array.from(clusterGroups.keys()).sort((a, b) => Number(a) - Number(b));
+      traces = sortedClusters.map(cluster => ({
+        type: 'box',
+        y: clusterGroups.get(cluster),
+        name: cluster,
+        marker: { color: this.boxPlotFill, line: { color: this.boxPlotOutline, width: 1 } },
+        boxmean: 'sd'
+      }));
+    } else {
+      // Single box for all enrichment values
+      const enrichmentValues = this.enrichmentData
+        .map(row => parseFloat(row['Enrichment']))
+        .filter(v => !isNaN(v) && isFinite(v));
+
+      traces = [{
+        type: 'box',
+        y: enrichmentValues,
+        name: 'All sequences',
+        marker: { color: this.boxPlotFill, line: { color: this.boxPlotOutline, width: 1 } },
+        boxmean: 'sd'
+      }];
+    }
+
+    const layout = {
+      title: { text: this.boxPlotTitle, font: { size: 18, family: 'Arial, sans-serif', weight: 'bold' } },
+      xaxis: { title: { text: this.boxPlotXAxis, font: { size: 14, family: 'Arial, sans-serif', weight: 'bold' } }, showline: true, linewidth: 2, linecolor: 'black' },
+      yaxis: { title: { text: this.boxPlotYAxis, font: { size: 14, family: 'Arial, sans-serif', weight: 'bold' } }, showline: true, linewidth: 2, linecolor: 'black', showgrid: true, gridcolor: '#e0e0e0' },
+      autosize: true,
+      height: 500,
+      margin: { t: 60, b: 70, l: 90, r: 50 },
+      plot_bgcolor: 'white',
+      paper_bgcolor: 'white',
+      showlegend: false
+    };
+
+    this.plotModalService.openPlot({
+      data: traces,
       layout: layout,
       config: { responsive: true }
     });

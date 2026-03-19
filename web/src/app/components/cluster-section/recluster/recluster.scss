@@ -42,3 +42,32 @@
   width: 100%;
   margin-top: 0.5rem;
 }
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 1rem;
+
+  th {
+    background-color: #1e466e;
+    color: #fff;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  tr:nth-child(even) td {
+    background-color: #f5f7fa;
+  }
+
+  tr:hover td {
+    background-color: #e8f0fb;
+  }
+}

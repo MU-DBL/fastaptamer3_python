@@ -237,11 +237,11 @@
       mat-raised-button 
       color="primary"
       class="plot-button"
-      [disabled]="!mergedFileName() || isGeneratingPlot()"
+      [disabled]="!mergedFileName() || isGeneratingPersistencePlot()"
       (click)="persistencePlot()"
       matTooltip="Shows the number of populations in which sequences are found">
-      <mat-icon [class.spinning]="isGeneratingPlot()">{{ isGeneratingPlot() ? 'sync' : 'show_chart' }}</mat-icon>
-      {{ isGeneratingPlot() ? 'Generating...' : 'Persistence plot' }}
+      <mat-icon [class.spinning]="isGeneratingPersistencePlot()">{{ isGeneratingPersistencePlot() ? 'sync' : 'show_chart' }}</mat-icon>
+      {{ isGeneratingPersistencePlot() ? 'Generating...' : 'Persistence plot' }}
     </button>
 
     <hr class="section-divider">
@@ -280,11 +280,11 @@
       mat-raised-button 
       color="primary"
       class="plot-button"
-      [disabled]="!mergedFileName() || isGeneratingPlot()"
+      [disabled]="!mergedFileName() || isGeneratingUpsetPlot()"
       (click)="upsetPlot()"
       matTooltip="Shows the sequence intersections between populations">
-      <mat-icon [class.spinning]="isGeneratingPlot()">{{ isGeneratingPlot() ? 'sync' : 'show_chart' }}</mat-icon>
-      {{ isGeneratingPlot() ? 'Generating...' : 'UpSet plot' }}
+      <mat-icon [class.spinning]="isGeneratingUpsetPlot()">{{ isGeneratingUpsetPlot() ? 'sync' : 'show_chart' }}</mat-icon>
+      {{ isGeneratingUpsetPlot() ? 'Generating...' : 'UpSet plot' }}
     </button>
 
   </div>

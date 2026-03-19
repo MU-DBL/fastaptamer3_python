@@ -38,7 +38,9 @@ export class Recluster implements OnDestroy {
   tableConfig: TableConfig = {
     columns: [
       { key: ColumnName.SEQUENCES, label: 'Sequences' },
-      { key: ColumnName.CLUSTER, label: 'Cluster', exact_match: true },
+      { key: ColumnName.CLUSTER, label: 'Super-cluster', exact_match: true },
+      { key: ColumnName.ORIGINAL_CLUSTER_A, label: 'Orig. Cluster (Pop 1)', exact_match: true },
+      { key: ColumnName.ORIGINAL_CLUSTER_B, label: 'Orig. Cluster (Pop 2)', exact_match: true },
       { key: ColumnName.RANK_IN_CLUSTER, label: 'Rank In Cluster', exact_match: true },
       { key: ColumnName.LED, label: 'LED' },
       { key: ColumnName.ID_A, label: 'ID (Pop 1)' },

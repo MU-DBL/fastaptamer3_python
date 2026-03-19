@@ -6,6 +6,7 @@
   height: 50px;
   color: white;
   font-family: Arial, sans-serif;
+  position: relative;
 }
 
 .navbar-brand {
@@ -17,6 +18,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .navbar-menu {
@@ -55,4 +57,74 @@
   right: 0;
   height: 3px;
   background-color: #3498db;
+}
+
+// Hamburger button — hidden on desktop
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 16px;
+  height: 100%;
+  margin-left: auto;
+
+  span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: white;
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  &.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  &.open span:nth-child(2) {
+    opacity: 0;
+  }
+  &.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
+
+// Small screen
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar-menu {
+    display: none;
+    flex-direction: column;
+    height: auto;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    background-color: #2c3e50;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+    &.open {
+      display: flex;
+    }
+  }
+
+  .navbar-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    &.active::after {
+      top: 0;
+      bottom: 0;
+      right: auto;
+      width: 3px;
+      height: 100%;
+    }
+  }
 }

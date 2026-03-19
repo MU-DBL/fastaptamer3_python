@@ -20,10 +20,11 @@ UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 
 class PosEnrichInput(BaseModel):
     fadf_recluster_path: str = ""
-    cluster_selection: int = 1
+    cluster_selection: Optional[int] = None
+    cluster_column: Optional[str] = None   # e.g. "Cluster" or "Cluster.a"; None = auto-detect
     seq_type: Literal["dna", "protein"] = "dna"
     output_format: str = "csv"
-    max_sequences: int = 2000  # Add this to control sampling
+    max_sequences: int = 2000
 
 class PosEnrichResponse(BaseModel):
     status: str
@@ -52,7 +53,8 @@ async def fa_pos_enrich_endpoint(params: PosEnrichInput):
     
     print("Starting positional enrichment analysis...")
     filepath = UPLOAD_DIR / params.fadf_recluster_path
-    output_path = UPLOAD_DIR / f"pos_enrich_cluster_{params.cluster_selection}.{params.output_format}"
+    cluster_label = str(params.cluster_selection) if params.cluster_selection is not None else "all"
+    output_path = UPLOAD_DIR / f"pos_enrich_cluster_{cluster_label}.{params.output_format}"
     
     try:
         print(f"[STEP 1] Reading file: {filepath}")
@@ -72,6 +74,7 @@ async def fa_pos_enrich_endpoint(params: PosEnrichInput):
         result_df = fa_pos_enrich(
             fadf_recluster=fadf_recluster,
             cluster_selection=params.cluster_selection,
+            cluster_column=params.cluster_column,
             seq_type=params.seq_type,
             max_sequences=params.max_sequences
         )
@@ -132,31 +135,16 @@ async def fa_pos_enrich_endpoint(params: PosEnrichInput):
 
 def fa_pos_enrich(
     fadf_recluster: pd.DataFrame,
-    cluster_selection: int = 1,
+    cluster_selection: Optional[int] = None,
+    cluster_column: Optional[str] = None,
     seq_type: Literal["dna", "protein"] = "dna",
     max_sequences: int = 2000
 ) -> pd.DataFrame:
     """
-    Calculate positional enrichment for sequences in a specific cluster.
-    
-    This function:
-    1. Filters sequences from a specific cluster
-    2. Removes sequences with ambiguous characters
-    3. Performs Multiple Sequence Alignment (MSA) with sampling if needed
-    4. Calculates average enrichment for each residue type at each position
-    
-    Args:
-        fadf_recluster: DataFrame with reclustered sequences and enrichment scores
-                       Must contain columns: Sequences, Cluster, Enrichment
-        cluster_selection: Cluster ID to analyze
-        seq_type: Type of sequences ("dna" or "protein")
-        max_sequences: Maximum sequences for MSA (prevents timeout)
-    
-    Returns:
-        DataFrame with columns:
-        - Residue: The nucleotide/amino acid character
-        - Position: Position in aligned sequence (1-indexed)
-        - AvEnrich: Average enrichment for that residue at that position
+    Calculate positional enrichment for sequences.
+
+    Supports recluster CSV (Cluster column), sequence enrichment CSV (Cluster.a),
+    or any file with an Enrichment column (no cluster filter when cluster_selection is None).
     """
     
     # Define acceptable alphabets for each sequence type
@@ -177,21 +165,31 @@ def fa_pos_enrich(
             "U", "T", regex=False
         )
     
-    # Filter sequences based on three criteria:
-    filtered_df = fadf_recluster[
-        (fadf_recluster[ColumnName.CLUSTER] == cluster_selection) &
-        (~fadf_recluster[ColumnName.SEQUENCES].str.contains(alphabet_pattern, regex=True, na=False)) &
-        (fadf_recluster["Enrichment"].notna())
-    ].copy()
-    
+    # Auto-detect cluster column if not specified
+    if cluster_column is None:
+        for candidate in [ColumnName.CLUSTER, "Cluster.a"]:
+            if candidate in fadf_recluster.columns:
+                cluster_column = candidate
+                break
+
+    # Build filter mask
+    valid_seqs = ~fadf_recluster[ColumnName.SEQUENCES].str.contains(alphabet_pattern, regex=True, na=False)
+    has_enrichment = fadf_recluster["Enrichment"].notna()
+
+    if cluster_column is not None and cluster_selection is not None:
+        in_cluster = fadf_recluster[cluster_column] == cluster_selection
+        filtered_df = fadf_recluster[in_cluster & valid_seqs & has_enrichment].copy()
+    else:
+        filtered_df = fadf_recluster[valid_seqs & has_enrichment].copy()
+
     num_sequences = len(filtered_df)
-    
+
     # Check if we have any sequences to analyze
     if num_sequences == 0:
+        cluster_info = f"cluster {cluster_selection}" if cluster_selection is not None else "the dataset"
         raise ValueError(
-            f"No valid sequences found for cluster {cluster_selection}. "
-            f"Check that: (1) cluster exists, (2) sequences have no ambiguous characters, "
-            f"(3) sequences have enrichment scores."
+            f"No valid sequences found for {cluster_info}. "
+            f"Check that sequences have no ambiguous characters and enrichment scores are present."
         )
     
     # Sample if too many sequences

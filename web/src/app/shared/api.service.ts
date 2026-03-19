@@ -241,7 +241,8 @@ export class ApiService {
     fadf_recluster_path: string;
     output_format: string;
     seq_type: string;
-    cluster_selected: number;
+    cluster_selection?: number | null;
+    cluster_column?: string | null;
   }): Observable<any>  {
     return this.http.post(`${this.baseUrl}/position-enrichment`, params);
   }

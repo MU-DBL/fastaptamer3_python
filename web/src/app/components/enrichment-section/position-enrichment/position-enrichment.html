@@ -1,15 +1,16 @@
 <div class="page-note">
-  Calculates per-position nucleotide or amino acid enrichment within a reclustered CSV file, revealing which positions are most variable or conserved. Produces a positional enrichment bar plot and heatmap.
+  Calculates per-position nucleotide or amino acid enrichment, revealing which positions are most variable or conserved. Accepts a recluster CSV, sequence enrichment CSV, or any CSV with an Enrichment column. Produces a positional enrichment bar plot and heatmap.
 </div>
 <div class="section-container">
     <div class="left-subsection">
         <div>
-            <h3 class="section-title">Recluster CSV file:</h3>
-            <app-upload [acceptedFileTypes]="'.csv'" [buttonText]="'Browse...'" [placeholderText]="'Recluster CSV file'"
-                [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+            <h3 class="section-title">Input CSV file *</h3>
+            <app-upload [acceptedFileTypes]="'.csv'" [buttonText]="'Browse...'" [placeholderText]="'Recluster or sequence enrichment CSV'"
+                [showUploadNote]="false" [uploadNotePath]="'#'" [uploadSpeed]="200"
                 (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
             </app-upload>
 
+            @if (availableClusters.length > 0) {
             <h3 class="section-title">Perform analysis for which cluster?</h3>
             <mat-form-field appearance="outline" style="width: 98%;">
                 <mat-select [(ngModel)]="selectedCluster" class="cluster-select">
@@ -18,6 +19,9 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            } @else if (uploadComplete) {
+            <p class="info-note">No cluster column detected — all sequences will be analyzed together.</p>
+            }
 
             <h3 class="section-title">Type of sequences?</h3>
             <mat-radio-group [(ngModel)]="sequenceType" class="radio-group">

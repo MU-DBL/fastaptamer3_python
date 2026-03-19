@@ -342,15 +342,16 @@ def calculate_enrichment_vectorized(merged_df: pd.DataFrame) -> pd.DataFrame:
     # Full join
     merge_df = pd.merge(pop1, pop2, on=ColumnName.SEQUENCES, how="outer")
 
-    # Coalesce cluster
+    # Coalesce into super-cluster and preserve originals with readable names
     merge_df[ColumnName.CLUSTER] = (
         merge_df[f"{ColumnName.CLUSTER}.a"]
         .fillna(merge_df[f"{ColumnName.CLUSTER}.b"])
         .astype(np.int32)
     )
-    merge_df = merge_df.drop(
-        columns=[f"{ColumnName.CLUSTER}.a", f"{ColumnName.CLUSTER}.b"]
-    )
+    merge_df = merge_df.rename(columns={
+        f"{ColumnName.CLUSTER}.a": "OriginalCluster.a",
+        f"{ColumnName.CLUSTER}.b": "OriginalCluster.b",
+    })
 
     # Vectorized enrichment calculation with proper handling
     rpu_a = merge_df[f"{ColumnName.RPU}.a"].values

@@ -10,11 +10,11 @@
       (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
     </app-upload>
 
-    <p>If your uploaded file is an already-processed count result, click below to visualize it directly.</p> 
-    <button
-      mat-stroked-button class="visualize-result-button" (click)="onLoadResult()"> <mat-icon>bar_chart</mat-icon>
-      Visualize Counting Results 
-    </button>
+    <div class="note-box">
+      <p style="margin: 0;">If you have already processed a count result (FASTA/CSV), upload it above and click
+        <button mat-stroked-button class="visualize-result-button" (click)="onLoadResult()">Visualize Results</button>
+        to load the table and plots directly without re-running the analysis.</p>
+    </div>
     <hr class="section-divider">
 
     <p>Sample data is available from <a href="test.fasta" download class="link">here</a>.</p>

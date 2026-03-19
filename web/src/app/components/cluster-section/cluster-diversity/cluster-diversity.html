@@ -1,20 +1,23 @@
 <div class="page-note">
-  Computes per-cluster diversity statistics (unique sequence count, total reads, average LED) from a clustered FASTA file, 
+  Computes per-cluster diversity statistics (unique sequence count, total reads, average LED) from a clustered FASTA
+  file,
   and visualizes k-mer composition across selected clusters using PCA or UMAP. Outputs a diversity summary table.
 </div>
 <div class="section-container">
   <div class="left-subsection">
     <h3 class="section-title">Input data:</h3>
-    <app-upload [acceptedFileTypes]="'.fasta,.csv'" [buttonText]="'Browse...'" [placeholderText]="'Clustered FASTA file or Results CSV file'"
-      [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
-      (uploadComplete)="onUploadComplete($event)">
+    <app-upload [acceptedFileTypes]="'.fasta,.csv'" [buttonText]="'Browse...'"
+      [placeholderText]="'Clustered FASTA file or Result CSV file'" [showUploadNote]="true" [uploadNotePath]="'#'"
+      [uploadSpeed]="200" (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
     </app-upload>
 
-    <p>If your uploaded file is an already-processed diversity result, click below to visualize it directly.</p>
-    <button mat-stroked-button class="visualize-result-button" (click)="onLoadResult()">
-      <mat-icon>bar_chart</mat-icon>
-      Visualize Results
-    </button>
+    <div class="note-box">
+      <p style="margin: 0;">If you have already processed a diversity result (CSV), upload it above and click 
+        <button mat-stroked-button
+          class="visualize-result-button" (click)="onLoadResult()">Visualize Results
+        </button> to load the table and plots directly without re-running the analysis.</p>
+    </div>
+
     <hr class="section-divider">
 
     <div class="action-buttons">
@@ -51,12 +54,12 @@
     <div class="customization-panel">
       <label>X-axis - represents clusters.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="clusterMetaXAxis" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="clusterMetaXAxis" rows="2"></textarea>
       </mat-form-field>
 
       <label>Y-axis 1 - represents unique sequence count.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="clusterMetaYAxis1" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="clusterMetaYAxis1" rows="2"></textarea>
       </mat-form-field>
 
       <div class="color-picker-field">
@@ -66,27 +69,27 @@
 
       <label>Y-axis 2 - represents total sequence count.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="clusterMetaYAxis2" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="clusterMetaYAxis2" rows="2"></textarea>
       </mat-form-field>
 
       <div class="color-picker-field">
         <label>Color for total sequence count.</label>
-        <input type="color" [(ngModel)]="clusterMetaColor2"  class="color-input">
+        <input type="color" [(ngModel)]="clusterMetaColor2" class="color-input">
       </div>
 
       <label>Y-axis 3 - represents average LED.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="clusterMetaYAxis3" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="clusterMetaYAxis3" rows="2"></textarea>
       </mat-form-field>
 
       <div class="color-picker-field">
         <label>Color for average LED.</label>
-        <input type="color" [(ngModel)]="clusterMetaColor3"  class="color-input">
+        <input type="color" [(ngModel)]="clusterMetaColor3" class="color-input">
       </div>
 
       <label>Plot title.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="clusterMetaPlotTitle" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="clusterMetaPlotTitle" rows="2"></textarea>
       </mat-form-field>
     </div>
     }
@@ -102,7 +105,7 @@
     <hr class="section-divider">
 
     <h3 class="section-title">k-mer size for plot:</h3>
-    <mat-radio-group [(ngModel)]="kmerSize"  class="radio-group">
+    <mat-radio-group [(ngModel)]="kmerSize" class="radio-group">
       <mat-radio-button value="3">3</mat-radio-button>
       <mat-radio-button value="4">4</mat-radio-button>
       <mat-radio-button value="5">5</mat-radio-button>
@@ -140,7 +143,7 @@
     </div>
 
     <h3 class="section-title">Plot type:</h3>
-    <mat-radio-group [(ngModel)]="plotType"  class="radio-group">
+    <mat-radio-group [(ngModel)]="plotType" class="radio-group">
       <mat-radio-button value="PCA">PCA</mat-radio-button>
       <mat-radio-button value="UMAP">UMAP</mat-radio-button>
     </mat-radio-group>
@@ -154,17 +157,17 @@
     <div class="customization-panel">
       <label>X-axis - 1st dim. of PCA or UMAP.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="kmerPlotXAxis" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="kmerPlotXAxis" rows="2"></textarea>
       </mat-form-field>
 
       <label>Y-axis - 2nd dim. of PCA or UMAP.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="kmerPlotYAxis" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="kmerPlotYAxis" rows="2"></textarea>
       </mat-form-field>
 
       <label>Legend title - represents clusters.</label>
       <mat-form-field appearance="outline" class="full-width">
-        <textarea matInput [(ngModel)]="kmerPlotLegendTitle" rows="2" ></textarea>
+        <textarea matInput [(ngModel)]="kmerPlotLegendTitle" rows="2"></textarea>
       </mat-form-field>
 
       <label>Plot title.</label>
@@ -175,7 +178,7 @@
       <div class="form-section">
         <label>Color palette.</label>
         <mat-form-field appearance="outline" class="full-width">
-          <mat-select [(ngModel)]="kmerPlotColorPalette" >
+          <mat-select [(ngModel)]="kmerPlotColorPalette">
             <mat-option value="Accent">Accent</mat-option>
             <mat-option value="Dark2">Dark2</mat-option>
             <mat-option value="Paired">Paired</mat-option>

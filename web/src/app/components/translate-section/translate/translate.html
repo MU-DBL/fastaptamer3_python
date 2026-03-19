@@ -9,11 +9,11 @@
       (uploadComplete)="onUploadComplete($event)">
     </app-upload>
 
-    <p>If your uploaded file is an already-processed translate result, click below to visualize it directly.</p>
-    <button mat-stroked-button class="visualize-result-button" (click)="onLoadResult()">
-      <mat-icon>bar_chart</mat-icon>
-      Visualize Results
-    </button>
+    <div class="note-box">
+      <p style="margin: 0;">If you have already processed a translation result (FASTA/CSV), upload it above and click
+        <button mat-stroked-button class="visualize-result-button" (click)="onLoadResult()">Visualize Results</button>
+        to load the table and plots directly without re-running the analysis.</p>
+    </div>
     <hr class="section-divider">
 
     <h3 class="section-title">Open reading frame:</h3>

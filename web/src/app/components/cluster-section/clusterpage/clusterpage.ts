@@ -8,7 +8,6 @@ import { ClusterMsa } from '../cluster-msa/cluster-msa';
 import { ClusterPhmm } from '../cluster-phmm/cluster-phmm';
 import { Cluster } from '../cluster/cluster';
 import { Recluster } from '../recluster/recluster';
-import { PositionEnrichment } from '../position-enrichment/position-enrichment';
 
 @Component({
   selector: 'app-clusterpage',
@@ -20,7 +19,6 @@ import { PositionEnrichment } from '../position-enrichment/position-enrichment';
     ClusterMsa,
     ClusterPhmm,
     Recluster,
-    PositionEnrichment,
     ...MATERIAL_IMPORTS
 ],
   templateUrl: './clusterpage.html',
