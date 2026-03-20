@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .split-container {
   display: flex;
   width: 100%;
@@ -42,7 +46,7 @@
 
 .split-divider {
   flex: none;
-  width: 8px;
+  width: 5px;
   cursor: col-resize;
   display: flex;
   align-items: center;

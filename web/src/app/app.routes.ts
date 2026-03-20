@@ -5,7 +5,7 @@ import { Clusterpage } from './components/cluster-section/clusterpage/clusterpag
 import { Motifpage } from './components/motif-section/motifpage/motifpage';
 import { Translate } from './components/translate-section/translate/translate';
 import { Enrichmentpage } from './components/enrichment-section/enrichmentpage/enrichmentpage';
-import { DataMergepage } from './components/data-merge-section/data-mergepage/data-mergepage';
+import { DataMerge } from './components/data-merge-section/data-merge/data-merge';
 import { DiffAnalysispage } from './components/diff-analysis-section/diff-analysispage/diff-analysispage';
 import { Distance } from './components/distance-section/distance/distance';
 import { MutationNetwork } from './components/mutation-network-section/mutation-network/mutation-network';
@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'motif', component: Motifpage },
   { path: 'translate', component: Translate },
   { path: 'enrichment', component: Enrichmentpage },
-  { path: 'data-merge', component: DataMergepage },
+  { path: 'data-merge', component: DataMerge },
   { path: 'diff-analysis', component: DiffAnalysispage },
   { path: 'distance', component: Distance },
   { path: 'mutation-network', component: MutationNetwork },
