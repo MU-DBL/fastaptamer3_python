@@ -1,84 +1,22 @@
 <div class="page-note">
   Combine 2 to 26 counted FASTA files into a single merged table, tracking sequence persistence across populations. Choose union (all sequences), intersection (shared sequences only), or left-join (sequences from the first file) to control which sequences are included. Outputs a merged CSV.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
 
     <!-- FILE UPLOAD SECTION -->
-    <h3 class="section-title">Choose data to merge*:</h3>
-    <p class="instruction-text">
-      <mat-icon>info</mat-icon>
-      Please select at least 2 FASTA files to merge
-    </p>
-    
-    <div class="file-upload-section">
-      <input 
-        type="file" 
-        #multiFileInput
-        multiple
-        accept=".fasta,.fa"
-        (change)="onMultipleFilesSelected($event)"
-        style="display: none;">
-      
-      <button 
-        mat-raised-button 
-        color="primary"
-        (click)="multiFileInput.click()"
-        [disabled]="isUploading"
-        class="browse-button">
-        Browse...
-      </button>
-      
-      <span class="upload-status">
-        @if (uploadingFiles.length === 0) {
-          <span>FASTA files</span>
-        } @else if (isUploading) {
-          <span>Uploading {{ uploadingFiles.length }} file(s)...</span>
-        } @else {
-          <span class="upload-complete">{{ uploadedFiles.length }} file(s) uploaded</span>
-        }
-      </span>
-    </div>
-
-    <!-- Upload Progress Bars -->
-    @if (uploadingFiles.length > 0) {
-      <div class="upload-progress-section">
-        @for (file of uploadingFiles; track file.name) {
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="file-name">{{ file.name }}</span>
-              <span class="progress-percentage">{{ file.progress }}%</span>
-            </div>
-            <mat-progress-bar
-              mode="determinate"
-              [value]="file.progress"
-              [class.complete]="file.isComplete">
-            </mat-progress-bar>
-            @if (file.isComplete) {
-              <span class="complete-text">✓ Upload complete</span>
-            }
-          </div>
-        }
-      </div>
-
-      @if (!isUploading) {
-        <p class="notice">
-          *All files uploaded successfully. You can now select and order them below.
-        </p>
-      } @else {
-        <p class="notice">
-          *Please wait while files are being uploaded...
-        </p>
-      }
-    }
+    <h3 class="section-title">Choose data to merge *</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'Add FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="100"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
 
     <!-- FILE SELECTION AND ORDERING -->
     <h3 class="section-title">Select file order ({{ fileSelections.length }} files)</h3>
-    <p class="instruction-text">
-      <mat-icon>reorder</mat-icon>
-      Holding ctrl (Windows) or command (Mac) allows you to select multiple files
-    </p>
-    
     @if (fileSelections.length === 0) {
       <div class="empty-state-box">
         <mat-icon>reorder</mat-icon>
@@ -120,20 +58,27 @@
                   </div>
 
                   <div class="action-buttons">
-                    <button 
+                    <button
                       mat-icon-button
                       [disabled]="i === 0"
                       (click)="moveFileUp(i)"
                       matTooltip="Move up">
                       <mat-icon>arrow_upward</mat-icon>
                     </button>
-                    
-                    <button 
+
+                    <button
                       mat-icon-button
                       [disabled]="i === fileSelections.length - 1"
                       (click)="moveFileDown(i)"
                       matTooltip="Move down">
                       <mat-icon>arrow_downward</mat-icon>
+                    </button>
+
+                    <button
+                      mat-icon-button
+                      (click)="removeFile(selection)"
+                      matTooltip="Remove">
+                      <mat-icon>close</mat-icon>
                     </button>
                   </div>
                 </div>
@@ -290,7 +235,7 @@
   </div>
 
   <!-- MAIN PANEL - MERGED DATA TABLE -->
-  <div class="right-subsection">
+  <div right>
     <h3 class="section-title">Merged Data</h3>
     @if (mergedData.length > 0) {
       <app-table [data]="mergedData" [config]="tableConfig"></app-table>
@@ -301,4 +246,4 @@
       </div>
     }
   </div>
-</div>
+</app-split-panel>

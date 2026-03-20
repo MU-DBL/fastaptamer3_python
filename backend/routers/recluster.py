@@ -25,6 +25,17 @@ class ReclusterInput(BaseModel):
     output_format: str = "csv"
 
 
+class ReclusterMultiInput(BaseModel):
+    fadf1_cluster_path: str = ""
+    fadf2_cluster_path: str = ""
+    fadf3_cluster_path: str = ""
+    round1_label: str = "R1"
+    round2_label: str = "R2"
+    round3_label: str = "R3"
+    led_threshold: int = 7
+    output_format: str = "csv"
+
+
 @router.post("/recluster")
 async def fa_recluster_endpoint(params: ReclusterInput):
     """
@@ -38,34 +49,74 @@ async def fa_recluster_endpoint(params: ReclusterInput):
 
     filepath1 = UPLOAD_DIR / params.fadf1_cluster_path
     filepath2 = UPLOAD_DIR / params.fadf2_cluster_path
-    output_path = (
-        UPLOAD_DIR / f"reclustered_led_{params.led_threshold}.{params.output_format}"
-    )
+
+    file1_stem = filepath1.stem
+    file2_stem = filepath2.stem
+
+    cluster_output_path = UPLOAD_DIR / f"{file1_stem}_{file2_stem}_reclustered_led_{params.led_threshold}_clusters.{params.output_format}"
+    sequence_output_path = UPLOAD_DIR / f"{file1_stem}_{file2_stem}_reclustered_led_{params.led_threshold}_sequences.{params.output_format}"
 
     try:
         # Read clustered data from both populations
         fadf1_cluster = read_file(filepath1)
         fadf2_cluster = read_file(filepath2)
 
-        # Perform reclustering
-        result_df = fa_recluster(
+        # Perform reclustering — returns cluster-level summary and sequence-level merged data
+        summary_df, sequence_df = fa_recluster(
             fadf1_cluster=fadf1_cluster,
             fadf2_cluster=fadf2_cluster,
             led_threshold=params.led_threshold,
         )
 
-        # Save output
+        # Save both outputs
+        save_sequences(summary_df, str(cluster_output_path), params.output_format)
+        save_sequences(sequence_df, str(sequence_output_path), params.output_format)
+
+        return {
+            "status": "ok",
+            "result": cluster_output_path.name,
+            "result_sequences": sequence_output_path.name,
+            "num_clusters": len(summary_df),
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Reclustering failed ({type(e).__name__}): {str(e)}")
+
+
+@router.post("/recluster-multi")
+async def fa_recluster_multi_endpoint(params: ReclusterMultiInput):
+    """
+    3-way cluster merge for multi-round SELEX analysis.
+    """
+    if not params.fadf1_cluster_path or not params.fadf2_cluster_path or not params.fadf3_cluster_path:
+        raise HTTPException(status_code=400, detail="All three cluster file paths are required")
+
+    filepath1 = UPLOAD_DIR / params.fadf1_cluster_path
+    filepath2 = UPLOAD_DIR / params.fadf2_cluster_path
+    filepath3 = UPLOAD_DIR / params.fadf3_cluster_path
+    file1_stem = filepath1.stem
+    file2_stem = filepath2.stem
+    file3_stem = filepath3.stem
+
+    labels = (params.round1_label, params.round2_label, params.round3_label)
+    output_path = UPLOAD_DIR / f"{file1_stem}_{file2_stem}_{file3_stem}_recluster_multi_led_{params.led_threshold}.{params.output_format}"
+
+    try:
+        fadf1 = read_file(filepath1)
+        fadf2 = read_file(filepath2)
+        fadf3 = read_file(filepath3)
+
+        result_df = fa_recluster_multi(fadf1, fadf2, fadf3, params.led_threshold, labels)
         save_sequences(result_df, str(output_path), params.output_format)
 
         return {
             "status": "ok",
             "result": output_path.name,
-            "num_sequences": len(result_df),
-            "num_clusters": result_df[ColumnName.CLUSTER].nunique(),
+            "num_clusters": len(result_df),
+            "labels": list(labels),
         }
-
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Reclustering failed ({type(e).__name__}): {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Multi-round reclustering failed ({type(e).__name__}): {str(e)}")
 
 
 class LEDMatrixInput(BaseModel):
@@ -196,7 +247,87 @@ def fa_recluster(
 
     result_df = calculate_led_to_seeds_fast(merge_df)
 
-    return result_df
+    summary_df = summarize_to_cluster_level(result_df)
+    return summary_df, result_df
+
+
+def summarize_to_cluster_level(merged_df: pd.DataFrame) -> pd.DataFrame:
+    """Aggregate sequence-level merged data to cluster-level summary."""
+    results = []
+    rpu_a_col = f'{ColumnName.RPU}.a'
+    rpu_b_col = f'{ColumnName.RPU}.b'
+    oc_a_col = 'OriginalCluster.a'
+    oc_b_col = 'OriginalCluster.b'
+
+    for cluster_id, group in merged_df.groupby(ColumnName.CLUSTER):
+        seed_row = group[group[ColumnName.RANK_IN_CLUSTER] == 1]
+        seed = seed_row[ColumnName.SEQUENCES].iloc[0] if len(seed_row) > 0 else group[ColumnName.SEQUENCES].iloc[0]
+
+        pop1_rows = group[group[oc_a_col].notna()]
+        pop2_rows = group[group[oc_b_col].notna()]
+
+        has_pop1 = len(pop1_rows) > 0
+        has_pop2 = len(pop2_rows) > 0
+
+        size_pop1 = len(pop1_rows) if has_pop1 else np.nan
+        size_pop2 = len(pop2_rows) if has_pop2 else np.nan
+        avg_rpu_pop1 = pop1_rows[rpu_a_col].mean() if has_pop1 else np.nan
+        avg_rpu_pop2 = pop2_rows[rpu_b_col].mean() if has_pop2 else np.nan
+
+        # Seed RPU: max RPU within each original cluster (cluster seed = highest RPU sequence)
+        # RankInCluster is dropped before merging, so we use max RPU per OriginalCluster group
+        # If multiple original clusters merged into this super-cluster, take the highest
+        if has_pop1:
+            seed_rpu_pop1 = pop1_rows.groupby(oc_a_col)[rpu_a_col].max().max()
+        else:
+            seed_rpu_pop1 = np.nan
+        if has_pop2:
+            seed_rpu_pop2 = pop2_rows.groupby(oc_b_col)[rpu_b_col].max().max()
+        else:
+            seed_rpu_pop2 = np.nan
+
+        if has_pop1 and has_pop2:
+            status = 'inherited'
+        elif has_pop2:
+            status = 'emerged'
+        else:
+            status = 'lost'
+
+        # Enrichment based on AvgRPU
+        if has_pop1 and has_pop2 and not np.isnan(avg_rpu_pop1) and avg_rpu_pop1 > 0:
+            enrichment = round(float(avg_rpu_pop2 / avg_rpu_pop1), 3)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                log2e = round(float(np.log2(enrichment)), 3)
+        else:
+            enrichment = np.nan
+            log2e = np.nan
+
+        # Seed enrichment based on SeedRPU
+        if not np.isnan(seed_rpu_pop1) and not np.isnan(seed_rpu_pop2) and seed_rpu_pop1 > 0:
+            seed_enrichment = round(float(seed_rpu_pop2 / seed_rpu_pop1), 3)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                seed_log2e = round(float(np.log2(seed_enrichment)), 3)
+        else:
+            seed_enrichment = np.nan
+            seed_log2e = np.nan
+
+        results.append({
+            'SuperCluster': int(cluster_id),
+            'Seed': seed,
+            'Size.Pop1': int(size_pop1) if not np.isnan(size_pop1) else np.nan,
+            'Size.Pop2': int(size_pop2) if not np.isnan(size_pop2) else np.nan,
+            'AvgRPU.Pop1': round(float(avg_rpu_pop1), 3) if not np.isnan(avg_rpu_pop1) else np.nan,
+            'AvgRPU.Pop2': round(float(avg_rpu_pop2), 3) if not np.isnan(avg_rpu_pop2) else np.nan,
+            'Enrichment': enrichment,
+            'log2E': log2e,
+            'SeedRPU.Pop1': round(float(seed_rpu_pop1), 3) if not np.isnan(seed_rpu_pop1) else np.nan,
+            'SeedRPU.Pop2': round(float(seed_rpu_pop2), 3) if not np.isnan(seed_rpu_pop2) else np.nan,
+            'SeedEnrichment': seed_enrichment,
+            'SeedLog2E': seed_log2e,
+            'Status': status,
+        })
+
+    return pd.DataFrame(results).sort_values('SuperCluster').reset_index(drop=True)
 
 
 def compute_led_matrix_fast(seeds1: np.ndarray, seeds2: np.ndarray) -> np.ndarray:
@@ -421,6 +552,146 @@ def calculate_led_to_seeds_fast(df: pd.DataFrame) -> pd.DataFrame:
     ).reset_index(drop=True)
 
     return df
+
+
+def fa_recluster_multi(
+    fadf1: pd.DataFrame,
+    fadf2: pd.DataFrame,
+    fadf3: pd.DataFrame,
+    led_threshold: int = 7,
+    labels: tuple = ('R1', 'R2', 'R3'),
+) -> pd.DataFrame:
+    """
+    3-way cluster merge using union-find on pairwise LED comparisons.
+    Returns cluster-level summary table with per-round stats.
+    """
+    def get_seeds_and_ids(df):
+        mask = df[ColumnName.RANK_IN_CLUSTER].astype(int) == 1
+        return df.loc[mask, ColumnName.SEQUENCES].values, df.loc[mask, ColumnName.CLUSTER].astype(int).values
+
+    seeds1, ids1 = get_seeds_and_ids(fadf1)
+    seeds2, ids2 = get_seeds_and_ids(fadf2)
+    seeds3, ids3 = get_seeds_and_ids(fadf3)
+
+    led_12 = compute_led_matrix_fast(seeds1, seeds2)
+    led_23 = compute_led_matrix_fast(seeds2, seeds3)
+
+    # Union-Find
+    parent: dict = {}
+
+    def find(x):
+        parent.setdefault(x, x)
+        if parent[x] != x:
+            parent[x] = find(parent[x])
+        return parent[x]
+
+    def union(x, y):
+        px, py = find(x), find(y)
+        if px != py:
+            parent[px] = py
+
+    all_nodes = (
+        [f'r1_{i}' for i in range(len(seeds1))] +
+        [f'r2_{i}' for i in range(len(seeds2))] +
+        [f'r3_{i}' for i in range(len(seeds3))]
+    )
+    for n in all_nodes:
+        find(n)
+
+    for i in range(len(seeds1)):
+        cols = np.where(led_12[i] < led_threshold)[0]
+        if len(cols) > 0:
+            union(f'r1_{i}', f'r2_{cols[np.argmin(led_12[i, cols])]}')
+
+    for j in range(len(seeds2)):
+        cols = np.where(led_23[j] < led_threshold)[0]
+        if len(cols) > 0:
+            union(f'r2_{j}', f'r3_{cols[np.argmin(led_23[j, cols])]}')
+
+    root_to_sc: dict = {}
+    sc_counter = 1
+    node_to_sc: dict = {}
+    for node in all_nodes:
+        root = find(node)
+        if root not in root_to_sc:
+            root_to_sc[root] = sc_counter
+            sc_counter += 1
+        node_to_sc[node] = root_to_sc[root]
+
+    def build_orig_to_sc(ids, prefix):
+        return {int(orig_id): node_to_sc[f'{prefix}_{i}'] for i, orig_id in enumerate(ids)}
+
+    orig_to_sc1 = build_orig_to_sc(ids1, 'r1')
+    orig_to_sc2 = build_orig_to_sc(ids2, 'r2')
+    orig_to_sc3 = build_orig_to_sc(ids3, 'r3')
+
+    def round_stats(df, orig_to_sc, label):
+        df = df.copy()
+        df['SuperCluster'] = df[ColumnName.CLUSTER].astype(int).map(orig_to_sc)
+        grouped = df.groupby('SuperCluster').agg(
+            **{
+                f'Size.{label}': (ColumnName.SEQUENCES, 'count'),
+                f'AvgRPU.{label}': (ColumnName.RPU, 'mean'),
+            }
+        ).reset_index()
+        grouped[f'AvgRPU.{label}'] = grouped[f'AvgRPU.{label}'].round(3)
+        # SeedRPU: max RPU among original cluster seeds (rank 1) per super-cluster
+        seed_rows = df[df[ColumnName.RANK_IN_CLUSTER].astype(int) == 1]
+        seed_rpu = seed_rows.groupby('SuperCluster')[ColumnName.RPU].max().reset_index()
+        seed_rpu = seed_rpu.rename(columns={ColumnName.RPU: f'SeedRPU.{label}'})
+        seed_rpu[f'SeedRPU.{label}'] = seed_rpu[f'SeedRPU.{label}'].round(3)
+        grouped = grouped.merge(seed_rpu, on='SuperCluster', how='left')
+        return grouped
+
+    r1, r2, r3 = labels
+    stats1 = round_stats(fadf1, orig_to_sc1, r1)
+    stats2 = round_stats(fadf2, orig_to_sc2, r2)
+    stats3 = round_stats(fadf3, orig_to_sc3, r3)
+
+    result = stats1.merge(stats2, on='SuperCluster', how='outer')
+    result = result.merge(stats3, on='SuperCluster', how='outer')
+
+    # Seed from latest round available
+    sc_to_seed: dict = {}
+    for i, orig_id in enumerate(ids3):
+        sc_to_seed[node_to_sc[f'r3_{i}']] = seeds3[i]
+    for i, orig_id in enumerate(ids2):
+        sc = node_to_sc[f'r2_{i}']
+        if sc not in sc_to_seed:
+            sc_to_seed[sc] = seeds2[i]
+    for i, orig_id in enumerate(ids1):
+        sc = node_to_sc[f'r1_{i}']
+        if sc not in sc_to_seed:
+            sc_to_seed[sc] = seeds1[i]
+
+    result['Seed'] = result['SuperCluster'].map(sc_to_seed)
+
+    # Enrichment between consecutive rounds (AvgRPU-based)
+    e_col_12 = f'E.{r1}.{r2}'
+    e_col_23 = f'E.{r2}.{r3}'
+    with np.errstate(divide='ignore', invalid='ignore'):
+        result[e_col_12] = (result[f'AvgRPU.{r2}'] / result[f'AvgRPU.{r1}']).round(3)
+        result[e_col_23] = (result[f'AvgRPU.{r3}'] / result[f'AvgRPU.{r2}']).round(3)
+    result[e_col_12] = result[e_col_12].replace([np.inf, -np.inf], np.nan)
+    result[e_col_23] = result[e_col_23].replace([np.inf, -np.inf], np.nan)
+
+    # Seed enrichment between consecutive rounds (SeedRPU-based)
+    se_col_12 = f'SeedE.{r1}.{r2}'
+    se_col_23 = f'SeedE.{r2}.{r3}'
+    with np.errstate(divide='ignore', invalid='ignore'):
+        result[se_col_12] = (result[f'SeedRPU.{r2}'] / result[f'SeedRPU.{r1}']).round(3)
+        result[se_col_23] = (result[f'SeedRPU.{r3}'] / result[f'SeedRPU.{r2}']).round(3)
+    result[se_col_12] = result[se_col_12].replace([np.inf, -np.inf], np.nan)
+    result[se_col_23] = result[se_col_23].replace([np.inf, -np.inf], np.nan)
+
+    cols = ['SuperCluster', 'Seed',
+            f'Size.{r1}', f'Size.{r2}', f'Size.{r3}',
+            f'AvgRPU.{r1}', f'AvgRPU.{r2}', f'AvgRPU.{r3}',
+            f'SeedRPU.{r1}', f'SeedRPU.{r2}', f'SeedRPU.{r3}',
+            e_col_12, e_col_23, se_col_12, se_col_23]
+    result = result[cols].sort_values('SuperCluster').reset_index(drop=True)
+
+    return result
 
 
 def compute_led_array_parallel(

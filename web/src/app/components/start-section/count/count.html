@@ -2,8 +2,8 @@
   Counts and ranks unique sequences from a FASTA or FASTQ file, computing Reads Per Unit (RPU) values normalized to a
   chosen scale. Outputs a ranked sequence table.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Choose data to count*:</h3>
     <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'" [buttonText]="'Browse...'"
       [placeholderText]="'FASTQ or FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
@@ -239,8 +239,8 @@
       </button>
     </div>
   </div>
-  <div class="right-subsection">
+  <div right>
     <app-table [data]="tableData" [config]="tableConfig">
     </app-table>
   </div>
-</div>
+</app-split-panel>

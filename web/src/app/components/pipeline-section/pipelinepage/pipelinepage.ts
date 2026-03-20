@@ -5,6 +5,7 @@ import { lastValueFrom, map } from 'rxjs';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { Upload, FileUploadResult } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { FileService } from '../../../shared/file-service';
 import { GENETIC_CODES } from '../../../shared/constants';
 
@@ -235,7 +236,7 @@ const OPERATION_DEFS: OperationDef[] = [
 
 @Component({
   selector: 'app-pipelinepage',
-  imports: [CommonModule, FormsModule, Upload, ...MATERIAL_IMPORTS],
+  imports: [CommonModule, FormsModule, Upload, SplitPanel, ...MATERIAL_IMPORTS],
   templateUrl: './pipelinepage.html',
   styleUrl: './pipelinepage.scss'
 })
@@ -310,6 +311,24 @@ export class Pipelinepage implements OnDestroy {
     step.error = undefined;
     step.progressLogs = [];
     step.progressValue = 0;
+
+    // Reset the next step if its operation is no longer valid
+    const idx = this.steps.indexOf(step);
+    if (idx !== -1 && idx + 1 < this.steps.length) {
+      const nextStep = this.steps[idx + 1];
+      const available = this.getAvailableOps(idx + 1);
+      if (!available.find(d => d.key === nextStep.operationKey)) {
+        nextStep.operationKey = available[0].key;
+        this.onOperationChange(nextStep);
+      }
+    }
+  }
+
+  getAvailableOps(index: number): OperationDef[] {
+    if (index === 0) return OPERATION_DEFS;
+    const prevDef = OPERATION_DEFS.find(d => d.key === this.steps[index - 1].operationKey);
+    if (!prevDef?.possibleNextSteps) return OPERATION_DEFS;
+    return OPERATION_DEFS.filter(d => prevDef.possibleNextSteps!.includes(d.key));
   }
 
   getOperationLabel(key: string): string {

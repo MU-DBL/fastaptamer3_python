@@ -257,6 +257,19 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/recluster`, params);
   }
 
+  reclusterMulti(params: {
+    fadf1_cluster_path: string;
+    fadf2_cluster_path: string;
+    fadf3_cluster_path: string;
+    round1_label: string;
+    round2_label: string;
+    round3_label: string;
+    led_threshold: number;
+    output_format: string;
+  }) {
+    return this.http.post(`${this.baseUrl}/recluster-multi`, params);
+  }
+
   // Get LED matrix between two populations
   getReclusterLedMatrix(params: {
     fadf1_cluster_path: string;

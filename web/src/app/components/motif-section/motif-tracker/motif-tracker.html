@@ -1,72 +1,19 @@
 <div class="page-note">
   Monitor how motifs or exact sequences rise or fall across multiple FASTA populations. Upload multiple counted FASTA populations in order, specify your motifs, and get a line plot of frequency per round plus a summary table with enrichment values.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
 
     <!-- FILE UPLOAD SECTION -->
-    <h3 class="section-title">Upload Multiple FASTA Files *</h3>
-    
-    <div class="file-upload-section">
-      <input 
-        type="file" 
-        #multiFileInput
-        multiple
-        accept=".fasta,.fa"
-        (change)="onMultipleFilesSelected($event)"
-        style="display: none;">
-      
-      <button 
-        mat-raised-button 
-        color="primary"
-        (click)="multiFileInput.click()"
-        [disabled]="isUploading"
-        class="browse-button">
-        Browse...
-      </button>
-      
-      <span class="upload-status">
-        @if (uploadingFiles.length === 0) {
-          <span>FASTA files</span>
-        } @else if (isUploading) {
-          <span>Uploading {{ uploadingFiles.length }} file(s)...</span>
-        } @else {
-          <span class="upload-complete">{{ uploadedFiles.length }} file(s) uploaded</span>
-        }
-      </span>
-    </div>
-
-    <!-- Upload Progress Bars -->
-    @if (uploadingFiles.length > 0) {
-      <div class="upload-progress-section">
-        @for (file of uploadingFiles; track file.name) {
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="file-name">{{ file.name }}</span>
-              <span class="progress-percentage">{{ file.progress }}%</span>
-            </div>
-            <mat-progress-bar
-              mode="determinate"
-              [value]="file.progress"
-              [class.complete]="file.isComplete">
-            </mat-progress-bar>
-            @if (file.isComplete) {
-              <span class="complete-text">Upload complete</span>
-            }
-          </div>
-        }
-      </div>
-
-      @if (!isUploading) {
-        <p class="notice">
-          *All files uploaded successfully. You can now select and order them below.
-        </p>
-      } @else {
-        <p class="notice">
-          *Please wait while files are being uploaded...
-        </p>
-      }
-    }
+    <h3 class="section-title">Upload FASTA Files *</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'Add FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="100"
+      (uploadComplete)="onUploadComplete($event)">
+    </app-upload>
 
     <!-- FILE SELECTION AND ORDERING -->
     <h3 class="section-title">File Order for Tracking ({{ fileSelections.length }} files)</h3>
@@ -112,20 +59,27 @@
                   </div>
 
                   <div class="action-buttons">
-                    <button 
+                    <button
                       mat-icon-button
                       [disabled]="$index === 0"
                       (click)="moveFileUp($index)"
                       matTooltip="Move up">
                       <mat-icon>arrow_upward</mat-icon>
                     </button>
-                    
-                    <button 
+
+                    <button
                       mat-icon-button
                       [disabled]="$index === fileSelections.length - 1"
                       (click)="moveFileDown($index)"
                       matTooltip="Move down">
                       <mat-icon>arrow_downward</mat-icon>
+                    </button>
+
+                    <button
+                      mat-icon-button
+                      (click)="removeFile(selection)"
+                      matTooltip="Remove">
+                      <mat-icon>close</mat-icon>
                     </button>
                   </div>
                 </div>
@@ -277,7 +231,7 @@
   </div>
 
   <!-- RESULTS SECTION -->
-  <div class="right-subsection">
+  <div right>
     <div class="results-section">
       <h3 class="results-title">Tracker Results</h3>
       <app-table
@@ -296,7 +250,7 @@
       </app-table>
     </div>
   </div>
-</div>
+</app-split-panel>
 <!-- PLOT MODAL -->
 @if (showTrackerPlot()) {
   <div class="plot-modal-overlay" (click)="closeTrackerPlot()">

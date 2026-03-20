@@ -1,8 +1,8 @@
 <div class="page-note">
   Performs Multiple Sequence Alignment (MSA) on sequences within a selected cluster from a clustered FASTA file. Outputs an aligned FASTA file.
 </div>
-<div class="section-container">
-    <div class="left-subsection">
+<app-split-panel>
+    <div left>
         <div>
             <h3 class="section-title">Clustered FASTA file:</h3>
             <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
@@ -168,8 +168,8 @@
             </button>
         </div>
     </div>
-    <div class="right-subsection">
+    <div right>
         <app-table [data]="clusterData" [config]="tableConfig">
         </app-table>
     </div>
-</div>
+</app-split-panel>

@@ -1,7 +1,7 @@
 <div class="page-note">
   Integrates read counts from 2 to 5 counted FASTA or FASTQ files, consolidates unique sequences, and recomputes Reads Per Unit RPU values normalized to a selected scale. Outputs a ranked table of sequences with updated abundance metrics.</div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
 
     <!-- FILE UPLOAD SECTION -->
     <h3 class="section-title">Upload FASTA files to recount (2 to 5 files) *</h3>
@@ -234,10 +234,10 @@
       </button>
     </div>
   </div>
-  <div class="right-subsection">
-     <app-table 
-        [data]="tableData" 
+  <div right>
+     <app-table
+        [data]="tableData"
         [config]="tableConfig">
       </app-table>
   </div>
-</div>
+</app-split-panel>

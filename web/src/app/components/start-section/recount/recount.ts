@@ -6,6 +6,7 @@ import { ApiService } from '../../../shared/api.service';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 
 const MAX_RECOUNT_FILES = 5;
 
@@ -22,6 +23,7 @@ interface UploadingFile {
     CommonModule,
     FormsModule,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './recount.html',

@@ -1,8 +1,8 @@
 <div class="page-note">
   Calculates per-position nucleotide or amino acid enrichment, revealing which positions are most variable or conserved. Accepts a recluster CSV, sequence enrichment CSV, or any CSV with an Enrichment column. Produces a positional enrichment bar plot and heatmap.
 </div>
-<div class="section-container">
-    <div class="left-subsection">
+<app-split-panel>
+    <div left>
         <div>
             <h3 class="section-title">Input CSV file *</h3>
             <app-upload [acceptedFileTypes]="'.csv'" [buttonText]="'Browse...'" [placeholderText]="'Recluster or sequence enrichment CSV'"
@@ -138,4 +138,4 @@
             </button>
         </div>
     </div>
-</div>
+</app-split-panel>

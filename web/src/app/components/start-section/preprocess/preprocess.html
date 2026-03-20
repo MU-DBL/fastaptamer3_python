@@ -2,8 +2,8 @@
 <div class="page-note">
   Trims constant 5' and 3' region from sequences in a FASTQ or FASTA file, then filters sequences by length range and maximum average error thresholds. Outputs a cleaned FASTA file ready for counting.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Choose data to preprocess *</h3>
     <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'" [buttonText]="'Browse...'"
       [placeholderText]="'FASTQ or FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
@@ -78,7 +78,7 @@
       </button>
     </div>
   </div>
-  <div class="right-subsection">
+  <div right>
     <h4>Processing logs</h4>
     <hr class="section-divider">
     @if (isProcessing() || logs().length > 0) {
@@ -99,4 +99,4 @@
     </div>
     }
   </div>
-</div>
+</app-split-panel>

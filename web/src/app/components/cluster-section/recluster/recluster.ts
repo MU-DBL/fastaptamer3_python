@@ -2,11 +2,11 @@ import { Component, inject, signal, PLATFORM_ID, Inject, ChangeDetectorRef, OnDe
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, forkJoin } from 'rxjs';
 
-// Components & Services
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { ApiService } from '../../../shared/api.service';
 import { ColumnName, FileService } from '../../../shared/file-service';
 import { Table, TableConfig } from '../../common/table/table';
@@ -14,13 +14,7 @@ import { PlotModalService } from '../../../shared/plot-modal.service';
 
 @Component({
   selector: 'app-recluster',
-  imports: [
-    CommonModule,
-    FormsModule,
-    Upload,
-    Table,
-    ...MATERIAL_IMPORTS
-  ],
+  imports: [CommonModule, FormsModule, Upload, Table, SplitPanel, ...MATERIAL_IMPORTS],
   templateUrl: './recluster.html',
   styleUrl: './recluster.scss',
 })
@@ -33,43 +27,87 @@ export class Recluster implements OnDestroy {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   // ========================================================================
-  // TABLE CONFIGURATION
+  // MODE
+  // ========================================================================
+  mode: 'two-pop' | 'multi-round' = 'two-pop';
+
+  onModeChange(): void {
+    this.reclusterData = [];
+    this.processedFileName.set('');
+    this.multiRoundLabels = [];
+  }
+
+  // ========================================================================
+  // TABLE CONFIG (2-pop)
   // ========================================================================
   tableConfig: TableConfig = {
     columns: [
-      { key: ColumnName.SEQUENCES, label: 'Sequences' },
+      { key: ColumnName.SUPER_CLUSTER, label: 'Super-cluster', exact_match: true },
+      { key: ColumnName.SEED, label: 'Seed' },
+      { key: ColumnName.SIZE_POP1, label: 'Size (Pop 1)' },
+      { key: ColumnName.SIZE_POP2, label: 'Size (Pop 2)' },
+      { key: ColumnName.AVG_RPU_POP1, label: 'Avg RPU (Pop 1)' },
+      { key: ColumnName.AVG_RPU_POP2, label: 'Avg RPU (Pop 2)' },
+      { key: ColumnName.ENRICHMENT, label: 'Enrichment (Avg)' },
+      { key: ColumnName.LOG2E, label: 'log2E (Avg)' },
+      { key: ColumnName.SEED_RPU_POP1, label: 'Seed RPU (Pop 1)' },
+      { key: ColumnName.SEED_RPU_POP2, label: 'Seed RPU (Pop 2)' },
+      { key: ColumnName.SEED_ENRICHMENT, label: 'Enrichment (Seed)' },
+      { key: ColumnName.SEED_LOG2E, label: 'log2E (Seed)' },
+      { key: ColumnName.STATUS, label: 'Status' },
+    ],
+    initialPageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100],
+  };
+
+  // Dynamic table config for multi-round
+  multiTableConfig: TableConfig = {
+    columns: [],
+    initialPageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100],
+  };
+
+  reclusterData: any[] = [];
+  sequenceData: any[] = [];
+  multiRoundLabels: string[] = [];
+
+  sequenceTableConfig: TableConfig = {
+    columns: [
+      { key: ColumnName.SEQUENCES, label: 'Sequence' },
       { key: ColumnName.CLUSTER, label: 'Super-cluster', exact_match: true },
       { key: ColumnName.ORIGINAL_CLUSTER_A, label: 'Orig. Cluster (Pop 1)', exact_match: true },
       { key: ColumnName.ORIGINAL_CLUSTER_B, label: 'Orig. Cluster (Pop 2)', exact_match: true },
       { key: ColumnName.RANK_IN_CLUSTER, label: 'Rank In Cluster', exact_match: true },
       { key: ColumnName.LED, label: 'LED' },
-      { key: ColumnName.ID_A, label: 'ID (Pop 1)' },
-      { key: ColumnName.RANK_A, label: 'Rank (Pop 1)' },
-      { key: ColumnName.READS_A, label: 'Reads (Pop 1)' },
       { key: ColumnName.RPU_A, label: 'RPU (Pop 1)' },
-      { key: ColumnName.ID_B, label: 'ID (Pop 2)' },
-      { key: ColumnName.RANK_B, label: 'Rank (Pop 2)' },
-      { key: ColumnName.READS_B, label: 'Reads (Pop 2)' },
       { key: ColumnName.RPU_B, label: 'RPU (Pop 2)' },
       { key: ColumnName.ENRICHMENT, label: 'Enrichment' },
-      { key: ColumnName.LOG2E, label: 'log2(Enrichment)' }
+      { key: ColumnName.LOG2E, label: 'log2E' },
     ],
-    initialPageSize: 10,
-    pageSizeOptions: [10, 25, 50, 100]
+    initialPageSize: 25,
+    pageSizeOptions: [10, 25, 50, 100],
   };
 
-  reclusterData: any[] = [];
+  // ========================================================================
+  // FILE UPLOAD STATE - 2 POP
+  // ========================================================================
+  savedFileName1 = '';
+  uploadComplete1 = false;
+  savedFileName2 = '';
+  uploadComplete2 = false;
 
   // ========================================================================
-  // FILE UPLOAD STATE
+  // FILE UPLOAD STATE - MULTI ROUND
   // ========================================================================
-  selectedFile1: File | null = null;
-  savedFileName1: string = '';
-  uploadComplete1: boolean = false;
-
-  selectedFile2: File | null = null;
-  savedFileName2: string = '';
-  uploadComplete2: boolean = false;
+  savedFileNameM1 = '';
+  uploadCompleteM1 = false;
+  savedFileNameM2 = '';
+  uploadCompleteM2 = false;
+  savedFileNameM3 = '';
+  uploadCompleteM3 = false;
+  round1Label = 'R1';
+  round2Label = 'R2';
+  round3Label = 'R3';
 
   // ========================================================================
   // PROCESSING STATE
@@ -77,88 +115,83 @@ export class Recluster implements OnDestroy {
   isProcessing = signal(false);
   isHeatmapProcessing = signal(false);
   processedFileName = signal('');
+  processedSequenceFileName = signal('');
 
   // ========================================================================
   // PARAMETERS
   // ========================================================================
-  ledThreshold: number = 7;
+  ledThreshold = 7;
 
   // ========================================================================
   // HEATMAP CUSTOMIZATION
   // ========================================================================
-  adjustHeatmap: string = 'no';
-  heatmapXAxis: string = 'Population 1 clusters';
-  heatmapYAxis: string = 'Population 2 clusters';
-  heatmapLegend: string = 'LED';
-  heatmapTitle: string = 'LED between cluster seeds';
-  heatmapPalette: string = 'Magma';
+  adjustHeatmap = 'no';
+  heatmapXAxis = 'Population 1 clusters';
+  heatmapYAxis = 'Population 2 clusters';
+  heatmapLegend = 'LED';
+  heatmapTitle = 'LED between cluster seeds';
+  heatmapPalette = 'Magma';
 
   // ========================================================================
   // POPULATION SIZE PLOT CUSTOMIZATION
   // ========================================================================
-  adjustPopSize: string = 'no';
-  popSizeXAxis: string = 'Cluster';
-  popSizeYAxis: string = 'Sequence count';
-  popSizeLegend: string = 'Population';
-  popSizeTitle: string = 'Sequence count per cluster';
-  popSizeColor1: string = '#1b9e77';
-  popSizeColor2: string = '#d95f02';
+  adjustPopSize = 'no';
+  popSizeXAxis = 'Super-cluster';
+  popSizeYAxis = 'Sequence count';
+  popSizeLegend = 'Population';
+  popSizeTitle = 'Sequence count per super-cluster';
+  popSizeColor1 = '#1b9e77';
+  popSizeColor2 = '#d95f02';
 
   // ========================================================================
   // RPU PLOT CUSTOMIZATION
   // ========================================================================
-  adjustRPU: string = 'no';
-  rpuXAxis: string = 'Cluster';
-  rpuYAxis: string = 'Avg. RPU';
-  rpuLegend: string = 'Population';
-  rpuTitle: string = 'Avg. RPU per cluster';
-  rpuColor1: string = '#1b9e77';
-  rpuColor2: string = '#d95f02';
+  adjustRPU = 'no';
+  rpuXAxis = 'Super-cluster';
+  rpuYAxis = 'Avg. RPU';
+  rpuLegend = 'Population';
+  rpuTitle = 'Avg. RPU per super-cluster';
+  rpuColor1 = '#1b9e77';
+  rpuColor2 = '#d95f02';
 
   // ========================================================================
-  // LED PLOT CUSTOMIZATION
+  // ENRICHMENT PLOT CUSTOMIZATION
   // ========================================================================
-  adjustLED: string = 'no';
-  ledXAxis: string = 'Cluster';
-  ledYAxis: string = 'Avg. LED';
-  ledTitle: string = 'Avg. LED per cluster';
-  ledBarOutline: string = '#000000';
-  ledBarFill: string = '#87ceeb';
+  adjustEnrichment = 'no';
+  enrichmentXAxis = 'Super-cluster';
+  enrichmentYAxis = 'Enrichment';
+  enrichmentTitle = 'Enrichment per super-cluster';
+  enrichmentBarFill = '#87ceeb';
+  enrichmentBarOutline = '#000000';
 
   // ========================================================================
-  // ENRICHMENT BOX PLOT CUSTOMIZATION
+  // TRAJECTORY PLOT CUSTOMIZATION (multi-round)
   // ========================================================================
-  adjustEnrichment: string = 'no';
-  enrichmentXAxis: string = 'Cluster';
-  enrichmentTitle: string = 'Sequence enrichment per super-cluster';
-  enrichmentBoxOutline: string = '#000000';
-  enrichmentBoxFill: string = '#87ceeb';
+  adjustTrajectory = 'no';
+  trajectoryYAxis = 'Avg. RPU';
+  trajectoryTitle = 'Cluster trajectory across rounds';
 
   // ========================================================================
-  // FILE UPLOAD HANDLERS - FILE 1
+  // LIFECYCLE
   // ========================================================================
+  ngOnDestroy(): void {
+    [this.savedFileName1, this.savedFileName2,
+     this.savedFileNameM1, this.savedFileNameM2, this.savedFileNameM3,
+     this.processedFileName(), this.processedSequenceFileName()].forEach(f => {
+      if (f) this.apiService.deleteFile(f).subscribe();
+    });
+  }
+
   cancelProcessing(): void {
     this.apiService.cancelProcesses().subscribe();
     this.isProcessing.set(false);
   }
 
-  ngOnDestroy(): void {
-    if (this.savedFileName1) {
-      this.apiService.deleteFile(this.savedFileName1).subscribe();
-    }
-    if (this.savedFileName2) {
-      this.apiService.deleteFile(this.savedFileName2).subscribe();
-    }
-    if (this.processedFileName()) {
-      this.apiService.deleteFile(this.processedFileName()).subscribe();
-    }
-  }
-
+  // ========================================================================
+  // FILE UPLOAD HANDLERS - 2 POP
+  // ========================================================================
   onFile1Selected(result: FileUploadResult): void {
-    if (this.savedFileName1) {
-      this.apiService.deleteFile(this.savedFileName1).subscribe();
-    }
-    this.selectedFile1 = result.file;
+    if (this.savedFileName1) this.apiService.deleteFile(this.savedFileName1).subscribe();
     this.savedFileName1 = '';
     this.uploadComplete1 = false;
     this.processedFileName.set('');
@@ -168,19 +201,11 @@ export class Recluster implements OnDestroy {
     if (result.uploadComplete && result.savedFileName) {
       this.uploadComplete1 = true;
       this.savedFileName1 = result.savedFileName;
-    } else if (result.error) {
-      console.error('Upload 1 failed:', result.error);
     }
   }
 
-  // ========================================================================
-  // FILE UPLOAD HANDLERS - FILE 2
-  // ========================================================================
   onFile2Selected(result: FileUploadResult): void {
-    if (this.savedFileName2) {
-      this.apiService.deleteFile(this.savedFileName2).subscribe();
-    }
-    this.selectedFile2 = result.file;
+    if (this.savedFileName2) this.apiService.deleteFile(this.savedFileName2).subscribe();
     this.savedFileName2 = '';
     this.uploadComplete2 = false;
     this.processedFileName.set('');
@@ -190,411 +215,321 @@ export class Recluster implements OnDestroy {
     if (result.uploadComplete && result.savedFileName) {
       this.uploadComplete2 = true;
       this.savedFileName2 = result.savedFileName;
-    } else if (result.error) {
-      console.error('Upload 2 failed:', result.error);
     }
   }
 
   // ========================================================================
-  // DOWNLOAD HANDLER
+  // FILE UPLOAD HANDLERS - MULTI ROUND
+  // ========================================================================
+  onFileM1Selected(result: FileUploadResult): void {
+    if (this.savedFileNameM1) this.apiService.deleteFile(this.savedFileNameM1).subscribe();
+    this.savedFileNameM1 = '';
+    this.uploadCompleteM1 = false;
+    this.processedFileName.set('');
+  }
+
+  onUploadM1Complete(result: FileUploadResult): void {
+    if (result.uploadComplete && result.savedFileName) {
+      this.uploadCompleteM1 = true;
+      this.savedFileNameM1 = result.savedFileName;
+    }
+  }
+
+  onFileM2Selected(result: FileUploadResult): void {
+    if (this.savedFileNameM2) this.apiService.deleteFile(this.savedFileNameM2).subscribe();
+    this.savedFileNameM2 = '';
+    this.uploadCompleteM2 = false;
+    this.processedFileName.set('');
+  }
+
+  onUploadM2Complete(result: FileUploadResult): void {
+    if (result.uploadComplete && result.savedFileName) {
+      this.uploadCompleteM2 = true;
+      this.savedFileNameM2 = result.savedFileName;
+    }
+  }
+
+  onFileM3Selected(result: FileUploadResult): void {
+    if (this.savedFileNameM3) this.apiService.deleteFile(this.savedFileNameM3).subscribe();
+    this.savedFileNameM3 = '';
+    this.uploadCompleteM3 = false;
+    this.processedFileName.set('');
+  }
+
+  onUploadM3Complete(result: FileUploadResult): void {
+    if (result.uploadComplete && result.savedFileName) {
+      this.uploadCompleteM3 = true;
+      this.savedFileNameM3 = result.savedFileName;
+    }
+  }
+
+  // ========================================================================
+  // DOWNLOAD
   // ========================================================================
   onDownload(): void {
     const filename = this.processedFileName();
-    if (!filename) {
-      console.warn('No file available for download.');
-      return;
-    }
-    this.fileService.downloadFile(filename);
+    if (filename) this.fileService.downloadFile(filename);
+  }
+
+  onDownloadSequences(): void {
+    const filename = this.processedSequenceFileName();
+    if (filename) this.fileService.downloadFile(filename);
   }
 
   // ========================================================================
-  // HEATMAP GENERATION
+  // HEATMAP (2-pop only)
   // ========================================================================
   onGenerateHeatmap(): void {
-    if (!this.uploadComplete1 || !this.savedFileName1) {
-      console.warn('Please upload file 1 first!');
-      return;
-    }
-    if (!this.uploadComplete2 || !this.savedFileName2) {
-      console.warn('Please upload file 2 first!');
-      return;
-    }
-
+    if (!this.uploadComplete1 || !this.uploadComplete2) return;
     this.isHeatmapProcessing.set(true);
 
-    const params = {
+    this.apiService.getReclusterLedMatrix({
       fadf1_cluster_path: this.savedFileName1,
       fadf2_cluster_path: this.savedFileName2,
       led_threshold: this.ledThreshold,
-      use_parallel: false
-    };
-
-    this.apiService.getReclusterLedMatrix(params)
-      .pipe(
-        tap((response) => {
-          this.generateHeatmapPlot(response);
-        }),
-        catchError((error) => {
-          console.error('LED matrix generation failed:', error);
-          alert(`Heatmap generation failed: ${error.error?.detail || error.message}`);
-          return of(null);
-        }),
-        finalize(() => {
-          this.isHeatmapProcessing.set(false);
-          this.cdr.detectChanges();
-        })
-      )
-      .subscribe();
+      use_parallel: false,
+    }).pipe(
+      tap(response => this.generateHeatmapPlot(response)),
+      catchError(error => {
+        alert(`Heatmap generation failed: ${error.error?.detail || error.message}`);
+        return of(null);
+      }),
+      finalize(() => { this.isHeatmapProcessing.set(false); this.cdr.detectChanges(); })
+    ).subscribe();
   }
 
   private generateHeatmapPlot(response: any): void {
     if (!isPlatformBrowser(this.platformId)) return;
-
     const { led_matrix, p1_cluster_ids, p2_cluster_ids } = response;
-
-    const trace: any = {
-      type: 'heatmap',
-      z: led_matrix,
-      x: p2_cluster_ids,
-      y: p1_cluster_ids,
-      colorscale: this.heatmapPalette,
-      colorbar: {
-        title: { text: this.heatmapLegend }
-      },
-      hoverongaps: false
-    };
-
-    const layout: any = {
-      title: { text: this.heatmapTitle },
-      xaxis: {
-        title: { text: this.heatmapXAxis },
-        side: 'bottom'
-      },
-      yaxis: {
-        title: { text: this.heatmapYAxis }
-      },
-      autosize: true
-    };
-
-    const config = {
-      responsive: true,
-      displayModeBar: true,
-      displaylogo: false
-    };
-
     this.plotModalService.openPlot({
-      data: [trace],
-      layout: layout,
-      config: config
+      data: [{
+        type: 'heatmap',
+        z: led_matrix,
+        x: p2_cluster_ids,
+        y: p1_cluster_ids,
+        colorscale: this.heatmapPalette,
+        colorbar: { title: { text: this.heatmapLegend } },
+        hoverongaps: false,
+      }],
+      layout: {
+        title: { text: this.heatmapTitle },
+        xaxis: { title: { text: this.heatmapXAxis }, side: 'bottom' },
+        yaxis: { title: { text: this.heatmapYAxis } },
+        autosize: true,
+      },
+      config: { responsive: true, displayModeBar: true, displaylogo: false },
     });
   }
 
   // ========================================================================
-  // RECLUSTER
+  // RECLUSTER (2-pop)
   // ========================================================================
   onRecluster(): void {
-    if (!this.uploadComplete1 || !this.savedFileName1) {
-      console.warn('Please upload file 1 first!');
-      return;
-    }
-    if (!this.uploadComplete2 || !this.savedFileName2) {
-      console.warn('Please upload file 2 first!');
-      return;
-    }
+    if (!this.uploadComplete1 || !this.uploadComplete2) return;
+    this.isProcessing.set(true);
+    this.processedFileName.set('');
+    this.processedSequenceFileName.set('');
+    this.reclusterData = [];
+    this.sequenceData = [];
 
+    this.apiService.recluster({
+      fadf1_cluster_path: this.savedFileName1,
+      fadf2_cluster_path: this.savedFileName2,
+      led_threshold: this.ledThreshold,
+      output_format: 'csv',
+    }).pipe(
+      switchMap((response: any) => {
+        this.processedFileName.set(response.result);
+        this.processedSequenceFileName.set(response.result_sequences ?? '');
+        const clusters$ = this.apiService.downloadFile(response.result).pipe(
+          switchMap(blob => this.fileService.parseClusterFile(blob, response.result))
+        );
+        const sequences$ = response.result_sequences
+          ? this.apiService.downloadFile(response.result_sequences).pipe(
+              switchMap(blob => this.fileService.parseClusterFile(blob, response.result_sequences))
+            )
+          : of([]);
+        return forkJoin([clusters$, sequences$]);
+      }),
+      tap(([clusterData, seqData]) => {
+        this.reclusterData = clusterData;
+        this.sequenceData = seqData;
+      }),
+      catchError(error => {
+        alert(`Reclustering failed: ${error.error?.detail || error.message}`);
+        return of([[], []]);
+      }),
+      finalize(() => { this.isProcessing.set(false); this.cdr.detectChanges(); })
+    ).subscribe();
+  }
+
+  // ========================================================================
+  // RECLUSTER MULTI
+  // ========================================================================
+  onReclusterMulti(): void {
+    if (!this.uploadCompleteM1 || !this.uploadCompleteM2 || !this.uploadCompleteM3) return;
     this.isProcessing.set(true);
     this.processedFileName.set('');
     this.reclusterData = [];
 
-    const params = {
-      fadf1_cluster_path: this.savedFileName1,
-      fadf2_cluster_path: this.savedFileName2,
+    this.apiService.reclusterMulti({
+      fadf1_cluster_path: this.savedFileNameM1,
+      fadf2_cluster_path: this.savedFileNameM2,
+      fadf3_cluster_path: this.savedFileNameM3,
+      round1_label: this.round1Label,
+      round2_label: this.round2Label,
+      round3_label: this.round3Label,
       led_threshold: this.ledThreshold,
-      output_format: 'csv'
-    };
+      output_format: 'csv',
+    }).pipe(
+      switchMap((response: any) => {
+        this.processedFileName.set(response.result);
+        this.multiRoundLabels = response.labels ?? [this.round1Label, this.round2Label, this.round3Label];
+        this.buildMultiTableConfig();
+        return this.apiService.downloadFile(response.result).pipe(
+          switchMap(blob => this.fileService.parseClusterFile(blob, response.result))
+        );
+      }),
+      tap(parsedData => { this.reclusterData = parsedData; }),
+      catchError(error => {
+        alert(`Multi-round reclustering failed: ${error.error?.detail || error.message}`);
+        return of([]);
+      }),
+      finalize(() => { this.isProcessing.set(false); this.cdr.detectChanges(); })
+    ).subscribe();
+  }
 
-    this.apiService.recluster(params)
-      .pipe(
-        switchMap((response) => {
-          this.processedFileName.set(response.result);
-          
-          // Download and parse the result file
-          return this.apiService.downloadFile(response.result).pipe(
-            switchMap((blob) => this.fileService.parseClusterFile(blob, response.result))
-          );
-        }),
-        tap((parsedData) => {
-          this.reclusterData = parsedData;
-        }),
-        catchError((error) => {
-          console.error('Reclustering failed:', error);
-          alert(`Reclustering failed: ${error.error?.detail || error.message}`);
-          return of([]);
-        }),
-        finalize(() => {
-          this.isProcessing.set(false);
-          this.cdr.detectChanges();
-        })
-      )
-      .subscribe();
+  private buildMultiTableConfig(): void {
+    const [r1, r2, r3] = this.multiRoundLabels;
+    this.multiTableConfig = {
+      columns: [
+        { key: 'SuperCluster', label: 'Super-cluster', exact_match: true },
+        { key: 'Seed', label: 'Seed' },
+        { key: `Size.${r1}`, label: `Size (${r1})` },
+        { key: `Size.${r2}`, label: `Size (${r2})` },
+        { key: `Size.${r3}`, label: `Size (${r3})` },
+        { key: `AvgRPU.${r1}`, label: `Avg RPU (${r1})` },
+        { key: `AvgRPU.${r2}`, label: `Avg RPU (${r2})` },
+        { key: `AvgRPU.${r3}`, label: `Avg RPU (${r3})` },
+        { key: `SeedRPU.${r1}`, label: `Seed RPU (${r1})` },
+        { key: `SeedRPU.${r2}`, label: `Seed RPU (${r2})` },
+        { key: `SeedRPU.${r3}`, label: `Seed RPU (${r3})` },
+        { key: `E.${r1}.${r2}`, label: `Enrichment (${r1}→${r2})` },
+        { key: `E.${r2}.${r3}`, label: `Enrichment (${r2}→${r3})` },
+        { key: `SeedE.${r1}.${r2}`, label: `Seed Enrichment (${r1}→${r2})` },
+        { key: `SeedE.${r2}.${r3}`, label: `Seed Enrichment (${r2}→${r3})` },
+      ],
+      initialPageSize: 10,
+      pageSizeOptions: [10, 25, 50, 100],
+    };
   }
 
   // ========================================================================
   // POPULATION SIZE PLOT
   // ========================================================================
   onGeneratePopSizePlot(): void {
-    if (this.reclusterData.length === 0) {
-      console.warn('Please generate recluster data first!');
-      return;
-    }
-
-    // Group by cluster and count sequences per population
-    const clusterGroups = new Map<number, { pop1: number; pop2: number }>();
-    
-    this.reclusterData.forEach(row => {
-      const cluster = row[ColumnName.CLUSTER];
-      if (!clusterGroups.has(cluster)) {
-        clusterGroups.set(cluster, { pop1: 0, pop2: 0 });
-      }
-      
-      const counts = clusterGroups.get(cluster)!;
-      if (row[ColumnName.ID_A] !== undefined && row[ColumnName.ID_A] !== null && row[ColumnName.ID_A] !== '') {
-        counts.pop1++;
-      }
-      if (row[ColumnName.ID_B] !== undefined && row[ColumnName.ID_B] !== null && row[ColumnName.ID_B] !== '') {
-        counts.pop2++;
-      }
-    });
-
-    const clusters = Array.from(clusterGroups.keys()).sort((a, b) => a - b);
-    const pop1Counts = clusters.map(c => clusterGroups.get(c)!.pop1);
-    const pop2Counts = clusters.map(c => clusterGroups.get(c)!.pop2);
-
-    const trace1: any = {
-      type: 'bar',
-      name: 'Population 1',
-      x: clusters,
-      y: pop1Counts,
-      marker: {
-        color: this.popSizeColor1
-      }
-    };
-
-    const trace2: any = {
-      type: 'bar',
-      name: 'Population 2',
-      x: clusters,
-      y: pop2Counts,
-      marker: {
-        color: this.popSizeColor2
-      }
-    };
-
-    const layout: any = {
-      title: { text: this.popSizeTitle },
-      xaxis: { title: { text: this.popSizeXAxis } },
-      yaxis: { title: { text: this.popSizeYAxis } },
-      barmode: 'group',
-      legend: { title: { text: this.popSizeLegend } },
-      autosize: true
-    };
+    if (this.reclusterData.length === 0) return;
+    const clusters = this.reclusterData.map(r => r[ColumnName.SUPER_CLUSTER]);
+    const pop1 = this.reclusterData.map(r => r[ColumnName.SIZE_POP1] ?? 0);
+    const pop2 = this.reclusterData.map(r => r[ColumnName.SIZE_POP2] ?? 0);
 
     this.plotModalService.openPlot({
-      data: [trace1, trace2],
-      layout: layout,
-      config: { responsive: true, displaylogo: false }
+      data: [
+        { type: 'bar', name: 'Population 1', x: clusters, y: pop1, marker: { color: this.popSizeColor1 } },
+        { type: 'bar', name: 'Population 2', x: clusters, y: pop2, marker: { color: this.popSizeColor2 } },
+      ],
+      layout: {
+        title: { text: this.popSizeTitle },
+        xaxis: { title: { text: this.popSizeXAxis } },
+        yaxis: { title: { text: this.popSizeYAxis } },
+        barmode: 'group',
+        legend: { title: { text: this.popSizeLegend } },
+        autosize: true,
+      },
+      config: { responsive: true, displaylogo: false },
     });
   }
 
   // ========================================================================
-  // AVERAGE RPU PLOT
+  // RPU PLOT
   // ========================================================================
   onGenerateRPUPlot(): void {
-    if (this.reclusterData.length === 0) {
-      console.warn('Please generate recluster data first!');
-      return;
-    }
-
-    // Group by cluster and calculate average RPU per population
-    const clusterGroups = new Map<number, { 
-      pop1Rpus: number[]; 
-      pop2Rpus: number[] 
-    }>();
-    
-    this.reclusterData.forEach(row => {
-      const cluster = row[ColumnName.CLUSTER];
-      if (!clusterGroups.has(cluster)) {
-        clusterGroups.set(cluster, { pop1Rpus: [], pop2Rpus: [] });
-      }
-      
-      const rpus = clusterGroups.get(cluster)!;
-      
-      const rpuA = row[ColumnName.RPU_A];
-      if (rpuA !== undefined && rpuA !== null && rpuA !== '') {
-        rpus.pop1Rpus.push(parseFloat(rpuA));
-      }
-      
-      const rpuB = row[ColumnName.RPU_B];
-      if (rpuB !== undefined && rpuB !== null && rpuB !== '') {
-        rpus.pop2Rpus.push(parseFloat(rpuB));
-      }
-    });
-
-    const clusters = Array.from(clusterGroups.keys()).sort((a, b) => a - b);
-    const avgRpuPop1 = clusters.map(c => {
-      const rpus = clusterGroups.get(c)!.pop1Rpus;
-      return rpus.length > 0 ? rpus.reduce((a, b) => a + b, 0) / rpus.length : 0;
-    });
-    const avgRpuPop2 = clusters.map(c => {
-      const rpus = clusterGroups.get(c)!.pop2Rpus;
-      return rpus.length > 0 ? rpus.reduce((a, b) => a + b, 0) / rpus.length : 0;
-    });
-
-    const trace1: any = {
-      type: 'bar',
-      name: 'Population 1',
-      x: clusters,
-      y: avgRpuPop1,
-      marker: {
-        color: this.rpuColor1
-      }
-    };
-
-    const trace2: any = {
-      type: 'bar',
-      name: 'Population 2',
-      x: clusters,
-      y: avgRpuPop2,
-      marker: {
-        color: this.rpuColor2
-      }
-    };
-
-    const layout: any = {
-      title: { text: this.rpuTitle },
-      xaxis: { title: { text: this.rpuXAxis } },
-      yaxis: { title: { text: this.rpuYAxis } },
-      barmode: 'group',
-      legend: { title: { text: this.rpuLegend } },
-      autosize: true
-    };
+    if (this.reclusterData.length === 0) return;
+    const clusters = this.reclusterData.map(r => r[ColumnName.SUPER_CLUSTER]);
+    const rpu1 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP1] ?? null);
+    const rpu2 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP2] ?? null);
 
     this.plotModalService.openPlot({
-      data: [trace1, trace2],
-      layout: layout,
-      config: { responsive: true, displaylogo: false }
+      data: [
+        { type: 'bar', name: 'Population 1', x: clusters, y: rpu1, marker: { color: this.rpuColor1 } },
+        { type: 'bar', name: 'Population 2', x: clusters, y: rpu2, marker: { color: this.rpuColor2 } },
+      ],
+      layout: {
+        title: { text: this.rpuTitle },
+        xaxis: { title: { text: this.rpuXAxis } },
+        yaxis: { title: { text: this.rpuYAxis } },
+        barmode: 'group',
+        legend: { title: { text: this.rpuLegend } },
+        autosize: true,
+      },
+      config: { responsive: true, displaylogo: false },
     });
   }
 
   // ========================================================================
-  // AVERAGE LED PLOT
-  // ========================================================================
-  onGenerateLEDPlot(): void {
-    if (this.reclusterData.length === 0) {
-      console.warn('Please generate recluster data first!');
-      return;
-    }
-
-    // Group by cluster and calculate average LED
-    const clusterGroups = new Map<number, number[]>();
-    
-    this.reclusterData.forEach(row => {
-      const cluster = row[ColumnName.CLUSTER];
-      const led = row[ColumnName.LED];
-      
-      if (led !== undefined && led !== null && led !== '') {
-        if (!clusterGroups.has(cluster)) {
-          clusterGroups.set(cluster, []);
-        }
-        clusterGroups.get(cluster)!.push(parseFloat(led));
-      }
-    });
-
-    const clusters = Array.from(clusterGroups.keys()).sort((a, b) => a - b);
-    const avgLed = clusters.map(c => {
-      const leds = clusterGroups.get(c)!;
-      return leds.reduce((a, b) => a + b, 0) / leds.length;
-    });
-
-    const trace: any = {
-      type: 'bar',
-      x: clusters,
-      y: avgLed,
-      marker: {
-        color: this.ledBarFill,
-        line: {
-          color: this.ledBarOutline,
-          width: 1
-        }
-      }
-    };
-
-    const layout: any = {
-      title: { text: this.ledTitle },
-      xaxis: { title: { text: this.ledXAxis } },
-      yaxis: { title: { text: this.ledYAxis } },
-      autosize: true
-    };
-
-    this.plotModalService.openPlot({
-      data: [trace],
-      layout: layout,
-      config: { responsive: true, displaylogo: false }
-    });
-  }
-
-  // ========================================================================
-  // ENRICHMENT BOX PLOT
+  // ENRICHMENT BAR PLOT (2-pop)
   // ========================================================================
   onGenerateEnrichmentPlot(): void {
-    if (this.reclusterData.length === 0) {
-      console.warn('Please generate recluster data first!');
-      return;
-    }
-
-    // Group enrichment values by cluster
-    const clusterGroups = new Map<number, number[]>();
-    
-    this.reclusterData.forEach(row => {
-      const cluster = row[ColumnName.CLUSTER];
-      const enrichment = row[ColumnName.ENRICHMENT];
-      
-      if (enrichment !== undefined && enrichment !== null && enrichment !== '' && !isNaN(enrichment) && isFinite(enrichment)) {
-        if (!clusterGroups.has(cluster)) {
-          clusterGroups.set(cluster, []);
-        }
-        clusterGroups.get(cluster)!.push(parseFloat(enrichment));
-      }
+    if (this.reclusterData.length === 0) return;
+    const clusters = this.reclusterData.map(r => r[ColumnName.SUPER_CLUSTER]);
+    const enrichments = this.reclusterData.map(r => {
+      const v = parseFloat(r[ColumnName.ENRICHMENT]);
+      return isFinite(v) ? v : null;
     });
 
-    const clusters = Array.from(clusterGroups.keys()).sort((a, b) => a - b);
-    const traces = clusters.map(cluster => ({
-      type: 'box',
-      y: clusterGroups.get(cluster),
-      name: `${cluster}`,
-      marker: {
-        color: this.enrichmentBoxFill,
-        line: {
-          color: this.enrichmentBoxOutline,
-          width: 1
-        }
+    this.plotModalService.openPlot({
+      data: [{
+        type: 'bar',
+        x: clusters,
+        y: enrichments,
+        marker: { color: this.enrichmentBarFill, line: { color: this.enrichmentBarOutline, width: 1 } },
+      }],
+      layout: {
+        title: { text: this.enrichmentTitle },
+        xaxis: { title: { text: this.enrichmentXAxis } },
+        yaxis: { title: { text: this.enrichmentYAxis } },
+        autosize: true,
       },
-      boxmean: 'sd'
-    }));
+      config: { responsive: true, displaylogo: false },
+    });
+  }
 
-    const layout: any = {
-      title: { text: this.enrichmentTitle },
-      xaxis: { title: { text: this.enrichmentXAxis } },
-      yaxis: { title: { text: 'Enrichment' } },
-      autosize: true,
-      showlegend: false
-    };
+  // ========================================================================
+  // TRAJECTORY LINE PLOT (multi-round)
+  // ========================================================================
+  onGenerateTrajectoryPlot(): void {
+    if (this.reclusterData.length === 0 || this.multiRoundLabels.length === 0) return;
+    const [r1, r2, r3] = this.multiRoundLabels;
+    const rounds = [r1, r2, r3];
+
+    const traces = this.reclusterData.map((row: any) => ({
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: `Cluster ${row['SuperCluster']}`,
+      x: rounds,
+      y: [row[`AvgRPU.${r1}`] ?? null, row[`AvgRPU.${r2}`] ?? null, row[`AvgRPU.${r3}`] ?? null],
+      connectgaps: false,
+    }));
 
     this.plotModalService.openPlot({
       data: traces,
-      layout: layout,
-      config: { responsive: true, displaylogo: false }
+      layout: {
+        title: { text: this.trajectoryTitle },
+        xaxis: { title: { text: 'Round' } },
+        yaxis: { title: { text: this.trajectoryYAxis } },
+        autosize: true,
+      },
+      config: { responsive: true, displaylogo: false },
     });
   }
-
 }

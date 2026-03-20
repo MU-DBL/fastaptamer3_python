@@ -1,8 +1,8 @@
 <div class="page-note">
   Compares RPU values for shared sequences between two populations and computes log2 enrichment. Accepts counted FASTA files, clustered FASTA files, or extracted single-cluster FASTA files. Outputs an enrichment table.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Input data 1 *</h3>
     <app-upload
       [acceptedFileTypes]="'.fasta,.fa,.csv'"
@@ -266,7 +266,7 @@
   </div>
 
   <!-- Table Display -->
-  <div class="right-subsection">
+  <div right>
     <app-table [config]="tableConfig" [data]="enrichmentData"></app-table>
   </div>
-</div>
+</app-split-panel>

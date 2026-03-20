@@ -4,17 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 
 @Component({
   selector: 'app-motif-search',
-  imports: [ 
-    CommonModule, 
+  imports: [
+    CommonModule,
     FormsModule,
     Upload,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './motif-search.html',

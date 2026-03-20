@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { FileService, ColumnName } from '../../../shared/file-service';
 import { PlotModalService } from '../../../shared/plot-modal.service';
 import { Table, TableConfig } from '../../common/table/table';
@@ -17,6 +18,7 @@ import { of } from 'rxjs';
     FormsModule,
     Upload,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './distance.html',

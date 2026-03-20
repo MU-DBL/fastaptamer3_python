@@ -64,24 +64,20 @@ def run_preprocess_without_state(input_path, const5p="", const3p="",
     # Fast quality filtering
     if file_format == 'fastq':
         print("\n=== Quality filtering (numba-accelerated) ===")
-        
-        records = list(SeqIO.parse(temp_trimmed, 'fastq'))
-        before_qc = len(records)
-        
-        # Filter with numba (very fast)
-        filtered_records = []
-        for rec in records:
-            qual_array = np.array(rec.letter_annotations['phred_quality'], dtype=np.float64)
-            avg_error = calculate_avg_error_fast(qual_array)
-            
-            if avg_error <= max_error:
-                filtered_records.append(rec)
-        
-        after_qc = len(filtered_records)
-        print(f"Quality filter: {after_qc:,}/{before_qc:,} passed ({100*after_qc/before_qc:.1f}%)")
-        
-        # Write output
-        SeqIO.write(filtered_records, output_path, output_format)
+
+        after_qc = 0
+        before_qc = 0
+        with open(output_path, 'w') as out_handle:
+            for rec in SeqIO.parse(temp_trimmed, 'fastq'):
+                before_qc += 1
+                qual_array = np.array(rec.letter_annotations['phred_quality'], dtype=np.float64)
+                avg_error = calculate_avg_error_fast(qual_array)
+                if avg_error <= max_error:
+                    SeqIO.write([rec], out_handle, output_format)
+                    after_qc += 1
+
+        pass_rate = 100 * after_qc / before_qc if before_qc > 0 else 0
+        print(f"Quality filter: {after_qc:,}/{before_qc:,} passed ({pass_rate:.1f}%)")
         print(f"✓ Saved to {output_path}")
         
     else:
@@ -252,42 +248,41 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
         if file_format == 'fastq':
             await send_progress(job_id, 'QC', 'Starting quality filtering...', 50)
             qc_start = time.time()
-            
-            records = list(SeqIO.parse(temp_trimmed, 'fastq'))
-            before_qc = len(records)
-            
-            await send_progress(job_id, 'QC', f'Loaded {before_qc:,} sequences', 55)
-            
-            # Filter with numba (very fast)
-            filtered_records = []
-            batch_size = max(1, len(records) // 10)  # Update every 10%
-            
-            for i, rec in enumerate(records):
-                qual_array = np.array(rec.letter_annotations['phred_quality'], dtype=np.float64)
-                avg_error = calculate_avg_error_fast(qual_array)
-                
-                if avg_error <= max_error:
-                    filtered_records.append(rec)
-                
-                # Send progress updates
-                if (i + 1) % batch_size == 0:
-                    progress = 55 + int(30 * (i + 1) / len(records))
-                    await send_progress(job_id, 'QC',  f'Filtered {i+1:,}/{before_qc:,} sequences',  progress)
-            
-            after_qc = len(filtered_records)
+
+            # Parse total read count from cutadapt stdout to avoid loading all records
+            before_qc = 0
+            for line in stdout.splitlines():
+                if 'Reads written (passing filters)' in line:
+                    # e.g. "Reads written (passing filters):     1,234,567 (72.1%)"
+                    before_qc = int(line.split(':')[1].strip().split()[0].replace(',', ''))
+                    break
+
+            await send_progress(job_id, 'QC', f'Filtering {before_qc:,} sequences', 55)
+
+            # Stream records one by one — no full list in memory
+            after_qc = 0
+            processed = 0
+            batch_size = max(1, before_qc // 10) if before_qc else 10000
+
+            with open(output_path, 'w') as out_handle:
+                for rec in SeqIO.parse(temp_trimmed, 'fastq'):
+                    qual_array = np.array(rec.letter_annotations['phred_quality'], dtype=np.float64)
+                    avg_error = calculate_avg_error_fast(qual_array)
+
+                    if avg_error <= max_error:
+                        SeqIO.write([rec], out_handle, output_format)
+                        after_qc += 1
+
+                    processed += 1
+                    if before_qc and processed % batch_size == 0:
+                        progress = 55 + int(30 * processed / before_qc)
+                        await send_progress(job_id, 'QC', f'Filtered {processed:,}/{before_qc:,} sequences', progress)
+
             qc_time = time.time() - qc_start
             pass_rate = 100 * after_qc / before_qc if before_qc > 0 else 0
-            
-            await send_progress(job_id, 'qc', 
-                        f'Quality filtering completed: {after_qc:,}/{before_qc:,} passed ({pass_rate:.1f}%)', 85, {'time': qc_time, 'passed': after_qc, 'total': before_qc})
-            
-            # Write output
-            await send_progress(job_id, 'write', 'Writing output file...', 90)
-            write_start = time.time()
-            SeqIO.write(filtered_records, output_path, output_format)
-            write_time = time.time() - write_start
-            
-            await send_progress(job_id, 'write', 'Output file written', 95, {'time': write_time})
+
+            await send_progress(job_id, 'qc',
+                        f'Quality filtering completed: {after_qc:,}/{before_qc:,} passed ({pass_rate:.1f}%)', 95, {'time': qc_time, 'passed': after_qc, 'total': before_qc})
             
         else:
             await send_progress(job_id, 'convert', 'Converting file format...', 85)

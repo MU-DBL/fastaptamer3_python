@@ -28,6 +28,7 @@ export class Upload implements OnDestroy{
   @Input() uploadNotePath: string = '#';
   @Input() uploadSpeed: number = 200; // milliseconds per 10%
   @Input() buttonClass: string = 'browse-button';
+  @Input() multiple: boolean = false;
   
   @Output() fileSelected = new EventEmitter<FileUploadResult>();
   @Output() uploadComplete = new EventEmitter<FileUploadResult>();
@@ -44,6 +45,9 @@ export class Upload implements OnDestroy{
   progress: number = 0;
   isUploading: boolean = false;
   uploadError: string = '';
+
+  // Multi-file mode state
+  multiFiles: { name: string; progress: number; isComplete: boolean; error: string; savedFileName: string }[] = [];
   
   // Generate unique ID for each upload component instance
   readonly uploadId: string = `fileUpload-${Math.random().toString(36).substr(2, 9)}`;
@@ -81,6 +85,44 @@ export class Upload implements OnDestroy{
   }
 
   onFileSelected(event: any): void {
+    if (this.multiple) {
+      const files: File[] = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+
+      // Reset previous uploads
+      this.multiFiles = files.map(f => ({ name: f.name, progress: 0, isComplete: false, error: '', savedFileName: '' }));
+      this.cdr.markForCheck();
+
+      // Signal to parent that a new selection started (so it can clear its list)
+      this.fileSelected.emit({ file: files[0], fileName: files[0].name, uploadComplete: false });
+
+      files.forEach((file, i) => {
+        const entry = this.multiFiles[i];
+        const interval = setInterval(() => {
+          if (entry.progress < 90) { entry.progress += 10; this.cdr.markForCheck(); }
+        }, this.uploadSpeed);
+
+        this.apiService.uploadFile(file).subscribe({
+          next: (response) => {
+            clearInterval(interval);
+            entry.progress = 100;
+            entry.isComplete = true;
+            entry.savedFileName = response.saved_filename;
+            this.cdr.markForCheck();
+            this.uploadComplete.emit({ file, fileName: file.name, savedFileName: response.saved_filename, uploadComplete: true });
+          },
+          error: (error) => {
+            clearInterval(interval);
+            entry.progress = 0;
+            entry.error = error.error?.detail || 'Upload failed';
+            this.cdr.markForCheck();
+            this.uploadComplete.emit({ file, fileName: file.name, uploadComplete: false, error: entry.error });
+          }
+        });
+      });
+      return;
+    }
+
     const file = event.target.files[0];
     if (file) {
       this.clearProgressInterval();

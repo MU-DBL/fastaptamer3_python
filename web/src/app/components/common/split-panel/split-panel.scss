@@ -1,0 +1,82 @@
+.split-container {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 150px);
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 0;
+
+  &.dragging {
+    user-select: none;
+    cursor: col-resize;
+  }
+}
+
+.split-left {
+  flex: none;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px 0 0 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.split-divider {
+  flex: none;
+  width: 8px;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e0e0;
+  transition: background 0.15s ease;
+  position: relative;
+  z-index: 1;
+
+  &:hover,
+  .split-container.dragging & {
+    background: #1976d2;
+
+    .divider-handle {
+      background: #1976d2;
+    }
+  }
+}
+
+.divider-handle {
+  width: 4px;
+  height: 40px;
+  background: #bdbdbd;
+  border-radius: 2px;
+  pointer-events: none;
+  transition: background 0.15s ease;
+}
+
+.split-right {
+  flex: 1;
+  min-width: 0;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}

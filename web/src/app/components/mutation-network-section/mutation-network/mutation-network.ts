@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
@@ -16,6 +17,7 @@ import { FileService } from '../../../shared/file-service';
     FormsModule,
     Upload,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './mutation-network.html',

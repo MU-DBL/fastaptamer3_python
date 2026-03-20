@@ -1,5 +1,47 @@
 @use '../../../shared/shared-styles.scss';
 
+.file-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-list-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #fafafa;
+  font-size: 13px;
+}
+
+.file-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.file-list-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-file-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  flex-shrink: 0;
+  mat-icon { font-size: 16px; color: #999; }
+  &:hover mat-icon { color: #d32f2f; }
+}
+
 .info-icon {
   font-size: 18px;
   width: 18px;

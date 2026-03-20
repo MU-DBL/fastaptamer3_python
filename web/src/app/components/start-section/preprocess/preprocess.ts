@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { Component, inject, signal, OnDestroy } from '@angular/core';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { ApiService, ProgressEvent } from '../../../shared/api.service';
 import { finalize } from 'rxjs/operators';
 
@@ -12,6 +13,7 @@ import { finalize } from 'rxjs/operators';
     CommonModule,
     FormsModule,
     Upload,
+    SplitPanel,
     ...MATERIAL_IMPORTS],
   templateUrl: './preprocess.html',
   styleUrl: './preprocess.scss'

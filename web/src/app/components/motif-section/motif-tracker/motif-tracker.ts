@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
 import { TrackerPlot } from './charts/tracker-plot';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 
 interface FileSelection {
   fileName: string;
@@ -16,20 +17,15 @@ interface FileSelection {
   include: boolean; // Whether to include this file in tracking
 }
 
-interface UploadingFile {
-  name: string;
-  progress: number;
-  isComplete: boolean;
-  savedFileName?: string;
-}
-
 @Component({
   selector: 'app-motif-tracker',
-  imports: [ 
+  imports: [
     CommonModule,
     FormsModule,
+    Upload,
     Table,
     TrackerPlot,
+    SplitPanel,
     DragDropModule,
     ...MATERIAL_IMPORTS
   ],
@@ -38,7 +34,6 @@ interface UploadingFile {
 })
 export class MotifTracker implements OnDestroy {
   private apiService = inject(ApiService);
-  private cdr = inject(ChangeDetectorRef);
 
   // Table configurations
   motifTrackerTableConfig: TableConfig = {
@@ -104,10 +99,8 @@ export class MotifTracker implements OnDestroy {
   }
 
   // File management
-  uploadedFiles: string[] = []; // Files that have been successfully uploaded
+  uploadedFiles: string[] = [];
   fileSelections: FileSelection[] = [];
-  uploadingFiles: UploadingFile[] = []; // Track upload progress for multiple files
-  isUploading: boolean = false;
   
   // Form values
   queryList: string = '';
@@ -143,95 +136,22 @@ export class MotifTracker implements OnDestroy {
   // FILE MANAGEMENT
   // ========================================================================
 
-  onMultipleFilesSelected(event: any): void {
-    const files: FileList = event.target.files;
-    if (!files || files.length === 0) return;
-
-    // Clear only upload progress and results, keep uploaded files
-    this.uploadingFiles = [];
-    this.processedFileName.set('');
-    this.enrichmentFileName.set('');
-    this.trackerData = [];
-    this.enrichmentData = [];
-
-    // Initialize upload tracking for each file
-    this.uploadingFiles = Array.from(files).map(file => ({
-      name: file.name,
-      progress: 0,
-      isComplete: false
-    }));
-
-    this.isUploading = true;
-    console.log('Multiple files selected:', files.length);
-    
-    // Upload files sequentially with progress tracking
-    this.uploadFilesSequentially(Array.from(files), 0);
-  }
-
-  uploadFilesSequentially(files: File[], index: number): void {
-    if (index >= files.length) {
-      // All files uploaded - auto-populate file selections
-      this.isUploading = false;
-      console.log('All files uploaded successfully');
-      
-      // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-      // but with 0ms delay for immediate visual feedback
-      setTimeout(() => {
-        this.autoPopulateFileSelections();
-        this.cdr.markForCheck();
-      }, 0);
-      return;
+  onUploadComplete(result: FileUploadResult): void {
+    if (result.uploadComplete && result.savedFileName) {
+      this.uploadedFiles.push(result.savedFileName);
+      this.fileSelections.push({
+        fileName: result.savedFileName,
+        order: this.fileSelections.length + 1,
+        include: true,
+      });
     }
-
-    const file = files[index];
-    const uploadingFile = this.uploadingFiles[index];
-
-    // Simulate progress
-    const progressInterval = setInterval(() => {
-      if (uploadingFile.progress < 90) {
-        uploadingFile.progress += 10;
-      }
-    }, 50);
-
-    this.apiService.uploadFile(file).subscribe({
-      next: (response) => {
-        clearInterval(progressInterval);
-        uploadingFile.progress = 100;
-        uploadingFile.isComplete = true;
-        uploadingFile.savedFileName = response.saved_filename;
-        
-        // Add to uploaded files list
-        this.uploadedFiles.push(response.saved_filename);
-        
-        console.log(`File ${index + 1} uploaded:`, response.saved_filename);
-        
-        // Continue with next file
-        setTimeout(() => {
-          this.uploadFilesSequentially(files, index + 1);
-        }, 200);
-      },
-      error: (error) => {
-        clearInterval(progressInterval);
-        uploadingFile.progress = 0;
-        uploadingFile.isComplete = false;
-        
-        console.error(`Failed to upload file ${index + 1}:`, error);
-        alert(`Failed to upload ${file.name}`);
-        
-        // Continue with next file despite error
-        this.uploadFilesSequentially(files, index + 1);
-      }
-    });
   }
 
-  autoPopulateFileSelections(): void {
-    // Clear existing selections and create new ones for all uploaded files
-    this.fileSelections = this.uploadedFiles.map((fileName, index) => ({
-      fileName: fileName,
-      order: index + 1,
-      include: true // All files included by default
-    }));
-    console.log('Auto-populated file selections:', this.fileSelections.length);
+  removeFile(selection: FileSelection): void {
+    this.apiService.deleteFile(selection.fileName).subscribe();
+    this.uploadedFiles = this.uploadedFiles.filter(f => f !== selection.fileName);
+    this.fileSelections = this.fileSelections.filter(s => s !== selection);
+    this.updateOrderNumbers();
   }
 
   // Drag and drop handler
@@ -397,8 +317,6 @@ export class MotifTracker implements OnDestroy {
     reader.onload = (e: any) => {
       const text = e.target.result;
       this.parseTrackerContent(text, filename);
-      // Trigger change detection after parsing tracker data
-      this.cdr.markForCheck();
     };
     reader.readAsText(blob);
   }
@@ -436,8 +354,6 @@ export class MotifTracker implements OnDestroy {
     reader.onload = (e: any) => {
       const text = e.target.result;
       this.parseEnrichmentContent(text);
-      // Trigger change detection after parsing enrichment data
-      this.cdr.markForCheck();
     };
     reader.readAsText(blob);
   }

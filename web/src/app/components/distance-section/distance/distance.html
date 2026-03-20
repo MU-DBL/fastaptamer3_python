@@ -1,8 +1,8 @@
 <div class="page-note">
   Computes the Levenshtein Edit Distance between a user-supplied query sequence and every sequence in a counted FASTA file. Outputs a table of all sequences ranked by distance to the query.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Input data *</h3>
     <app-upload [acceptedFileTypes]="'.fasta,.csv'" [buttonText]="'Browse...'" [placeholderText]="'FASTA or CSV file'"
       [showUploadNote]="false" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
@@ -109,7 +109,7 @@
   </div>
 
   <!-- Table Display -->
-  <div class="right-subsection">
+  <div right>
     <app-table [config]="tableConfig" [data]="distanceData"></app-table>
   </div>
-</div>
+</app-split-panel>

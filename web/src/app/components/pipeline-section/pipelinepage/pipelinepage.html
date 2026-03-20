@@ -1,11 +1,11 @@
 <div class="page-note">
   Seamlessly chain multiple operations—including Preprocessing, Counting, and Clustering—into a single automated workflow. Simply upload your initial file, configure your parameters, and execute the entire sequence with one click.
   <br/>
-  <strong>Important:</strong> Please remain on this page while the pipeline is active. You can monitor real-time progress and download results as each step completes. To ensure data privacy, all temporary files are purged from the server once the session is closed or refreshed.
+  <strong>Important:</strong> Please keep this page open while the pipeline is running. You can monitor real-time progress and download results as each step completes. To ensure data privacy, all temporary files are purged from the server once the session is closed or refreshed.
 </div>
-<div class="section-container">
+<app-split-panel>
   <!-- LEFT PANEL: Pipeline Builder -->
-  <div class="left-subsection">
+  <div left>
     <h2 class="page-title">Pipeline Builder</h2>
 
     <!-- Initial File Upload -->
@@ -43,7 +43,7 @@
                 (ngModelChange)="onOperationChange(step)"
                 class="operation-select"
                 [disabled]="isRunning()">
-                @for (op of operationDefs; track op.key) {
+                @for (op of getAvailableOps(i); track op.key) {
                   <mat-option [value]="op.key">{{ op.label }}</mat-option>
                 }
               </mat-select>
@@ -116,7 +116,7 @@
   </div>
 
   <!-- RIGHT PANEL: Execution Results -->
-  <div class="right-subsection">
+  <div right>
     <h2 class="page-title">Pipeline Results</h2>
 
     @if (steps.length === 0) {
@@ -193,4 +193,4 @@
     }
   </div>
 
-</div>
+</app-split-panel>

@@ -45,6 +45,19 @@ export enum ColumnName {
   LOG2E = 'log2E',
   POPULATION = 'Population',
 
+  // Cluster-level recluster columns
+  SUPER_CLUSTER = 'SuperCluster',
+  SEED = 'Seed',
+  SIZE_POP1 = 'Size.Pop1',
+  SIZE_POP2 = 'Size.Pop2',
+  AVG_RPU_POP1 = 'AvgRPU.Pop1',
+  AVG_RPU_POP2 = 'AvgRPU.Pop2',
+  SEED_RPU_POP1 = 'SeedRPU.Pop1',
+  SEED_RPU_POP2 = 'SeedRPU.Pop2',
+  SEED_ENRICHMENT = 'SeedEnrichment',
+  SEED_LOG2E = 'SeedLog2E',
+  STATUS = 'Status',
+
   FROM_SEQUENCE = 'From_Sequence',
   TO_SEQUENCE = 'To_Sequence' ,
   TRANSITION_COST = 'Transition_Cost'
@@ -179,6 +192,12 @@ export class FileService {
     return value;
   }
 
+  private parseRawValue(value: string): any {
+    if (value === '' || value === 'nan' || value === 'NaN' || value === 'None') return null;
+    const num = Number(value);
+    return isNaN(num) ? value : num;
+  }
+
   private parseFasta(content: string): { header: string; sequence: string }[] {
     const entries: { header: string; sequence: string }[] = [];
     const lines = content.split('\n');
@@ -227,10 +246,11 @@ export class FileService {
       columnMap.set(val.toString().toLowerCase(), val);
     });
 
-    // 4. Map CSV headers to ColumnName enum
-    const headerMapping: (ColumnName | null)[] = headers.map(header => {
-      const normalizedHeader = header.trim().toLowerCase();
-      return columnMap.get(normalizedHeader) || null;
+    // 4. Map CSV headers to ColumnName enum, falling back to raw header for unknown columns
+    const headerMapping: (string | null)[] = headers.map(header => {
+      const trimmed = header.trim();
+      const normalizedHeader = trimmed.toLowerCase();
+      return columnMap.get(normalizedHeader) || trimmed || null;
     });
 
     // 5. Parse data rows
@@ -247,7 +267,10 @@ export class FileService {
         const targetColumn = headerMapping[colIndex];
 
         if (targetColumn) {
-          row[targetColumn] = this.parseValueByType(targetColumn, value);
+          const isKnownColumn = Object.values(ColumnName).includes(targetColumn as ColumnName);
+          row[targetColumn] = isKnownColumn
+            ? this.parseValueByType(targetColumn as ColumnName, value)
+            : this.parseRawValue(value);
         }
       });
 

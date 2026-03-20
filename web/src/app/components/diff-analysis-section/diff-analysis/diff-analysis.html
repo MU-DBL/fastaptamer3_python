@@ -1,137 +1,70 @@
 <div class="page-note">
-  Performs differential expression analysis between two experimental conditions (each with 2+ counted FASTA files).
+  Performs differential expression analysis between two experimental conditions (each with at least two counted FASTA files).
   Sequences are compared using statistics: <strong>logFC</strong> (log₂ fold change between conditions),
   <strong>logCPM</strong> (log₂ counts per million, a measure of overall abundance), and a
   <strong>p-value</strong> to control for false discoveries across multiple sequences.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
 
-    <!-- CONDITION 1 FILE UPLOAD -->
-    <h3 class="section-title">
-      Condition 1 files *
-      <mat-icon 
-        class="info-icon" 
-        matTooltip="Holding Ctrl (Windows) or Command (Mac) allows multiple file selection"
-        matTooltipPosition="right">help_outline</mat-icon>
-    </h3>
-    
-    <div class="file-upload-section">
-      <input 
-        type="file" 
-        #cond1FileInput
-        multiple
-        accept=".fasta,.fa"
-        (change)="onCondition1FilesSelected($event)"
-        style="display: none;">
-      
-      <button 
-        mat-raised-button 
-        color="primary"
-        (click)="cond1FileInput.click()"
-        [disabled]="isUploadingCond1"
-        class="browse-button">
-        Browse...
-      </button>
-      
-      <span class="upload-status">
-        @if (uploadingFilesCond1.length === 0) {
-          <span>FASTA files</span>
-        } @else if (isUploadingCond1) {
-          <span>Uploading {{ uploadingFilesCond1.length }} file(s)...</span>
-        } @else {
-          <span class="upload-complete">{{ uploadedFilesCond1.length }} file(s) uploaded</span>
-        }
-      </span>
-    </div>
+    <!-- CONDITION 1 -->
+    <h3 class="section-title">Condition 1 files *</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'Add FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="100"
+      (uploadComplete)="onCond1Complete($event)">
+    </app-upload>
 
-    <!-- Condition 1 Upload Progress -->
-    @if (uploadingFilesCond1.length > 0) {
-      <div class="upload-progress-section">
-        @for (file of uploadingFilesCond1; track file.name) {
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="file-name">{{ file.name }}</span>
-              <span class="progress-percentage">{{ file.progress }}%</span>
-            </div>
-            <mat-progress-bar
-              mode="determinate"
-              [value]="file.progress"
-              [class.complete]="file.isComplete">
-            </mat-progress-bar>
-            @if (file.isComplete) {
-              <span class="complete-text">Upload complete</span>
-            }
+    @if (filesCond1.length > 0) {
+      <div class="file-list">
+        @for (file of filesCond1; track file.savedFileName) {
+          <div class="file-list-item">
+            <mat-icon class="file-icon">description</mat-icon>
+            <span class="file-list-name">{{ file.displayName }}</span>
+            <button mat-icon-button class="remove-file-btn" (click)="removeCond1File(file)" matTooltip="Remove">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
         }
       </div>
     }
 
-    <!-- CONDITION 2 FILE UPLOAD -->
-    <h3 class="section-title">
-      Condition 2 files *
-      <mat-icon 
-        class="info-icon" 
-        matTooltip="Holding Ctrl (Windows) or Command (Mac) allows multiple file selection"
-        matTooltipPosition="right">help_outline</mat-icon>
-    </h3>
-    
-    <div class="file-upload-section">
-      <input 
-        type="file" 
-        #cond2FileInput
-        multiple
-        accept=".fasta,.fa"
-        (change)="onCondition2FilesSelected($event)"
-        style="display: none;">
-      
-      <button 
-        mat-raised-button 
-        color="primary"
-        (click)="cond2FileInput.click()"
-        [disabled]="isUploadingCond2"
-        class="browse-button">
-        Browse...
-      </button>
-      
-      <span class="upload-status">
-        @if (uploadingFilesCond2.length === 0) {
-          <span>FASTA files</span>
-        } @else if (isUploadingCond2) {
-          <span>Uploading {{ uploadingFilesCond2.length }} file(s)...</span>
-        } @else {
-          <span class="upload-complete">{{ uploadedFilesCond2.length }} file(s) uploaded</span>
-        }
-      </span>
-    </div>
+    <hr class="section-divider">
 
-    <!-- Condition 2 Upload Progress -->
-    @if (uploadingFilesCond2.length > 0) {
-      <div class="upload-progress-section">
-        @for (file of uploadingFilesCond2; track file.name) {
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="file-name">{{ file.name }}</span>
-              <span class="progress-percentage">{{ file.progress }}%</span>
-            </div>
-            <mat-progress-bar
-              mode="determinate"
-              [value]="file.progress"
-              [class.complete]="file.isComplete">
-            </mat-progress-bar>
-            @if (file.isComplete) {
-              <span class="complete-text">Upload complete</span>
-            }
+    <!-- CONDITION 2 -->
+    <h3 class="section-title">Condition 2 files *</h3>
+    <app-upload
+      [acceptedFileTypes]="'.fasta,.fa'"
+      [buttonText]="'Browse...'"
+      [placeholderText]="'Add FASTA file'"
+      [showUploadNote]="false"
+      [uploadSpeed]="100"
+      (uploadComplete)="onCond2Complete($event)">
+    </app-upload>
+
+    @if (filesCond2.length > 0) {
+      <div class="file-list">
+        @for (file of filesCond2; track file.savedFileName) {
+          <div class="file-list-item">
+            <mat-icon class="file-icon">description</mat-icon>
+            <span class="file-list-name">{{ file.displayName }}</span>
+            <button mat-icon-button class="remove-file-btn" (click)="removeCond2File(file)" matTooltip="Remove">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
         }
       </div>
     }
+
+    <hr class="section-divider">
 
     <!-- P-VALUE CUTOFF SLIDER -->
     <h3 class="section-title">
       Cutoff for p-value:
-      <mat-icon 
-        class="info-icon" 
+      <mat-icon class="info-icon"
         matTooltip="Maximum BH-corrected p-value to consider as significant"
         matTooltipPosition="right">help_outline</mat-icon>
     </h3>
@@ -150,30 +83,22 @@
 
     <!-- ACTION BUTTONS -->
     <div class="action-buttons">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="start-button"
-        [disabled]="uploadedFilesCond1.length < 2 || uploadedFilesCond2.length < 2 || isProcessing()"
-        (click)="onStart()">
+      <button mat-raised-button color="primary" class="start-button"
+        [disabled]="!canRun" (click)="onStart()">
         <mat-icon [class.spinning]="isProcessing()">{{ isProcessing() ? 'sync' : 'play_arrow' }}</mat-icon>
         {{ isProcessing() ? 'Processing...' : 'Start' }}
       </button>
 
       @if (isProcessing()) {
-      <button mat-raised-button color="accent" class="cancel-button" (click)="cancelProcessing()">
-        <mat-icon>stop</mat-icon>
-        Cancel
-      </button>
+        <button mat-raised-button color="accent" class="cancel-button" (click)="cancelProcessing()">
+          <mat-icon>stop</mat-icon>
+          Cancel
+        </button>
       }
 
-      <button
-        mat-raised-button
-        color="accent"
-        class="download-button"
+      <button mat-raised-button color="accent" class="download-button"
         [class.download-ready]="processedFileName()"
-        [disabled]="!processedFileName()"
-        (click)="onDownload()">
+        [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
         Download
       </button>
@@ -183,10 +108,7 @@
 
     <!-- EDGER PLOT CUSTOMIZATION -->
     <h3 class="section-title">Adjust default edgeR plot?</h3>
-    <mat-radio-group 
-      [(ngModel)]="adjustEdgeRPlot"
-      (change)="onAdjustEdgeRPlotChange()"
-      class="radio-group">
+    <mat-radio-group [(ngModel)]="adjustEdgeRPlot" (change)="onAdjustEdgeRPlotChange()" class="radio-group">
       <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>
     </mat-radio-group>
@@ -197,23 +119,19 @@
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="edgeRPlotXAxis" />
         </mat-form-field>
-
         <mat-label>Y-axis - represents log(fold-change)</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="edgeRPlotYAxis" />
         </mat-form-field>
-
         <mat-label>Plot title</mat-label>
         <mat-form-field appearance="outline" class="full-width">
           <input matInput [(ngModel)]="edgeRPlotTitle" />
         </mat-form-field>
-
         <div class="color-picker-field">
           <label>Color for significant points:</label>
           <input type="color" [(ngModel)]="edgeRPlotSigColor" class="color-input" />
           <span class="color-value">{{ edgeRPlotSigColor }}</span>
         </div>
-
         <div class="color-picker-field">
           <label>Color for insignificant points:</label>
           <input type="color" [(ngModel)]="edgeRPlotInsigColor" class="color-input" />
@@ -222,12 +140,8 @@
       </div>
     }
 
-    <button 
-      mat-raised-button 
-      color="primary"
-      class="plot-button"
-      [disabled]="diffAnalysisData.length === 0"
-      (click)="edgeRPlot()">
+    <button mat-raised-button color="primary" class="plot-button"
+      [disabled]="diffAnalysisData.length === 0" (click)="edgeRPlot()">
       <mat-icon>scatter_plot</mat-icon>
       edgeR plot
     </button>
@@ -235,7 +149,7 @@
   </div>
 
   <!-- RIGHT SIDE - DATA TABLE -->
-  <div class="right-subsection">
+  <div right>
     <app-table [data]="diffAnalysisData" [config]="tableConfig"></app-table>
   </div>
-</div>
+</app-split-panel>

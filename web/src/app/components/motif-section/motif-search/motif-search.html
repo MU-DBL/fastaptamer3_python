@@ -1,8 +1,8 @@
 <div class="page-note">
   Searches a counted FASTA file for sequences containing one or more motifs (nucleotide, amino acid, or arbitrary string), with AND/OR logic for multiple patterns. Outputs a filtered FASTA or CSV containing only the matching sequences.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Choose FASTA file to search *</h3>
     <app-upload
       [acceptedFileTypes]="'.fasta,.fa'"
@@ -83,10 +83,10 @@
     </div>
   </div>
 
-  <div class="right-subsection">
+  <div right>
     <app-table
       [config]="tableConfig"
       [data]="tableData">
     </app-table>
   </div>
-</div>
+</app-split-panel>

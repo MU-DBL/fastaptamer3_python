@@ -12,11 +12,30 @@
       [id]="uploadId"
       (change)="onFileSelected($event)"
       [accept]="acceptedFileTypes"
+      [multiple]="multiple"
       style="display: none;">
   </div>
 
-  <!-- Step-by-step upload progress -->
-  @if (selectedFile) {
+  <!-- Multi-file list -->
+  @if (multiple && multiFiles.length > 0) {
+    <div class="multi-file-list">
+      @for (f of multiFiles; track f.name) {
+        <div class="multi-file-item">
+          <span class="multi-file-name">{{ f.name }}</span>
+          @if (f.isComplete) {
+            <mat-icon class="multi-status done">check_circle</mat-icon>
+          } @else if (f.error) {
+            <mat-icon class="multi-status error">error</mat-icon>
+          } @else {
+            <mat-icon class="multi-status spinning">sync</mat-icon>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Step-by-step upload progress (single file mode) -->
+  @if (!multiple && selectedFile) {
     <div class="upload-steps">
 
       <div class="step done">
@@ -57,7 +76,9 @@
     }
   }
 
+  @if (!multiple) {
   <p class="notice">
     *Do not start until step 3 shows 'Ready'.<br>
   </p>
+  }
 </div>

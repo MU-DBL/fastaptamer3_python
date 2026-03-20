@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Table, TableConfig } from '../../common/table/table';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
 import { PlotModalService } from '../../../shared/plot-modal.service';
@@ -16,6 +17,7 @@ import { ColumnName, FileService } from '../../../shared/file-service';
     FormsModule,
     Upload,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS],
   templateUrl: './cluster-msa.html',
   styleUrl: './cluster-msa.scss',

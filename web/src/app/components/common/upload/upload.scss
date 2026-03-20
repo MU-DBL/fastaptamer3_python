@@ -163,3 +163,31 @@
   font-size: 13px;
   color: #d32f2f;
 }
+
+
+.multi-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.multi-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.multi-file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multi-status {
+  font-size: 18px;
+  &.done { color: #2e7d32; }
+  &.error { color: #c62828; }
+}

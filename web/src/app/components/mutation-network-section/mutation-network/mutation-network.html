@@ -1,8 +1,8 @@
 <div class="page-note">
   Finds the shortest mutational path between a start sequence and an end sequence through sequences in a FASTA file, constrained by a maximum allowed edit distance per step. Outputs the ordered sequence path as a table.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Input data:</h3>
     <app-upload
       [acceptedFileTypes]="'.fasta'"
@@ -80,10 +80,10 @@
     <p class="note-box">Please wait while the process completes. This may take a few moments.</p>
   </div>
 
-  <div class="right-subsection">
+  <div right>
     <app-table
       [config]="tableConfig"
       [data]="tableData">
     </app-table>
   </div>
-</div>
+</app-split-panel>

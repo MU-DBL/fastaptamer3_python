@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { ColumnName, FileService } from '../../../shared/file-service';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -19,11 +20,12 @@ export interface CodonChange {
 @Component({
   selector: 'app-translate',
   standalone: true,
-  imports: [ 
-    CommonModule, 
+  imports: [
+    CommonModule,
     FormsModule,
     Upload,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS],
   templateUrl: './translate.html',
   styleUrl: './translate.scss'

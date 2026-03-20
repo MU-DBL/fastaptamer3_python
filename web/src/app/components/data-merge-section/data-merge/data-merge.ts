@@ -1,11 +1,13 @@
-import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../shared/api.service';
 import { FileService } from '../../../shared/file-service';
 import { PlotModalService } from '../../../shared/plot-modal.service';
+import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { Table, TableConfig } from '../../common/table/table';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
 import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -16,20 +18,15 @@ interface FileSelection {
   include: boolean;
 }
 
-interface UploadingFile {
-  name: string;
-  progress: number;
-  isComplete: boolean;
-  savedFileName?: string;
-}
-
 @Component({
   selector: 'app-data-merge',
   imports: [
     CommonModule,
     FormsModule,
+    Upload,
     Table,
     DragDropModule,
+    SplitPanel,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './data-merge.html',
@@ -41,13 +38,10 @@ export class DataMerge implements OnDestroy {
   private apiService = inject(ApiService);
   private fileService = inject(FileService);
   private plotModalService = inject(PlotModalService);
-  private cdr = inject(ChangeDetectorRef);
 
   // File management
   uploadedFiles: string[] = [];
   fileSelections: FileSelection[] = [];
-  uploadingFiles: UploadingFile[] = [];
-  isUploading: boolean = false;
 
   // Merge parameters
   mergeType: 'Union' | 'Intersection' | 'Left' = 'Union';
@@ -96,85 +90,22 @@ export class DataMerge implements OnDestroy {
     }
   }
 
-  onMultipleFilesSelected(event: any): void {
-    const files: FileList = event.target.files;
-    if (!files || files.length === 0) return;
-
-    // Clear previous upload progress
-    this.uploadingFiles = [];
-    this.mergedFileName.set('');
-    this.mergedData = [];
-
-    // Initialize upload tracking
-    this.uploadingFiles = Array.from(files).map(file => ({
-      name: file.name,
-      progress: 0,
-      isComplete: false
-    }));
-
-    this.isUploading = true;
-    console.log('Multiple files selected:', files.length);
-
-    // Upload files sequentially
-    this.uploadFilesSequentially(Array.from(files), 0);
-  }
-
-  uploadFilesSequentially(files: File[], index: number): void {
-    if (index >= files.length) {
-      this.isUploading = false;
-      console.log('All files uploaded successfully');
-      
-      setTimeout(() => {
-        this.autoPopulateFileSelections();
-        this.cdr.markForCheck();
-      }, 0);
-      return;
+  onUploadComplete(result: FileUploadResult): void {
+    if (result.uploadComplete && result.savedFileName) {
+      this.uploadedFiles.push(result.savedFileName);
+      this.fileSelections.push({
+        fileName: result.savedFileName,
+        order: this.fileSelections.length + 1,
+        include: true,
+      });
     }
-
-    const file = files[index];
-    const uploadingFile = this.uploadingFiles[index];
-
-    // Simulate progress
-    const progressInterval = setInterval(() => {
-      if (uploadingFile.progress < 90) {
-        uploadingFile.progress += 10;
-      }
-    }, 50);
-
-    this.apiService.uploadFile(file).subscribe({
-      next: (response) => {
-        clearInterval(progressInterval);
-        uploadingFile.progress = 100;
-        uploadingFile.isComplete = true;
-        uploadingFile.savedFileName = response.saved_filename;
-        
-        this.uploadedFiles.push(response.saved_filename);
-        console.log(`File ${index + 1} uploaded:`, response.saved_filename);
-        
-        setTimeout(() => {
-          this.uploadFilesSequentially(files, index + 1);
-        }, 200);
-      },
-      error: (error) => {
-        clearInterval(progressInterval);
-        uploadingFile.progress = 0;
-        uploadingFile.isComplete = false;
-        
-        console.error(`Failed to upload file ${index + 1}:`, error);
-        alert(`Failed to upload ${file.name}`);
-        
-        this.uploadFilesSequentially(files, index + 1);
-      }
-    });
   }
 
-  autoPopulateFileSelections(): void {
-    this.fileSelections = this.uploadedFiles.map((fileName, index) => ({
-      fileName: fileName,
-      order: index + 1,
-      include: true
-    }));
-    console.log('Auto-populated file selections:', this.fileSelections.length);
+  removeFile(selection: FileSelection): void {
+    this.apiService.deleteFile(selection.fileName).subscribe();
+    this.uploadedFiles = this.uploadedFiles.filter(f => f !== selection.fileName);
+    this.fileSelections = this.fileSelections.filter(s => s !== selection);
+    this.updateOrderNumbers();
   }
 
   // Drag and drop handler

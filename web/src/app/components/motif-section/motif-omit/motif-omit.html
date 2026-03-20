@@ -1,8 +1,8 @@
 <div class="page-note">
   Removes sequences containing specified motifs from a counted FASTA file. Accepts comma-separated motif patterns and outputs a FASTA or CSV with all matching sequences excluded.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Choose FASTA file to filter *</h3>
     <app-upload
       [acceptedFileTypes]="'.fasta,.fa'"
@@ -75,11 +75,11 @@
     </div>
   </div>
 
-  <div class="right-subsection">
+  <div right>
     <app-table
       [config]="tableConfig"
       [data]="tableData">
     </app-table>
   </div>
-</div>
+</app-split-panel>
 

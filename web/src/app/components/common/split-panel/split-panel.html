@@ -1,0 +1,15 @@
+<div class="split-container" #container [class.dragging]="isDragging">
+  <div class="split-left" [style.width.%]="leftPercent">
+    <ng-content select="[left]"></ng-content>
+  </div>
+
+  <div
+    class="split-divider"
+    (mousedown)="onDividerMouseDown($event)">
+    <div class="divider-handle"></div>
+  </div>
+
+  <div class="split-right">
+    <ng-content select="[right]"></ng-content>
+  </div>
+</div>

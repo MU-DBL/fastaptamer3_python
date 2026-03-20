@@ -1,8 +1,8 @@
 <div class="page-note">
   Translates DNA sequences from a counted FASTA file into amino acid sequences using a selected genetic code or custom codon table, and open reading frame, optionally merging identical translations, customizing translation table. Outputs a ranked table of translated amino acid sequences.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Choose data to translate*:</h3>
     <app-upload [acceptedFileTypes]="'.fasta,.fa'" [buttonText]="'Browse...'" [placeholderText]="'FASTA file'"
       [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200" (fileSelected)="onFileSelected($event)"
@@ -225,7 +225,7 @@
   </div>
 
   <!-- Table Display -->
-  <div class="right-subsection">
+  <div right>
     <app-table [config]="tableConfig" [data]="translateData"></app-table>
   </div>
-</div>
+</app-split-panel>

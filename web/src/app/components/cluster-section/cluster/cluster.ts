@@ -1,6 +1,7 @@
 import { Component, inject, signal, output, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { CommonModule } from '@angular/common';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
@@ -21,6 +22,7 @@ export interface ClusterResultsEvent {
     FormsModule,
     Upload,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS],
   templateUrl: './cluster.html',
   styleUrl: './cluster.scss',

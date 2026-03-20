@@ -3,8 +3,8 @@
   file,
   and visualizes k-mer composition across selected clusters using PCA or UMAP. Outputs a diversity summary table.
 </div>
-<div class="section-container">
-  <div class="left-subsection">
+<app-split-panel>
+  <div left>
     <h3 class="section-title">Input data:</h3>
     <app-upload [acceptedFileTypes]="'.fasta,.csv'" [buttonText]="'Browse...'"
       [placeholderText]="'Clustered FASTA file or Result CSV file'" [showUploadNote]="true" [uploadNotePath]="'#'"
@@ -208,8 +208,8 @@
 
     <p class="note-text">*Characters outside of [A,C,G,T,U] converted to 'X'.</p>
   </div>
-  <div class="right-subsection">
+  <div right>
     <app-table [data]="diversityData" [config]="tableConfig">
     </app-table>
   </div>
-</div>
+</app-split-panel>

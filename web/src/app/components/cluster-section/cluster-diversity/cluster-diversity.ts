@@ -8,6 +8,7 @@ import { ChangeDetectorRef } from '@angular/core';
 // Components & Services
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
+import { SplitPanel } from '../../common/split-panel/split-panel';
 import { ApiService } from '../../../shared/api.service';
 import { ColumnName, FileService } from '../../../shared/file-service';
 import { KmerAnalysisRequest, PlotlyTrace } from '../../../shared/kmer-analysis.types';
@@ -28,6 +29,7 @@ export interface DiversityResultsEvent {
     FormsModule,
     Upload,
     Table,
+    SplitPanel,
     ...MATERIAL_IMPORTS
   ],
   templateUrl: './cluster-diversity.html',
