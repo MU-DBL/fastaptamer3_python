@@ -363,29 +363,94 @@ Builds a Profile Hidden Markov Model (PHMM) from a cluster's MSA output, then si
 
 #### Description
 
-Merges clusters from two separately clustered FASTA populations and computes pairwise Levenshtein Edit Distance between cluster seeds across populations. Outputs a CSV with cross-population cluster assignments and enrichment scores, enabling structural comparison across selection rounds or conditions.
+Merges cluster families from separately clustered FASTA populations by comparing seed sequences using pairwise Levenshtein Edit Distance. Cluster families whose seeds fall within the LED threshold are merged into a single super-cluster. Two modes are available:
 
-#### Usage
+- **2 Populations** — cross-compare two populations (e.g., pre- and post-selection). Outputs a cluster-level summary table and a sequence-level table with per-sequence enrichment.
+- **Multi-round (3 files)** — track cluster family convergence across three consecutive selection rounds. Outputs a single merged table with abundance and enrichment columns for all three rounds.
 
-1. Upload **Cluster data 1** (first population clustered FASTA).
-2. Upload **Cluster data 2** (second population clustered FASTA).
-3. Set the **Max. LED** threshold for cross-population seed comparison.
+> **Avg RPU** — mean RPU across all sequences assigned to the super-cluster in that population. Reflects overall cluster family abundance but is pulled down by low-count peripheral variants.
+>
+> **Seed RPU** — RPU of the cluster seed (the most abundant sequence in the original cluster). More robust than Avg RPU because it represents the dominant variant only, unaffected by rare sequences at the cluster periphery.
+>
+> Use Seed RPU to compare dominant aptamers between rounds. Use Avg RPU to capture the enrichment of the entire cluster family.
+
+#### Usage — 2 Populations Mode
+
+1. Select **2 Populations** mode.
+2. Upload **Cluster data 1** (first population clustered FASTA or CSV).
+3. Upload **Cluster data 2** (second population clustered FASTA or CSV).
+4. Set the **Max. LED** threshold.
+5. Click **Recluster**. The cluster-level summary table appears on the right; if sequence-level data is available, it appears below.
+6. Click **Download Summary** to save the cluster-level CSV.
+7. Click **Download Reclustered Sequences** to save the sequence-level CSV.
+
+#### Usage — Multi-round Mode
+
+1. Select **Multi-round (3 files)** mode.
+2. For each round (Round 1, Round 2, Round 3), enter a **Round label** (e.g., LR8, LR10, LR15) and upload the corresponding clustered FASTA or CSV.
+3. Set the **Max. LED** threshold.
 4. Click **Recluster**. Results appear in the table.
-5. Click **Download CSV** to save the output.
+5. Click **Download Summary** to save the output.
 
 #### Parameters
 
 | Parameter | Range | Description |
 |---|---|---|
-| Max. LED | 1–20 (step 1) | Maximum edit distance between seeds from the two populations for them to be considered the same cluster across populations. |
+| Max. LED | 1–20 (step 1) | Maximum edit distance between seeds from different populations for them to be merged into the same super-cluster. |
+| Round label (Multi-round only) | — | Display name for each round, used as column suffixes in the output (e.g., "LR8" → `AvgRPU.LR8`). |
+
+#### Output Table Columns — 2 Populations
+
+**Cluster-level summary:**
+
+| Column | Description |
+|---|---|
+| Super-cluster | Merged cluster identifier |
+| Seed | Seed sequence of the super-cluster |
+| Size (Pop 1 / Pop 2) | Number of unique sequences in each population |
+| Avg RPU (Pop 1 / Pop 2) | Mean RPU across all sequences in the super-cluster per population |
+| Enrichment (Avg) | Avg RPU (Pop 2) / Avg RPU (Pop 1) |
+| log2E (Avg) | log₂ of the average RPU enrichment |
+| Seed RPU (Pop 1 / Pop 2) | RPU of the cluster seed in each population |
+| Enrichment (Seed) | Seed RPU (Pop 2) / Seed RPU (Pop 1) |
+| log2E (Seed) | log₂ of the seed RPU enrichment |
+| Status | Whether the super-cluster was found in both populations or only one |
+
+**Sequence-level data:**
+
+| Column | Description |
+|---|---|
+| Sequence | Nucleotide or amino acid sequence |
+| Super-cluster | Merged cluster assignment |
+| Orig. Cluster (Pop 1 / Pop 2) | Original cluster number from each input file |
+| Rank In Cluster | Rank within the super-cluster by read count |
+| LED | Edit distance from the super-cluster seed |
+| RPU (Pop 1 / Pop 2) | RPU of the sequence in each population |
+| Enrichment | RPU (Pop 2) / RPU (Pop 1) per sequence |
+| log2E | log₂ per-sequence enrichment |
+
+#### Output Table Columns — Multi-round
+
+Columns are named using the round labels you supplied (e.g., R1, R2, R3):
+
+| Column | Description |
+|---|---|
+| Super-cluster | Merged cluster identifier |
+| Seed | Seed sequence of the super-cluster |
+| AvgRPU.R1 / R2 / R3 | Mean RPU across all super-cluster sequences per round |
+| SeedRPU.R1 / R2 / R3 | RPU of the cluster seed per round |
+| E.R1.R2 | AvgRPU.R2 / AvgRPU.R1 — average RPU enrichment from round 1 to round 2 |
+| E.R2.R3 | AvgRPU.R3 / AvgRPU.R2 — average RPU enrichment from round 2 to round 3 |
+| SeedE.R1.R2 | SeedRPU.R2 / SeedRPU.R1 — seed RPU enrichment from round 1 to round 2 |
+| SeedE.R2.R3 | SeedRPU.R3 / SeedRPU.R2 — seed RPU enrichment from round 2 to round 3 |
 
 #### Plotting
 
-Four plots can be generated. Each has an optional customization panel (set the corresponding **Adjust default ... plot?** to **Yes**).
+**2 Populations mode** — four plots, each with an optional customization panel.
 
 **LED Heatmap**
 
-Pairwise LED between cluster seeds of population 1 (x-axis) and population 2 (y-axis), shown as a color-coded heatmap. Click **LED Heatmap** (both files must be uploaded).
+Pairwise LED between all cluster seeds of population 1 (x-axis) vs. population 2 (y-axis). Click **LED Heatmap** (both files must be uploaded before running).
 
 | Customization Option | Description |
 |---|---|
@@ -397,7 +462,7 @@ Pairwise LED between cluster seeds of population 1 (x-axis) and population 2 (y-
 
 **Population Size Plot**
 
-Side-by-side bar chart comparing unique sequence counts per cluster between the two populations. Click **Population Plot** (requires recluster results).
+Side-by-side bar chart comparing unique sequence counts per super-cluster between the two populations. Click **Population Plot** (requires recluster results in the table).
 
 | Customization Option | Description |
 |---|---|
@@ -405,37 +470,35 @@ Side-by-side bar chart comparing unique sequence counts per cluster between the 
 | Y-axis label | Unique sequence count label |
 | Legend title | Population legend label |
 | Plot title | Title above the chart |
-| Population 1 bar color | Bar color for population 1 |
-| Population 2 bar color | Bar color for population 2 |
+| Population 1 / 2 bar color | Bar color per population |
 
-**Average RPU Plot**
+**RPU Plot**
 
-Compares mean RPU per cluster between the two populations. Click **RPU Plot**.
+Compares mean Avg RPU per super-cluster between the two populations. Click **RPU Plot**.
 
-Customization options: same as Population Size Plot (with RPU on y-axis).
+Customization options: same as Population Size Plot.
 
-**Average LED Plot**
+**Enrichment Plot**
 
-Bar chart of mean LED per cluster. Click **LED Plot**.
-
-| Customization Option | Description |
-|---|---|
-| X-axis label | Cluster axis label |
-| Y-axis label | Average LED label |
-| Plot title | Title above the chart |
-| Bar outline color | Color of bar borders |
-| Bar fill color | Color of bar interiors |
-
-**Enrichment Box Plot**
-
-Box plot of per-sequence enrichment scores within each cluster. Click **Box Plot**.
+Bar chart of enrichment (Avg RPU Pop 2 / Pop 1) per super-cluster. Click **Enrichment Plot**.
 
 | Customization Option | Description |
 |---|---|
 | X-axis label | Cluster axis label |
+| Y-axis label | Enrichment label |
 | Plot title | Title above the chart |
-| Box outline color | Color of box borders |
-| Box fill color | Color of box interiors |
+| Bar fill / outline color | Bar colors |
+
+**Multi-round mode** — one plot.
+
+**Trajectory Plot**
+
+Line chart showing how Avg RPU evolves across the three rounds for each super-cluster. Click **Trajectory Plot** (requires recluster results in the table).
+
+| Customization Option | Description |
+|---|---|
+| Y-axis label | Label for the RPU axis |
+| Plot title | Title above the chart |
 
 ---
 
@@ -443,37 +506,37 @@ Box plot of per-sequence enrichment scores within each cluster. Click **Box Plot
 
 #### Description
 
-Calculates per-position nucleotide or amino acid enrichment within a reclustered CSV file. Reveals which alignment positions are most conserved or most variable. Produces a positional enrichment bar plot and a heatmap.
+Calculates per-position nucleotide or amino acid enrichment by aligning sequences within a cluster and computing the mean enrichment value at each alignment position. Reveals which positions are most conserved (high enrichment) or most variable. Accepts a Recluster CSV, a Sequence Enrichment CSV, or any CSV that contains an `Enrichment` column alongside a `Sequence` column.
 
-> This analysis uses MSA internally and may take time to complete.
+> Position enrichment performs MSA internally and can be slow for large clusters. Wait on the page until processing completes.
 
 #### Usage
 
-1. Upload a **Recluster CSV file** (output from the Recluster tab).
-2. Select the **cluster number** to analyze.
+1. Upload an **Input CSV file** — a Recluster CSV (from the Recluster tab), a Sequence Enrichment CSV, or any compatible CSV with `Sequence` and `Enrichment` columns.
+2. If the file contains a cluster column, a **cluster selector** appears — choose which cluster to analyze. If no cluster column is detected, all sequences in the file are analyzed together.
 3. Choose **Type of sequences**: Nucleotide or AminoAcid.
-4. Click **Start**. Results appear in the table.
-5. Click **Download** to save the output.
+4. Click **Start**. Results appear in the download-ready output.
+5. Click **Download** to save the positional enrichment CSV.
 
 #### Plotting
 
 **Position Enrichment Bar Plot**
 
-Bar chart with alignment positions on the x-axis and mean enrichment on the y-axis. Click **Position Enrichment** after a successful run.
+Bar chart with alignment positions on the x-axis and mean enrichment at each position on the y-axis. Click **Position Enrichment** after a successful run.
 
 Set **Adjust default bar plot?** to **Yes** for customization.
 
 | Customization Option | Description |
 |---|---|
-| X-axis label | Label for alignment position axis |
-| Y-axis label | Label for mean enrichment axis |
+| X-axis label | Label for the alignment position axis |
+| Y-axis label | Label for the mean enrichment axis |
 | Plot title | Title above the chart |
 | Bar outline color | Color of bar borders |
 | Bar fill color | Color of bar interiors |
 
 **Position Enrichment Heatmap**
 
-Heatmap with alignment positions on x-axis, residue identities on y-axis, and color intensity encoding mean enrichment. Click **Heatmap** after a successful run.
+Heatmap with alignment positions on the x-axis, residue identities on the y-axis, and color intensity encoding mean enrichment at each position-residue combination. Click **Heatmap** after a successful run.
 
 Set **Adjust default heat plot?** to **Yes** for customization.
 
