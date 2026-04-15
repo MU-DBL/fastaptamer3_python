@@ -38,15 +38,16 @@
           <mat-card-header>
             <div class="step-header">
               <span class="step-badge">{{ i + 1 }}</span>
-              <mat-select
-                [(ngModel)]="step.operationKey"
-                (ngModelChange)="onOperationChange(step)"
-                class="operation-select"
-                [disabled]="isRunning()">
-                @for (op of getAvailableOps(i); track op.key) {
-                  <mat-option [value]="op.key">{{ op.label }}</mat-option>
-                }
-              </mat-select>
+              <mat-form-field appearance="outline" class="operation-field">
+                <mat-select
+                  [(ngModel)]="step.operationKey"
+                  (ngModelChange)="onOperationChange(step)"
+                  [disabled]="isRunning()">
+                  @for (op of getAvailableOps(i); track op.key) {
+                    <mat-option [value]="op.key">{{ op.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
               <button mat-icon-button (click)="removeStep(i)" [disabled]="isRunning()" title="Remove step">
                 <mat-icon>close</mat-icon>
               </button>

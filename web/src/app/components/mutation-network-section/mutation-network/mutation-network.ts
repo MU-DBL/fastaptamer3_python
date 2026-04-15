@@ -5,7 +5,7 @@ import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
 import { SplitPanel } from '../../common/split-panel/split-panel';
-import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, switchMap, tap, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 import { FileService } from '../../../shared/file-service';
@@ -133,10 +133,8 @@ export class MutationNetwork implements OnDestroy {
           this.processedFileName.set(response.result);
           console.log('Mutation Network completed:', response.result);
 
-          return this.apiService.downloadFile(response.result).pipe(
-            switchMap(blob =>
-              this.fileService.parseClusterFile(blob, response.result)
-            ),
+          return this.apiService.fetchFileText(response.result).pipe(
+            map(text => this.fileService.parseResultFile(text, response.result)),
             tap(parsedData => {
               this.tableData = parsedData;
               this.cdr.detectChanges();
@@ -167,20 +165,9 @@ export class MutationNetwork implements OnDestroy {
       return;
     }
 
-    this.apiService.downloadFile(this.processedFileName()).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = this.processedFileName();
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('File downloaded:', this.processedFileName());
-      },
-      error: (error) => {
-        console.error('Download error:', error);
-        this.errorMessage.set('Failed to download file');
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(this.processedFileName());
+    link.download = this.processedFileName();
+    link.click();
   }
 }

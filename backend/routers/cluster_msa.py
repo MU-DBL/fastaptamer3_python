@@ -36,7 +36,7 @@ async def cluster_msa_endpoint(params: ClusterMSAInput):
     
     filepath = UPLOAD_DIR / params.input_path
     base_name = filepath.stem
-    output_path = UPLOAD_DIR / f"{base_name}_cluster{params.cluster_selected}_msa.{params.output_format}"
+    output_path = UPLOAD_DIR / f"{base_name}_cluster_{params.cluster_selected}_msa.{params.output_format}"
     
     try:
         # Read clustered data

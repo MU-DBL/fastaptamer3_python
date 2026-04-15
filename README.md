@@ -12,7 +12,7 @@ bash setup-docker-resources.sh
 
 # Build and push multi-platform image (run once to publish)
 docker buildx create --use
-docker buildx build -f Dockerfile --platform linux/amd64,linux/arm64 -t yongfangqin/fastaptamer3:1.1 --push .
+docker buildx build -f Dockerfile --platform linux/amd64,linux/arm64 -t yongfangqin/fastaptamer3:1.4 --push .
 docker buildx build --platform linux/amd64 -t yongfangqin/fastaptamer3:1.1 --load .
 
 # Package to tar

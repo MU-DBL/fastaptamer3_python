@@ -61,22 +61,22 @@
 
     <hr class="section-divider">
 
-    <!-- P-VALUE CUTOFF SLIDER -->
+    <!-- LFC CUTOFF SLIDER -->
     <h3 class="section-title">
-      Cutoff for p-value:
+      Absolute log₂ fold change (|log₂FC|) cutoff:
       <mat-icon class="info-icon"
-        matTooltip="Maximum BH-corrected p-value to consider as significant"
+        matTooltip="Minimum absolute log2 fold-change to classify a sequence as significant. Sequences above this threshold are marked Sig."
         matTooltipPosition="right">help_outline</mat-icon>
     </h3>
     <div class="slider-group">
       <div class="slider-header">
-        <span class="value-chip range-min">0.01</span>
-        <input type="number" [min]="0.01" [max]="0.5" [step]="0.01" [(ngModel)]="pCutoff">
-        <span class="value-chip range-max">0.50</span>
+        <span class="value-chip range-min">0.5</span>
+        <input type="number" [min]="0.5" [max]="20" [step]="0.1" [(ngModel)]="lfcCutoff">
+        <span class="value-chip range-max">20.0</span>
       </div>
       <div class="dual-range-container">
-        <mat-slider [min]="0.01" [max]="0.5" [step]="0.01" discrete class="range-slider">
-          <input matSliderThumb [(ngModel)]="pCutoff">
+        <mat-slider [min]="0.5" [max]="10" [step]="0.1" discrete class="range-slider">
+          <input matSliderThumb [(ngModel)]="lfcCutoff">
         </mat-slider>
       </div>
     </div>

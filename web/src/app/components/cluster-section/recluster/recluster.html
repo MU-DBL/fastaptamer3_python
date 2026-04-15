@@ -3,11 +3,12 @@
   cluster seeds. Use <strong>Multi-round</strong> mode to track cluster family convergence across 3 selection rounds.
   <p><strong>Avg RPU</strong> — mean RPU across <em>all sequences</em> assigned to the super-cluster in that population.
     Reflects the overall abundance of the cluster family, but is pulled down by low-read peripheral variants.
-  <strong>Seed RPU</strong> — RPU of the original cluster seed (rank 1 sequence in the original cluster file, i.e.
+    <strong>Seed RPU</strong> — RPU of the original cluster seed (rank 1 sequence in the original cluster file, i.e.
     the most abundant sequence in that cluster). More robust than Avg RPU as it represents the dominant variant,
     unaffected by rare sequences at the cluster periphery.
-  <strong>When to use each:</strong> Use Seed RPU to compare the dominant aptamer between rounds. Use Avg RPU to
-    capture the overall enrichment of the entire cluster family.</p>
+    <strong>When to use each:</strong> Use Seed RPU to compare the dominant aptamer between rounds. Use Avg RPU to
+    capture the overall enrichment of the entire cluster family.
+  </p>
 
 </div>
 
@@ -119,12 +120,13 @@
       <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedFileName()"
         [disabled]="!processedFileName()" (click)="onDownload()">
         <mat-icon>download</mat-icon>
-        Download  Summary
-    </button>
+        Download Summary
+      </button>
 
       @if (mode === 'two-pop') {
-      <button mat-raised-button color="accent" class="download-button" [class.download-ready]="processedSequenceFileName()"
-        [disabled]="!processedSequenceFileName()" (click)="onDownloadSequences()">
+      <button mat-raised-button color="accent" class="download-button"
+        [class.download-ready]="processedSequenceFileName()" [disabled]="!processedSequenceFileName()"
+        (click)="onDownloadSequences()">
         <mat-icon>download</mat-icon>
         Download Reclustered Sequences
       </button>
@@ -290,9 +292,46 @@
         Enrichment Plot
       </button>
     </div>
+
+    <hr class="section-divider">
+
+    <!-- RPU SCATTER PLOT -->
+    <h3 class="section-title">Adjust default RPU scatter plot?</h3>
+    <mat-radio-group [(ngModel)]="adjustRPUScatter" class="radio-group">
+      <mat-radio-button value="yes">Yes</mat-radio-button>
+      <mat-radio-button value="no">No</mat-radio-button>
+    </mat-radio-group>
+    @if (adjustRPUScatter === 'yes') {
+    <div class="customization-panel">
+      <mat-label>X-axis</mat-label>
+      <mat-form-field appearance="outline" class="full-width"><input matInput
+          [(ngModel)]="rpuScatterXAxis"></mat-form-field>
+      <mat-label>Y-axis</mat-label>
+      <mat-form-field appearance="outline" class="full-width"><input matInput
+          [(ngModel)]="rpuScatterYAxis"></mat-form-field>
+      <mat-label>Plot title</mat-label>
+      <mat-form-field appearance="outline" class="full-width"><input matInput
+          [(ngModel)]="rpuScatterTitle"></mat-form-field>
+      <div class="color-picker-group">
+        <label>Marker color:</label>
+        <input type="color" [(ngModel)]="rpuScatterColor" class="color-input">
+      </div>
+    </div>
+    }
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" class="plot-button" [disabled]="reclusterData.length === 0"
+        (click)="onGenerateRPUScatterPlot()">
+        <mat-icon>scatter_plot</mat-icon>
+        RPU Scatter Plot
+      </button>
+    </div>
     }
 
     @if (mode === 'multi-round') {
+
+    <label class="section-label">Top N clusters to show in trajectory plot (leave blank for all)</label>
+    <mat-form-field appearance="outline" class="full-width"><input matInput type="number" min="1"
+        [(ngModel)]="trajectoryTopN"></mat-form-field>
     <!-- TRAJECTORY PLOT -->
     <h3 class="section-title">Adjust default trajectory plot?</h3>
     <mat-radio-group [(ngModel)]="adjustTrajectory" class="radio-group">
@@ -307,6 +346,7 @@
       <mat-label>Plot title</mat-label>
       <mat-form-field appearance="outline" class="full-width"><input matInput
           [(ngModel)]="trajectoryTitle"></mat-form-field>
+
     </div>
     }
     <div class="action-buttons">

@@ -16,7 +16,7 @@ UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 class EdgeRPairTestInput(BaseModel):
     cond1_paths: List[str]  # Condition 1 FASTA file paths
     cond2_paths: List[str]  # Condition 2 FASTA file paths
-    p_cutoff: float = 0.1
+    lfc_cutoff: float = 1.0  # |log2FC| threshold for significance
     output_format: str = "csv"
 
 class DifferentialExpressionResponse(BaseModel):
@@ -42,10 +42,6 @@ async def differential_expression(params: EdgeRPairTestInput):
     if len(params.cond1_paths) > 26 or len(params.cond2_paths) > 26:
         raise HTTPException(status_code=400, detail="Maximum 26 replicates per condition")
 
-    if not (0 < params.p_cutoff < 1):
-        raise HTTPException(status_code=400, detail="p_cutoff must be between 0 and 1")
-
-    
    # -----------------------
     # LOAD CONDITION 1
     # -----------------------
@@ -168,31 +164,35 @@ async def differential_expression(params: EdgeRPairTestInput):
     log_cpm = np.log2(cpm_matrix.mean(axis=1) + pseudocount)
 
     # -----------------------
-    # STATISTICAL TESTING (RAW COUNTS)
+    # STATISTICAL TESTING (CPM-NORMALIZED)
     # -----------------------
-    p_values = []
+    insufficient_replicates = n_cond1 < 3 or len(params.cond2_paths) < 3
 
-    cond1_counts = count_matrix[:, :n_cond1]
-    cond2_counts = count_matrix[:, n_cond1:]
+    lfc_sig = np.abs(log_fc) >= params.lfc_cutoff
 
-    if cond1_counts.shape[1] >= 3 and cond2_counts.shape[1] >= 3:
-        for i in range(len(count_matrix)):
-            _, p = stats.ttest_ind(cond1_counts[i], cond2_counts[i], equal_var=False)
-            p_values.append(p)
+    if insufficient_replicates:
+        # Statistical testing requires at least 3 replicates per condition.
+        # Classify by logFC threshold only.
+        p_col = np.full(len(count_matrix), np.nan)
+        p_class = np.where(lfc_sig, "Sig.", "Not Sig.")
     else:
+        # Use CPM for testing so that replicate library-size differences don't
+        # inflate variance and wash out real signal.
+        cond1_cpm = cpm_matrix[:, :n_cond1]
+        cond2_cpm = cpm_matrix[:, n_cond1:]
+
+        p_values = []
         for i in range(len(count_matrix)):
-            try:
-                _, p = stats.mannwhitneyu(cond1_counts[i], cond2_counts[i], alternative="two-sided")
-                p_values.append(p)
-            except ValueError:
-                p_values.append(1.0)
+            _, p = stats.ttest_ind(cond1_cpm[i], cond2_cpm[i], equal_var=False)
+            if np.isnan(p):
+                p = 0.0 if cond1_cpm[i].mean() != cond2_cpm[i].mean() else 1.0
+            p_values.append(p)
 
-    p_values = np.nan_to_num(p_values, nan=1.0)
-
-    # -----------------------
-    # FDR CORRECTION
-    # -----------------------
-    _, p_adj, _, _ = multipletests(p_values, alpha=params.p_cutoff, method="fdr_bh")
+        p_values = np.array(p_values)
+        _, p_adj, _, _ = multipletests(p_values, alpha=0.05, method="fdr_bh")
+        p_col = np.round(p_adj, 4)
+        # Classify by logFC threshold only; p-value is shown as reference
+        p_class = np.where(lfc_sig, "Sig.", "Not Sig.")
 
     # -----------------------
     # RESULTS TABLE
@@ -200,10 +200,10 @@ async def differential_expression(params: EdgeRPairTestInput):
     d_test = pd.DataFrame({
         "logFC": np.round(log_fc, 3),
         "logCPM": np.round(log_cpm, 3),
-        "PValue": np.round(p_adj, 4),
-        "PClass": np.where(p_adj < params.p_cutoff, "Sig.", "Not Sig."),
+        "PValue": p_col,
+        "PClass": p_class,
         "Sequence": sequences,
-    }).sort_values("PValue")
+    }).sort_values("logFC", key=np.abs, ascending=False)
 
     # -----------------------
     # SAVE OUTPUT

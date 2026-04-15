@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
@@ -6,7 +6,7 @@ import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
 import { SplitPanel } from '../../common/split-panel/split-panel';
 import { PlotModalService } from '../../../shared/plot-modal.service';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 
@@ -39,9 +39,7 @@ export class MotifDiscovery implements OnDestroy {
   };
 
   private apiService = inject(ApiService);
-  private cdr = inject(ChangeDetectorRef);
   private plotModalService = inject(PlotModalService);
-  private ngZone = inject(NgZone);
 
   selectedFile: File | null = null;
   savedFileName: string = '';
@@ -106,9 +104,9 @@ export class MotifDiscovery implements OnDestroy {
 
   onLoadResult(): void {
     if (!this.savedFileName) return;
-    this.apiService.downloadFile(this.savedFileName).pipe(
-      tap(blob => {
-        this.parseFileBlob(blob, this.savedFileName);
+    this.apiService.fetchFileText(this.savedFileName).pipe(
+      tap(text => {
+        this.parseResultFile(text, this.savedFileName);
         this.processedFileName.set(this.savedFileName);
       })
     ).subscribe();
@@ -175,8 +173,8 @@ export class MotifDiscovery implements OnDestroy {
       switchMap(response => {
         // Automatically load results after successful discovery
         if (response.status === 'ok' && response.result) {
-          return this.apiService.downloadFile(response.result).pipe(
-            tap(blob => this.parseFileBlob(blob, response.result))
+          return this.apiService.fetchFileText(response.result).pipe(
+            tap(text => this.parseResultFile(text, response.result))
           );
         }
         return of(null);
@@ -191,18 +189,6 @@ export class MotifDiscovery implements OnDestroy {
         this.isProcessing.set(false);
       })
     ).subscribe();
-  }
-
-  parseFileBlob(blob: Blob, filename: string): void {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const text = e.target.result;
-      this.ngZone.run(() => {
-        this.parseResultFile(text, filename);
-        this.cdr.detectChanges();
-      });
-    };
-    reader.readAsText(blob);
   }
 
   parseResultFile(content: string, filename: string): void {
@@ -249,21 +235,10 @@ export class MotifDiscovery implements OnDestroy {
       return;
     }
 
-    this.apiService.downloadFile(this.processedFileName()).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = this.processedFileName();
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('File downloaded:', this.processedFileName());
-      },
-      error: (error) => {
-        console.error('Download error:', error);
-        alert('Failed to download file');
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(this.processedFileName());
+    link.download = this.processedFileName();
+    link.click();
   }
 
   onShowPlot(): void {

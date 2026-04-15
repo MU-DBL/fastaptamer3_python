@@ -9,7 +9,7 @@ import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { Table, TableConfig } from '../../common/table/table';
 import { SplitPanel } from '../../common/split-panel/split-panel';
 import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 interface FileSelection {
@@ -193,8 +193,8 @@ export class DataMerge implements OnDestroy {
       }),
       switchMap(response => {
         if (response.status === 'ok' && response.result) {
-          return this.apiService.downloadFile(response.result).pipe(
-            switchMap(blob => this.fileService.parseClusterFile(blob, response.result)),
+          return this.apiService.fetchFileText(response.result).pipe(
+            map(text => this.fileService.parseResultFile(text, response.result)),
             tap(parsedData => {
               this.mergedData = parsedData;
               this.updateTableConfig(parsedData);

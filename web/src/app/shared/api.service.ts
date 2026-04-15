@@ -25,9 +25,12 @@ export class ApiService {
     input_path: string;
     const5p: string;
     const3p: string;
+    trim5_fixed: number;
+    trim3_fixed: number;
     min_length: number;
     max_length: number;
     max_error: number;
+    adapter_error_rate: number;
     output_format: string;
   }): Observable<string> {
     return new Observable(observer => {
@@ -110,6 +113,7 @@ export class ApiService {
     min_length: number;
     max_length: number;
     max_error: number;
+    adapter_error_rate: number;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/preprocess`, params);
@@ -135,10 +139,22 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/recount`, params);
   }
 
-  // Download file
+  // Direct URL for browser-native file download (no blob buffering)
+  getDownloadUrl(filename: string): string {
+    return `${this.baseUrl}/download/${filename}`;
+  }
+
+  // Download file as blob (avoid for large files — use getDownloadUrl instead)
   downloadFile(filename: string): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/download/${filename}`, {
       responseType: 'blob'
+    });
+  }
+
+  // Fetch file as text for parsing (lighter than blob for large files)
+  fetchFileText(filename: string): Observable<string> {
+    return this.http.get(`${this.baseUrl}/download/${filename}`, {
+      responseType: 'text'
     });
   }
 
@@ -361,7 +377,7 @@ export class ApiService {
   differentialAnalysis(params: {
     cond1_paths: string[];
     cond2_paths: string[];
-    p_cutoff: number;
+    lfc_cutoff: number;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/differential-expression`, params);

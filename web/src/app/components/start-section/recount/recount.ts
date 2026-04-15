@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 import { SplitPanel } from '../../common/split-panel/split-panel';
@@ -199,8 +199,8 @@ export class Recount implements OnDestroy {
       switchMap(response => {
         // Automatically load results after successful recount
         if (response.status === 'ok' && response.result) {
-          return this.apiService.downloadFile(response.result).pipe(
-            tap(blob => this.parseFileBlob(blob, response.result))
+          return this.apiService.fetchFileText(response.result).pipe(
+            tap(text => this.parseResultFile(text, response.result))
           );
         }
         return of(null);
@@ -214,15 +214,6 @@ export class Recount implements OnDestroy {
         this.isProcessing.set(false);
       })
     ).subscribe();
-  }
-
-  parseFileBlob(blob: Blob, filename: string): void {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const text = e.target.result;
-      this.parseResultFile(text, filename);
-    };
-    reader.readAsText(blob);
   }
 
   parseResultFile(content: string, filename: string): void {
@@ -322,21 +313,10 @@ export class Recount implements OnDestroy {
 
     console.log('Downloading file:', filename);
 
-    this.apiService.downloadFile(filename).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('Download started');
-      },
-      error: (error) => {
-        const errorMsg = error.error?.detail || 'Download failed';
-        console.error('Download error:', errorMsg);
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(filename);
+    link.download = filename;
+    link.click();
   }
 
   // Plot methods - emit events to parent component

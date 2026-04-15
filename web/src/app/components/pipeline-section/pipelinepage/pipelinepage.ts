@@ -38,6 +38,9 @@ const OPERATION_DEFS: OperationDef[] = [
     defaultParams: {
       const5p: '',
       const3p: '',
+      adapter_error_rate: 0.1,
+      trim5_fixed: 0,
+      trim3_fixed: 0,
       min_length: 10,
       max_length: 100,
       max_error: 0.005,
@@ -45,6 +48,9 @@ const OPERATION_DEFS: OperationDef[] = [
     paramLabels: {
       const5p: "Constant 5' Region",
       const3p: "Constant 3' Region",
+      adapter_error_rate: 'Adapter Mismatch Tolerance (0-0.5)',
+      trim5_fixed: "Fixed 5' Trim (bases)",
+      trim3_fixed: "Fixed 3' Trim (bases)",
       min_length: 'Min Length',
       max_length: 'Max Length',
       max_error: 'Max Allowed Error (0-1)',

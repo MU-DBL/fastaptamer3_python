@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
@@ -281,8 +281,8 @@ export class MotifTracker implements OnDestroy {
       switchMap(response => {
         // Load tracker results
         if (response.status === 'ok' && response.result) {
-          return this.apiService.downloadFile(response.result).pipe(
-            tap(blob => this.parseTrackerFile(blob, response.result))
+          return this.apiService.fetchFileText(response.result).pipe(
+            tap(text => this.parseTrackerContent(text, response.result))
           );
         }
         return of(null);
@@ -290,8 +290,8 @@ export class MotifTracker implements OnDestroy {
       switchMap(() => {
         // Load enrichment results
         if (this.enrichmentFileName()) {
-          return this.apiService.downloadFile(this.enrichmentFileName()).pipe(
-            tap(blob => this.parseEnrichmentFile(blob))
+          return this.apiService.fetchFileText(this.enrichmentFileName()).pipe(
+            tap(text => this.parseEnrichmentContent(text))
           );
         }
         return of(null);
@@ -311,15 +311,6 @@ export class MotifTracker implements OnDestroy {
   // ========================================================================
   // FILE PARSING
   // ========================================================================
-
-  parseTrackerFile(blob: Blob, filename: string): void {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const text = e.target.result;
-      this.parseTrackerContent(text, filename);
-    };
-    reader.readAsText(blob);
-  }
 
   parseTrackerContent(content: string, filename: string): void {
     const isCsv = filename.endsWith('.csv');
@@ -347,15 +338,6 @@ export class MotifTracker implements OnDestroy {
     }
 
     console.log('Parsed tracker data:', this.trackerData.length, 'rows');
-  }
-
-  parseEnrichmentFile(blob: Blob): void {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const text = e.target.result;
-      this.parseEnrichmentContent(text);
-    };
-    reader.readAsText(blob);
   }
 
   parseEnrichmentContent(content: string): void {
@@ -389,21 +371,10 @@ export class MotifTracker implements OnDestroy {
       return;
     }
 
-    this.apiService.downloadFile(this.processedFileName()).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = this.processedFileName();
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('Tracker file downloaded:', this.processedFileName());
-      },
-      error: (error) => {
-        console.error('Download error:', error);
-        alert('Failed to download tracker file');
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(this.processedFileName());
+    link.download = this.processedFileName();
+    link.click();
   }
 
   onDownloadEnrichment(): void {
@@ -412,21 +383,10 @@ export class MotifTracker implements OnDestroy {
       return;
     }
 
-    this.apiService.downloadFile(this.enrichmentFileName()).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = this.enrichmentFileName();
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('Enrichment file downloaded:', this.enrichmentFileName());
-      },
-      error: (error) => {
-        console.error('Download error:', error);
-        alert('Failed to download enrichment file');
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(this.enrichmentFileName());
+    link.download = this.enrichmentFileName();
+    link.click();
   }
 
   // ========================================================================

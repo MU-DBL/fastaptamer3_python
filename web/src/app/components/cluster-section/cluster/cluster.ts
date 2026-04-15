@@ -5,7 +5,7 @@ import { SplitPanel } from '../../common/split-panel/split-panel';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 import { ColumnName, FileService } from '../../../shared/file-service';
@@ -135,10 +135,8 @@ export class Cluster implements OnDestroy {
         this.processedFileName.set(response.result);
         console.log('Clustering completed:', response.result);
         
-        return this.apiService.downloadFile(response.result).pipe(
-          switchMap(blob => 
-            this.fileService.parseClusterFile(blob, response.result)
-          ),
+        return this.apiService.fetchFileText(response.result).pipe(
+          map(text => this.fileService.parseResultFile(text, response.result)),
           tap(parsedData => {
             this.clusterData = parsedData;
             this.availableClusters = [...new Set(parsedData.map((r: any) => r[ColumnName.CLUSTER] as number))].sort((a, b) => a - b);

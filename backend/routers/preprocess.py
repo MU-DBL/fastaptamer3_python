@@ -17,9 +17,12 @@ class PreprocessInput(BaseModel):
     input_path: str | None = None
     const5p: str = ""
     const3p: str = ""
+    trim5_fixed: int = 0
+    trim3_fixed: int = 0
     min_length: int = 0
     max_length: int = 100
     max_error: float = 0.005
+    adapter_error_rate: float = 0.1
     output_format: str = "fasta"
 
 @router.post("/preprocess")
@@ -38,8 +41,11 @@ async def preprocess(params: PreprocessInput, background_tasks: BackgroundTasks)
             filepath,
             const5p=params.const5p,
             const3p=params.const3p,
+            trim5_fixed=params.trim5_fixed,
+            trim3_fixed=params.trim3_fixed,
             length_range=[params.min_length, params.max_length],
             max_error=params.max_error,
+            adapter_error_rate=params.adapter_error_rate,
             output_path=output_path,
             output_format=output_format
         )

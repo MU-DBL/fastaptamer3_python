@@ -78,12 +78,24 @@
   flex-shrink: 0;
 }
 
-.operation-select {
+.operation-field {
   flex: 1;
   min-width: 0;
+  margin-bottom: -1.25em; // collapse the hint/error space below the field
 
-  ::ng-deep .mat-mdc-select-trigger {
-    font-size: 14px;
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      padding: 0 8px;
+    }
+    .mat-mdc-form-field-infix {
+      padding-top: 8px;
+      padding-bottom: 8px;
+      min-height: unset;
+    }
+    .mat-mdc-select-trigger {
+      font-size: 14px;
+      font-weight: 500;
+    }
   }
 }
 

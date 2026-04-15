@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, inject, signal, output, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
 
@@ -145,8 +145,8 @@ export class ClusterDiversity implements OnDestroy {
   onLoadResult(): void {
     if (!this.savedFileName) return;
     this.diversityData = [];
-    this.apiService.downloadFile(this.savedFileName).pipe(
-      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+    this.apiService.fetchFileText(this.savedFileName).pipe(
+      map(text => this.fileService.parseResultFile(text, this.savedFileName)),
       tap(parsedData => {
         this.diversityData = parsedData;
         const uniqueClusters = [...new Set(parsedData.map((r: any) => r[ColumnName.CLUSTER]))].sort((a: any, b: any) => a - b);
@@ -205,8 +205,8 @@ export class ClusterDiversity implements OnDestroy {
           this.processedFileName.set(response.result);
 
           // Chain download and parsing
-          return this.apiService.downloadFile(response.result).pipe(
-            switchMap(blob => this.fileService.parseClusterFile(blob, response.result)),
+          return this.apiService.fetchFileText(response.result).pipe(
+            map(text => this.fileService.parseResultFile(text, response.result)),
             tap(parsedData => {
               this.diversityData = parsedData;
               const rawClusters = this.diversityData.map(row => row[ColumnName.CLUSTER]);

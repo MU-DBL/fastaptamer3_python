@@ -6,7 +6,7 @@ import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { ApiService } from '../../../shared/api.service';
 import { SplitPanel } from '../../common/split-panel/split-panel';
 import { ColumnName, FileService } from '../../../shared/file-service';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
 import { PlotModalService } from '../../../shared/plot-modal.service';
@@ -164,8 +164,8 @@ export class Translate implements OnDestroy {
   onLoadResult(): void {
     if (!this.savedFileName) return;
     this.translateData = [];
-    this.apiService.downloadFile(this.savedFileName).pipe(
-      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+    this.apiService.fetchFileText(this.savedFileName).pipe(
+      map(text => this.fileService.parseResultFile(text, this.savedFileName)),
       tap(parsedData => {
         this.translateData = parsedData;
         this.processedFileName.set(this.savedFileName);
@@ -241,8 +241,8 @@ export class Translate implements OnDestroy {
           console.log('Translation completed:', response.result);
           
           // Chain download and parsing
-          return this.apiService.downloadFile(response.result).pipe(
-            switchMap(blob => this.fileService.parseClusterFile(blob, response.result)),
+          return this.apiService.fetchFileText(response.result).pipe(
+            map(text => this.fileService.parseResultFile(text, response.result)),
             tap(parsedData => {
               this.translateData = parsedData;
             })

@@ -125,8 +125,8 @@ export class Count implements OnDestroy {
   onLoadResult(): void {
     if (!this.savedFileName) return;
     this.tableData = [];
-    this.apiService.downloadFile(this.savedFileName).pipe(
-      tap(blob => this.parseFileBlob(blob, this.savedFileName))
+    this.apiService.fetchFileText(this.savedFileName).pipe(
+      tap(text => this.parseResultFile(text, this.savedFileName))
     ).subscribe();
     this.processedFileName.set(this.savedFileName);
   }
@@ -180,8 +180,8 @@ export class Count implements OnDestroy {
       switchMap(response => {
         // Automatically load results after successful count
         if (response.status === 'ok' && response.result) {
-          return this.apiService.downloadFile(response.result).pipe(
-            tap(blob => this.parseFileBlob(blob, response.result))
+          return this.apiService.fetchFileText(response.result).pipe(
+            tap(text => this.parseResultFile(text, response.result))
           );
         }
         return of(null);
@@ -195,15 +195,6 @@ export class Count implements OnDestroy {
         this.isProcessing.set(false);
       })
     ).subscribe();
-  }
-
-  parseFileBlob(blob: Blob, filename: string): void {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const text = e.target.result;
-      this.parseResultFile(text, filename);
-    };
-    reader.readAsText(blob);
   }
 
   parseResultFile(content: string, filename: string): void {
@@ -286,23 +277,10 @@ export class Count implements OnDestroy {
       return;
     }
 
-    console.log('Downloading file:', filename);
-
-    this.apiService.downloadFile(filename).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('Download started');
-      },
-      error: (error) => {
-        const errorMsg = error.error?.detail || 'Download failed';
-        console.error('Download error:', errorMsg);
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(filename);
+    link.download = filename;
+    link.click();
   }
 
   // Plot methods - emit events to parent component
@@ -329,7 +307,7 @@ export class Count implements OnDestroy {
     }
     
     // Check if max rank exceeds available data
-    const maxAvailableRank = Math.max(...this.tableData.map(item => item.rank));
+    const maxAvailableRank = this.tableData.reduce((max, item) => item.rank > max ? item.rank : max, 0);
     const data = this.getReadsPerRankData();
     
     if (data.length === 0) {
@@ -418,7 +396,7 @@ export class Count implements OnDestroy {
 
   getReadsPerRankData(): any[] {
     // Get all data within the rank range, regardless of minReadsToPlot
-    const maxAvailableRank = Math.max(...this.tableData.map(item => item.rank));
+    const maxAvailableRank = this.tableData.reduce((max, item) => item.rank > max ? item.rank : max, 0);
     const effectiveMaxRank = Math.min(this.maxRankToPlot, maxAvailableRank);
     
     return this.tableData

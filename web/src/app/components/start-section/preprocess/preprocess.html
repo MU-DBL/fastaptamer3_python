@@ -20,9 +20,41 @@
       <input matInput [(ngModel)]="constant3Region" />
     </mat-form-field>
 
+        <label class="section-label">Adapter matching error rate:
+      <mat-icon class="info-icon"
+        matTooltip="Maximum error rate allowed when matching adapter sequences. A value of 0.1 means up to 10% mismatches/indels are tolerated (e.g. 2 errors for a 20nt adapter).">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">Min 0</span>
+        <input type="number" [min]="0" [max]="adapterErrorRateRange" [step]="0.01" [(ngModel)]="adapterErrorRate" />
+        <span class="value-chip range-max">Max {{ adapterErrorRateRange }}</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="0" [max]="adapterErrorRateRange" [step]="0.01" [displayWith]="formatErrorLabel" discrete
+          class="range-slider">
+          <input matSliderThumb [(ngModel)]="adapterErrorRate">
+        </mat-slider>
+      </div>
+    </div>
+
+    <label class="section-label">Fixed bases to trim from 5' end:
+      <mat-icon class="info-icon" matTooltip="Remove a fixed number of bases from the beginning of each read, regardless of sequence content.">help_outline</mat-icon>
+    </label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput type="number" [min]="0" [(ngModel)]="trim5Fixed" />
+    </mat-form-field>
+
+    <label class="section-label">Fixed bases to trim from 3' end:
+      <mat-icon class="info-icon" matTooltip="Remove a fixed number of bases from the end of each read, regardless of sequence content.">help_outline</mat-icon>
+    </label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput type="number" [min]="0" [(ngModel)]="trim3Fixed" />
+    </mat-form-field>
+
     <label class="section-label">Sequence length range:
       <mat-icon class="info-icon"
-        matTooltip="Define the minimum and maximum length for primer sequences">help_outline</mat-icon>
+        matTooltip="Define the minimum and maximum length for variable region">help_outline</mat-icon>
     </label>
     <div class="slider-group">
       <div class="slider-header">

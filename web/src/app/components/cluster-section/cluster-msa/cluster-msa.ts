@@ -7,7 +7,7 @@ import { SplitPanel } from '../../common/split-panel/split-panel';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
 import { PlotModalService } from '../../../shared/plot-modal.service';
-import { catchError, finalize, of, switchMap, tap } from 'rxjs';
+import { catchError, finalize, of, switchMap, tap, map } from 'rxjs';
 import { ColumnName, FileService } from '../../../shared/file-service';
 
 @Component({
@@ -116,8 +116,8 @@ export class ClusterMsa implements OnDestroy {
   onLoadResult(): void {
     if (!this.savedFileName) return;
     this.clusterData = [];
-    this.apiService.downloadFile(this.savedFileName).pipe(
-      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+    this.apiService.fetchFileText(this.savedFileName).pipe(
+      map(text => this.fileService.parseResultFile(text, this.savedFileName)),
       tap(parsedData => {
         this.clusterData = parsedData;
         this.processedFileName.set(this.savedFileName);
@@ -177,10 +177,8 @@ export class ClusterMsa implements OnDestroy {
         this.processedFileName.set(response.result);
         console.log('Clustering completed:', response.result);
         
-        return this.apiService.downloadFile(response.result).pipe(
-          switchMap(blob => 
-            this.fileService.parseClusterFile(blob, response.result)
-          ),
+        return this.apiService.fetchFileText(response.result).pipe(
+          map(text => this.fileService.parseResultFile(text, response.result)),
           tap(parsedData => {
             this.clusterData = parsedData;
             this.cdr.detectChanges();

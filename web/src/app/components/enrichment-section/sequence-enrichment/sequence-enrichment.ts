@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,7 @@ import { SplitPanel } from '../../common/split-panel/split-panel';
 import { FileService } from '../../../shared/file-service';
 import { PlotModalService } from '../../../shared/plot-modal.service';
 import { Table, TableConfig } from '../../common/table/table';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 @Component({
@@ -31,7 +31,6 @@ export class SequenceEnrichment implements OnDestroy {
   private fileService = inject(FileService);
   private plotModalService = inject(PlotModalService);
   private cdr = inject(ChangeDetectorRef);
-  private ngZone = inject(NgZone);
 
   // Signals
   isProcessing = signal(false);
@@ -217,8 +216,8 @@ export class SequenceEnrichment implements OnDestroy {
       }),
       switchMap(response => {
         if (response.result) {
-          return this.apiService.downloadFile(response.result).pipe(
-            tap(blob => this.parseFileBlob(blob, response.result))
+          return this.apiService.fetchFileText(response.result).pipe(
+            tap(text => this.parseResultFile(text, response.result))
           );
         }
         throw new Error('No result file returned from enrichment analysis');
@@ -233,17 +232,6 @@ export class SequenceEnrichment implements OnDestroy {
         this.cdr.detectChanges();
       })
     ).subscribe();
-  }
-
-  parseFileBlob(blob: Blob, filename: string): void {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      this.ngZone.run(() => {
-        this.parseResultFile(content, filename);
-      });
-    };
-    reader.readAsText(blob);
   }
 
   parseResultFile(content: string, filename: string): void {
@@ -293,20 +281,10 @@ export class SequenceEnrichment implements OnDestroy {
       return;
     }
 
-    this.apiService.downloadFile(this.processedFileName()).subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = this.processedFileName();
-        link.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: (error: any) => {
-        console.error('Download error:', error);
-        alert('Failed to download file.');
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(this.processedFileName());
+    link.download = this.processedFileName();
+    link.click();
   }
 
   // ========================================================================
@@ -490,19 +468,15 @@ export class SequenceEnrichment implements OnDestroy {
       return;
     }
 
-    const trace = {
-      x: aValues,
-      y: rValues,
-      mode: 'markers',
-      type: 'scatter',
-      marker: {
-        color: this.raPlotPointColor,
-        size: 6,
-        opacity: 0.5
-      },
-      text: sequences,
-      hovertemplate: '%{text}<br>A: %{x:.4f}<br>R: %{y:.4f}<extra></extra>'
-    };
+    const traces: any[] = [
+      {
+        x: aValues, y: rValues, text: sequences,
+        mode: 'markers', type: 'scatter',
+        name: 'Sequences',
+        marker: { color: this.raPlotPointColor, size: 6, opacity: 0.5 },
+        hovertemplate: '%{text}<br>A: %{x:.4f}<br>R: %{y:.4f}<extra></extra>'
+      }
+    ];
 
     const layout = {
       title: {
@@ -540,7 +514,7 @@ export class SequenceEnrichment implements OnDestroy {
     };
 
     this.plotModalService.openPlot({
-      data: [trace],
+      data: traces,
       layout: layout,
       config: { responsive: true }
     });

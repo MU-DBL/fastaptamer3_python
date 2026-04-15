@@ -21,78 +21,6 @@ def calculate_avg_error_fast(quality_scores):
     return total_error / len(quality_scores)
 
 
-def run_preprocess_without_state(input_path, const5p="", const3p="", 
-                            length_range=(10, 100), max_error=0.005,
-                            output_path=None, output_format='fasta'):
-    """
-    Fastest hybrid: cutadapt + numba-accelerated quality filtering
-    """
-    temp_trimmed = "/tmp/trimmed.fastq"
-    
-    if input_path.endswith(('.fq', '.fastq', '.fq.gz', '.fastq.gz')):
-        file_format = 'fastq'
-    else:
-        file_format = 'fasta'
-    
-    # Cutadapt command
-    cmd = ['cutadapt']
-    
-    if const5p:
-        cmd.extend(['-g', f'^{const5p}'])
-    if const3p:
-        cmd.extend(['-a', f'{const3p}$'])
-    
-    cmd.extend([
-        '-j', '0',  # use all available cores
-        '-m', str(length_range[0]),
-        '-M', str(length_range[1]),
-        '-e', '0.1',
-        '-o', temp_trimmed,
-        input_path
-    ])
-
-    print("Running cutadapt...")
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    
-    if result.returncode != 0:
-        error_msg = result.stderr or result.stdout
-        print(f"❌ Error: {error_msg}")
-        raise RuntimeError(f"Cutadapt failed: {error_msg}") 
-    
-    print(result.stdout if result.stdout else result.stderr)
-    
-    # Fast quality filtering
-    if file_format == 'fastq':
-        print("\n=== Quality filtering (numba-accelerated) ===")
-
-        after_qc = 0
-        before_qc = 0
-        with open(output_path, 'w') as out_handle:
-            for rec in SeqIO.parse(temp_trimmed, 'fastq'):
-                before_qc += 1
-                qual_array = np.array(rec.letter_annotations['phred_quality'], dtype=np.float64)
-                avg_error = calculate_avg_error_fast(qual_array)
-                if avg_error <= max_error:
-                    SeqIO.write([rec], out_handle, output_format)
-                    after_qc += 1
-
-        pass_rate = 100 * after_qc / before_qc if before_qc > 0 else 0
-        print(f"Quality filter: {after_qc:,}/{before_qc:,} passed ({pass_rate:.1f}%)")
-        print(f"✓ Saved to {output_path}")
-        
-    else:
-        if output_format != file_format:
-            records = SeqIO.parse(temp_trimmed, file_format)
-            SeqIO.write(records, output_path, output_format)
-        else:
-            shutil.move(temp_trimmed, output_path)
-    
-    if os.path.exists(temp_trimmed):
-        os.remove(temp_trimmed)
-    
-    return output_path
-
-
 def run_preprocess_slow(input_path=None, const5p="", const3p="", 
                   length_range=(10, 100), max_error=0.005,
                   output_path=None, output_format='fasta'):
@@ -187,8 +115,10 @@ def trim_constant_region(seq_df, const_region, file_format):
 
 
 
-async def run_preprocess(job_id, input_path, const5p="", const3p="", 
+async def run_preprocess(job_id, input_path, const5p="", const3p="",
+                                  trim5_fixed=0, trim3_fixed=0,
                                   length_range=(10, 100), max_error=0.005,
+                                  adapter_error_rate=0.1,
                                   output_path=None, output_format='fasta'):
     """
     Preprocessing with real-time progress updates
@@ -207,16 +137,20 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
         # Cutadapt command
         cmd = ['cutadapt']
         
+        if trim5_fixed > 0:
+            cmd.extend(['-u', str(trim5_fixed)])
+        if trim3_fixed > 0:
+            cmd.extend(['-u', str(-trim3_fixed)])
         if const5p:
-            cmd.extend(['-g', f'^{const5p}'])
+            cmd.extend(['-g', f'{const5p}'])
         if const3p:
-            cmd.extend(['-a', f'{const3p}$'])
+            cmd.extend(['-a', f'{const3p}'])
         
         cmd.extend([
             '-j', '0',  # use all available cores
             '-m', str(length_range[0]),
             '-M', str(length_range[1]),
-            '-e', '0.1',
+            '-e', str(adapter_error_rate),
             '-o', temp_trimmed,
             input_path
         ])

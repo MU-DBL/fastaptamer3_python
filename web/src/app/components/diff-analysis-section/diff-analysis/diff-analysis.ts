@@ -33,7 +33,7 @@ export class DiffAnalysis implements OnDestroy {
   filesCond1: UploadedFile[] = [];
   filesCond2: UploadedFile[] = [];
 
-  pCutoff: number = 0.1;
+  lfcCutoff: number = 1.0;
   downloadFormat: string = 'csv';
   diffAnalysisData: any[] = [];
 
@@ -117,7 +117,7 @@ export class DiffAnalysis implements OnDestroy {
     this.apiService.differentialAnalysis({
       cond1_paths: this.filesCond1.map(f => f.savedFileName),
       cond2_paths: this.filesCond2.map(f => f.savedFileName),
-      p_cutoff: this.pCutoff,
+      lfc_cutoff: this.lfcCutoff,
       output_format: this.downloadFormat
     }).pipe(
       tap(response => this.processedFileName.set(response.result)),
@@ -147,7 +147,13 @@ export class DiffAnalysis implements OnDestroy {
         const row: any = {};
         headers.forEach((header, idx) => {
           const value = values[idx];
-          row[header] = ['logFC', 'logCPM', 'PValue'].includes(header) ? (value ? parseFloat(value) : 0) : (value || '');
+          if (header === 'PValue') {
+            row[header] = (!value || value === '' || value.toLowerCase() === 'nan') ? 'N/A' : parseFloat(value);
+          } else if (['logFC', 'logCPM'].includes(header)) {
+            row[header] = value ? parseFloat(value) : 0;
+          } else {
+            row[header] = value || '';
+          }
         });
         this.diffAnalysisData.push(row);
       }

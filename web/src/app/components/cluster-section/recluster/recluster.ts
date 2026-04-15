@@ -1,7 +1,7 @@
 import { Component, inject, signal, PLATFORM_ID, Inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of, forkJoin } from 'rxjs';
 
 import { FileUploadResult, Upload } from '../../common/upload/upload';
@@ -165,11 +165,21 @@ export class Recluster implements OnDestroy {
   enrichmentBarOutline = '#000000';
 
   // ========================================================================
+  // RPU SCATTER PLOT CUSTOMIZATION (two-pop)
+  // ========================================================================
+  adjustRPUScatter = 'no';
+  rpuScatterXAxis = 'Pop 1 Avg. RPU';
+  rpuScatterYAxis = 'Pop 2 Avg. RPU';
+  rpuScatterTitle = 'RPU scatter: Pop 1 vs Pop 2';
+  rpuScatterColor = '#1f77b4';
+
+  // ========================================================================
   // TRAJECTORY PLOT CUSTOMIZATION (multi-round)
   // ========================================================================
   adjustTrajectory = 'no';
   trajectoryYAxis = 'Avg. RPU';
   trajectoryTitle = 'Cluster trajectory across rounds';
+  trajectoryTopN: number | null = null;
 
   // ========================================================================
   // LIFECYCLE
@@ -341,12 +351,12 @@ export class Recluster implements OnDestroy {
       switchMap((response: any) => {
         this.processedFileName.set(response.result);
         this.processedSequenceFileName.set(response.result_sequences ?? '');
-        const clusters$ = this.apiService.downloadFile(response.result).pipe(
-          switchMap(blob => this.fileService.parseClusterFile(blob, response.result))
+        const clusters$ = this.apiService.fetchFileText(response.result).pipe(
+          map(text => this.fileService.parseResultFile(text, response.result))
         );
         const sequences$ = response.result_sequences
-          ? this.apiService.downloadFile(response.result_sequences).pipe(
-              switchMap(blob => this.fileService.parseClusterFile(blob, response.result_sequences))
+          ? this.apiService.fetchFileText(response.result_sequences).pipe(
+              map(text => this.fileService.parseResultFile(text, response.result_sequences))
             )
           : of([]);
         return forkJoin([clusters$, sequences$]);
@@ -386,8 +396,8 @@ export class Recluster implements OnDestroy {
         this.processedFileName.set(response.result);
         this.multiRoundLabels = response.labels ?? [this.round1Label, this.round2Label, this.round3Label];
         this.buildMultiTableConfig();
-        return this.apiService.downloadFile(response.result).pipe(
-          switchMap(blob => this.fileService.parseClusterFile(blob, response.result))
+        return this.apiService.fetchFileText(response.result).pipe(
+          map(text => this.fileService.parseResultFile(text, response.result))
         );
       }),
       tap(parsedData => { this.reclusterData = parsedData; }),
@@ -411,11 +421,11 @@ export class Recluster implements OnDestroy {
         { key: `AvgRPU.${r1}`, label: `Avg RPU (${r1})` },
         { key: `AvgRPU.${r2}`, label: `Avg RPU (${r2})` },
         { key: `AvgRPU.${r3}`, label: `Avg RPU (${r3})` },
+        { key: `E.${r1}.${r2}`, label: `Enrichment (${r1}→${r2})` },
+        { key: `E.${r2}.${r3}`, label: `Enrichment (${r2}→${r3})` },
         { key: `SeedRPU.${r1}`, label: `Seed RPU (${r1})` },
         { key: `SeedRPU.${r2}`, label: `Seed RPU (${r2})` },
         { key: `SeedRPU.${r3}`, label: `Seed RPU (${r3})` },
-        { key: `E.${r1}.${r2}`, label: `Enrichment (${r1}→${r2})` },
-        { key: `E.${r2}.${r3}`, label: `Enrichment (${r2}→${r3})` },
         { key: `SeedE.${r1}.${r2}`, label: `Seed Enrichment (${r1}→${r2})` },
         { key: `SeedE.${r2}.${r3}`, label: `Seed Enrichment (${r2}→${r3})` },
       ],
@@ -505,6 +515,47 @@ export class Recluster implements OnDestroy {
   }
 
   // ========================================================================
+  // RPU SCATTER PLOT (two-pop)
+  // ========================================================================
+  onGenerateRPUScatterPlot(): void {
+    if (this.reclusterData.length === 0) return;
+    const clusters = this.reclusterData.map(r => r[ColumnName.SUPER_CLUSTER]);
+    const rpu1 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP1] ?? null);
+    const rpu2 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP2] ?? null);
+    const maxVal = Math.max(...rpu1.filter(v => v != null), ...rpu2.filter(v => v != null));
+
+    this.plotModalService.openPlot({
+      data: [
+        {
+          type: 'scatter',
+          mode: 'markers+text',
+          x: rpu1,
+          y: rpu2,
+          text: clusters.map((c: any) => `Cluster ${c}`),
+          textposition: 'top center',
+          marker: { color: this.rpuScatterColor, size: 8 },
+        },
+        {
+          type: 'scatter',
+          mode: 'lines',
+          x: [0, maxVal],
+          y: [0, maxVal],
+          line: { color: '#888', dash: 'dash', width: 1 },
+          showlegend: false,
+          hoverinfo: 'none',
+        },
+      ],
+      layout: {
+        title: { text: this.rpuScatterTitle },
+        xaxis: { title: { text: this.rpuScatterXAxis }, zeroline: false },
+        yaxis: { title: { text: this.rpuScatterYAxis }, zeroline: false },
+        autosize: true,
+      },
+      config: { responsive: true, displaylogo: false },
+    });
+  }
+
+  // ========================================================================
   // TRAJECTORY LINE PLOT (multi-round)
   // ========================================================================
   onGenerateTrajectoryPlot(): void {
@@ -512,7 +563,11 @@ export class Recluster implements OnDestroy {
     const [r1, r2, r3] = this.multiRoundLabels;
     const rounds = [r1, r2, r3];
 
-    const traces = this.reclusterData.map((row: any) => ({
+    const data = (this.trajectoryTopN && this.trajectoryTopN > 0)
+      ? this.reclusterData.slice(0, this.trajectoryTopN)
+      : this.reclusterData;
+
+    const traces = data.map((row: any) => ({
       type: 'scatter',
       mode: 'lines+markers',
       name: `Cluster ${row['SuperCluster']}`,

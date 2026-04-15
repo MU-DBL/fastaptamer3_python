@@ -8,7 +8,7 @@ import { SplitPanel } from '../../common/split-panel/split-panel';
 import { FileService, ColumnName } from '../../../shared/file-service';
 import { PlotModalService } from '../../../shared/plot-modal.service';
 import { Table, TableConfig } from '../../common/table/table';
-import { switchMap, tap, catchError, finalize } from 'rxjs/operators';
+import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 @Component({
@@ -106,8 +106,8 @@ export class Distance implements OnDestroy {
   onLoadResult(): void {
     if (!this.savedFileName) return;
     this.distanceData = [];
-    this.apiService.downloadFile(this.savedFileName).pipe(
-      switchMap(blob => this.fileService.parseClusterFile(blob, this.savedFileName)),
+    this.apiService.fetchFileText(this.savedFileName).pipe(
+      map(text => this.fileService.parseResultFile(text, this.savedFileName)),
       tap(parsedData => {
         this.distanceData = parsedData;
         this.processedFileName.set(this.savedFileName);
@@ -167,10 +167,8 @@ export class Distance implements OnDestroy {
           this.processedFileName.set(response.result);
           console.log('Distance completed:', response.result);
           
-          return this.apiService.downloadFile(response.result).pipe(
-            switchMap(blob => 
-              this.fileService.parseClusterFile(blob, response.result)
-            ),
+          return this.apiService.fetchFileText(response.result).pipe(
+            map(text => this.fileService.parseResultFile(text, response.result)),
             tap(parsedData => {
               this.distanceData = parsedData;
               this.cdr.detectChanges();

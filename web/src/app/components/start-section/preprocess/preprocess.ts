@@ -5,7 +5,6 @@ import { FileUploadResult, Upload } from '../../common/upload/upload';
 import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { SplitPanel } from '../../common/split-panel/split-panel';
 import { ApiService, ProgressEvent } from '../../../shared/api.service';
-import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-preprocess',
@@ -41,11 +40,15 @@ export class Preprocess implements OnDestroy {
 
   constant5Region: string = '';
   constant3Region: string = '';
+  trim5Fixed: number = 0;
+  trim3Fixed: number = 0;
   sequenceLengthMin: number = 10;
   sequenceLengthMax: number = 100;
   sequenceLengthRange: number = 500;
   maxAllowedError: number = 0.005;
   maxErrorRange: number = 1;
+  adapterErrorRate: number = 0.1;
+  adapterErrorRateRange: number = 0.5;
   progressSubscription: any;
 
   onFileSelected(result: FileUploadResult): void {
@@ -95,9 +98,12 @@ export class Preprocess implements OnDestroy {
       input_path: this.savedFileName,
       const5p: this.constant5Region.replace(/\s/g, ''),
       const3p: this.constant3Region.replace(/\s/g, ''),
+      trim5_fixed: this.trim5Fixed,
+      trim3_fixed: this.trim3Fixed,
       min_length: this.sequenceLengthMin,
       max_length: this.sequenceLengthMax,
       max_error: this.maxAllowedError,
+      adapter_error_rate: this.adapterErrorRate,
       output_format: this.downloadFormat
     };
 
@@ -207,21 +213,10 @@ export class Preprocess implements OnDestroy {
 
     console.log('Downloading file:', filename);
 
-    this.apiService.downloadFile(filename).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        console.log('Download started');
-      },
-      error: (error) => {
-        const errorMsg = error.error?.detail || 'Download failed';
-        console.error('Download error:', errorMsg);
-      }
-    });
+    const link = document.createElement('a');
+    link.href = this.apiService.getDownloadUrl(filename);
+    link.download = filename;
+    link.click();
   }
 
   formatLabel(value: number): string {
