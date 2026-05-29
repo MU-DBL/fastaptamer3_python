@@ -120,7 +120,6 @@
   gap: 12px;
   padding: 6px 0;
   border-bottom: 1px solid #f0f0f0;
-
   &:last-child {
     border-bottom: none;
   }
@@ -128,8 +127,7 @@
 
 .param-key {
   flex: 0 0 30%;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #555;
   word-break: break-all;

@@ -34,6 +34,7 @@ export class DiffAnalysis implements OnDestroy {
   filesCond2: UploadedFile[] = [];
 
   lfcCutoff: number = 1.0;
+  logcpmCutoff: number = 0.0;
   downloadFormat: string = 'csv';
   diffAnalysisData: any[] = [];
 
@@ -118,6 +119,7 @@ export class DiffAnalysis implements OnDestroy {
       cond1_paths: this.filesCond1.map(f => f.savedFileName),
       cond2_paths: this.filesCond2.map(f => f.savedFileName),
       lfc_cutoff: this.lfcCutoff,
+      logcpm_cutoff: this.logcpmCutoff,
       output_format: this.downloadFormat
     }).pipe(
       tap(response => this.processedFileName.set(response.result)),
@@ -138,7 +140,7 @@ export class DiffAnalysis implements OnDestroy {
     const reader = new FileReader();
     reader.onload = (e) => {
       const content = e.target?.result as string;
-      this.diffAnalysisData = [];
+      const rows: any[] = [];
       const lines = content.split('\n').filter(l => l.trim());
       if (lines.length === 0) return;
       const headers = lines[0].split(',').map(h => h.trim());
@@ -155,8 +157,9 @@ export class DiffAnalysis implements OnDestroy {
             row[header] = value || '';
           }
         });
-        this.diffAnalysisData.push(row);
+        rows.push(row);
       }
+      this.diffAnalysisData = rows;
       this.cdr.detectChanges();
     };
     reader.readAsText(blob);
@@ -186,9 +189,9 @@ export class DiffAnalysis implements OnDestroy {
 
     const logCPM = this.diffAnalysisData.map(r => r['logCPM']);
     const logFC = this.diffAnalysisData.map(r => r['logFC']);
-    const pClass = this.diffAnalysisData.map(r => r['PClass']);
     const sequences = this.diffAnalysisData.map(r => r['Sequence'] || '');
 
+    const pClass = this.diffAnalysisData.map(r => r['PClass']);
     const sigIdx = pClass.map((p, i) => p === 'Sig.' ? i : -1).filter(i => i >= 0);
     const insigIdx = pClass.map((p, i) => p === 'Not Sig.' ? i : -1).filter(i => i >= 0);
     const traces: any[] = [];

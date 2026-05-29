@@ -1,8 +1,11 @@
 <div class="page-note">
   Performs differential expression analysis between two experimental conditions (each with at least one counted FASTA files).
-  Sequences are compared using statistics: <strong>logFC</strong> (log₂ fold change between conditions),
-  <strong>logCPM</strong> (log₂ counts per million, a measure of overall abundance), and a
-  <strong>p-value</strong> to control for false discoveries across multiple sequences.
+  Sequences are compared using statistics: <strong>logFC</strong> log₂ fold change between conditions;
+  <strong>logCPM</strong> log₂ of average counts per million across all replicates from both conditions combined — a measure of overall abundance, not a comparison between conditions;
+  <strong>PValue</strong> — Benjamini-Hochberg FDR-adjusted p-value, which accounts for testing thousands of sequences simultaneously and is therefore more conservative than a standard p-value.
+  A value of 0.05 means there is a 5% chance the observed difference is due to random variation; values closer to 0 indicate stronger evidence of a real difference between conditions.
+  Requires ≥ 3 replicates per condition — otherwise shown as N/A.
+  PValues are for reference only; sequences are classified as significant by both the |log₂FC| and logCPM cutoffs.
 </div>
 <app-split-panel>
   <div left>
@@ -77,6 +80,26 @@
       <div class="dual-range-container">
         <mat-slider [min]="0.5" [max]="10" [step]="0.1" discrete class="range-slider">
           <input matSliderThumb [(ngModel)]="lfcCutoff">
+        </mat-slider>
+      </div>
+    </div>
+
+    <!-- LOGCPM CUTOFF SLIDER -->
+    <h3 class="section-title">
+      Minimum logCPM cutoff:
+      <mat-icon class="info-icon"
+        matTooltip="Minimum average abundance (logCPM) required to classify a sequence as significant. Set to 0 to disable. Filters out low-abundance sequences where fold changes may be unreliable."
+        matTooltipPosition="right">help_outline</mat-icon>
+    </h3>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">0</span>
+        <input type="number" [min]="0" [max]="10" [step]="0.5" [(ngModel)]="logcpmCutoff">
+        <span class="value-chip range-max">10</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="0" [max]="10" [step]="0.5" discrete class="range-slider">
+          <input matSliderThumb [(ngModel)]="logcpmCutoff">
         </mat-slider>
       </div>
     </div>

@@ -378,6 +378,7 @@ export class ApiService {
     cond1_paths: string[];
     cond2_paths: string[];
     lfc_cutoff: number;
+    logcpm_cutoff: number;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/differential-expression`, params);
