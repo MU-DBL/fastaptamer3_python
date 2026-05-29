@@ -1,4 +1,5 @@
 import asyncio
+import gzip
 import shutil
 import time
 import numpy as np
@@ -35,8 +36,12 @@ def run_preprocess_slow(input_path=None, const5p="", const3p="",
     else:
         return None
     
-    # Read sequences
-    records = list(SeqIO.parse(input_path, file_format))
+    # Read sequences - handle gzip compression
+    if input_path.endswith('.gz'):
+        with gzip.open(input_path, 'rt') as handle:
+            records = list(SeqIO.parse(handle, file_format))
+    else:
+        records = list(SeqIO.parse(input_path, file_format))
     
     # Create DataFrame
     seq_df = pd.DataFrame({
@@ -162,7 +167,7 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
 
         # Poll until cutadapt finishes, sending heartbeat updates so SSE stays live
         while proc.poll() is None:
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
             elapsed = int(time.time() - cutadapt_start)
             await send_progress(job_id, 'trimming', f'Adapter trimming in progress... ({elapsed}s)', min(10 + elapsed, 35))
 

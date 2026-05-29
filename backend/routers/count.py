@@ -19,7 +19,8 @@ class CountInput(BaseModel):
 @router.post("/count")
 async def count(params:CountInput):
     filepath = f"{UPLOAD_DIR}/{params.input_path}"
-    base_name = os.path.splitext(os.path.basename(params.input_path))[0]
+    p = Path(params.input_path)
+    base_name = p.stem if p.suffix.lower() != '.gz' else Path(p.stem).stem
     output_format=params.output_format
     output_path=f"{UPLOAD_DIR}/{base_name}_count.{output_format}"
 

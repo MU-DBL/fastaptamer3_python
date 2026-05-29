@@ -1,12 +1,12 @@
 <div class="page-note">
   Counts and ranks unique sequences from a FASTA or FASTQ file, computing Reads Per Unit (RPU) values normalized to a
-  chosen scale. Outputs a ranked sequence table.
+  chosen scale. Outputs a ranked sequence table. Gzip-compressed files (.fastq.gz, .fasta.gz) are supported.
 </div>
 <app-split-panel>
   <div left>
     <h3 class="section-title">Choose data to count*:</h3>
-    <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'" [buttonText]="'Browse...'"
-      [placeholderText]="'FASTQ or FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+    <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq,.fasta.gz,.fastq.gz,.fa.gz,.fq.gz,.gz'" [buttonText]="'Browse...'"
+      [placeholderText]="'FASTQ or FASTA file (or .gz)'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
       (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
     </app-upload>
 

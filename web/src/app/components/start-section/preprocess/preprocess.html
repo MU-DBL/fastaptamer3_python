@@ -1,12 +1,12 @@
 
 <div class="page-note">
-  Trims constant 5' and 3' region from sequences in a FASTQ or FASTA file, then filters sequences by length range and maximum average error thresholds. Outputs a cleaned FASTA file ready for counting.
+  Trims constant 5' and 3' region from sequences in a FASTQ or FASTA file, then filters sequences by length range and maximum average error thresholds. Outputs a cleaned FASTA file ready for counting. Gzip-compressed files (.fastq.gz, .fasta.gz) are supported.
 </div>
 <app-split-panel>
   <div left>
     <h3 class="section-title">Choose data to preprocess *</h3>
-    <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq'" [buttonText]="'Browse...'"
-      [placeholderText]="'FASTQ or FASTA file'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
+    <app-upload [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq,.fasta.gz,.fastq.gz,.fa.gz,.fq.gz,.gz'" [buttonText]="'Browse...'"
+      [placeholderText]="'FASTQ or FASTA file (or .gz)'" [showUploadNote]="true" [uploadNotePath]="'#'" [uploadSpeed]="200"
       (fileSelected)="onFileSelected($event)" (uploadComplete)="onUploadComplete($event)">
     </app-upload>
 
@@ -20,7 +20,7 @@
       <input matInput [(ngModel)]="constant3Region" />
     </mat-form-field>
 
-        <label class="section-label">Adapter matching error rate:
+    <label class="section-label">Adapter matching error rate:
       <mat-icon class="info-icon"
         matTooltip="Maximum error rate allowed when matching adapter sequences. A value of 0.1 means up to 10% mismatches/indels are tolerated (e.g. 2 errors for a 20nt adapter).">help_outline</mat-icon>
     </label>
@@ -115,10 +115,12 @@
     <hr class="section-divider">
     @if (isProcessing() || logs().length > 0) {
     <!-- Live Logs -->
-    <div class="progress-container" *ngIf="isProcessing()">
+    @if (isProcessing()) {
+    <div class="progress-container">
       <mat-progress-bar mode="determinate" [value]="progress" [class.complete]="currentStage === 'complete'"></mat-progress-bar>
       <div class="progress-text">{{ progress }}%</div>
     </div>
+    }
     <div class="logs-container" #logContainer>
       @for (log of logs(); track log.timestamp) {
       <div class="log-row" [ngClass]="log.stage">
