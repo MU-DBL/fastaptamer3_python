@@ -35,14 +35,15 @@ export class DiffAnalysis implements OnDestroy {
 
   lfcCutoff: number = 1.0;
   logcpmCutoff: number = 0.0;
+  pvalueCutoff: number = 1.0;
   downloadFormat: string = 'csv';
   diffAnalysisData: any[] = [];
 
   tableConfig: TableConfig = {
     columns: [
       { key: 'Sequence', label: 'Sequence' },
-      { key: 'logFC', label: 'logFC', exact_match: true },
-      { key: 'logCPM', label: 'logCPM', exact_match: true },
+      { key: 'logFC', label: 'log₂FC', exact_match: true },
+      { key: 'logCPM', label: 'log₂CPM', exact_match: true },
       { key: 'PValue', label: 'PValue', exact_match: true },
       { key: 'PClass', label: 'PClass' }
     ],
@@ -120,6 +121,7 @@ export class DiffAnalysis implements OnDestroy {
       cond2_paths: this.filesCond2.map(f => f.savedFileName),
       lfc_cutoff: this.lfcCutoff,
       logcpm_cutoff: this.logcpmCutoff,
+      pvalue_cutoff: this.pvalueCutoff,
       output_format: this.downloadFormat
     }).pipe(
       tap(response => this.processedFileName.set(response.result)),
@@ -150,7 +152,7 @@ export class DiffAnalysis implements OnDestroy {
         headers.forEach((header, idx) => {
           const value = values[idx];
           if (header === 'PValue') {
-            row[header] = (!value || value === '' || value.toLowerCase() === 'nan') ? 'N/A' : parseFloat(value);
+            row[header] = (!value || value === '' || value.toLowerCase() === 'nan') ? '-' : parseFloat(value);
           } else if (['logFC', 'logCPM'].includes(header)) {
             row[header] = value ? parseFloat(value) : 0;
           } else {

@@ -12,8 +12,8 @@
     <div class="upload-section">
       <h3 class="section-title">1. Upload Initial File</h3>
       <app-upload
-        [acceptedFileTypes]="'.fasta,.fastq'"
-        [placeholderText]="'FASTA or FASTQ file'"
+        [acceptedFileTypes]="'.fasta,.fastq,.fa,.fq,.gz,application/gzip'"
+        [placeholderText]="'FASTA or FASTQ file (optionally gzipped)'"
         [uploadSpeed]="200"
         (uploadComplete)="onInitialUpload($event)">
       </app-upload>

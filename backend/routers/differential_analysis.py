@@ -18,6 +18,7 @@ class EdgeRPairTestInput(BaseModel):
     cond2_paths: List[str]  # Condition 2 FASTA file paths
     lfc_cutoff: float = 1.0  # |log2FC| threshold for significance
     logcpm_cutoff: float = 0.0  # minimum logCPM threshold for significance (0 = off)
+    pvalue_cutoff: float = 1.0  # adjusted p-value threshold (1.0 = disabled)
     output_format: str = "csv"
 
 class DifferentialExpressionResponse(BaseModel):
@@ -192,8 +193,8 @@ async def differential_expression(params: EdgeRPairTestInput):
         p_values = np.array(p_values)
         _, p_adj, _, _ = multipletests(p_values, alpha=0.05, method="fdr_bh")
         p_col = np.round(p_adj, 6)
-        # Classify by logFC threshold only; p-value is shown as reference
-        p_class = np.where(lfc_sig, "Sig.", "Not Sig.")
+        pvalue_sig = p_col <= params.pvalue_cutoff
+        p_class = np.where(lfc_sig & pvalue_sig, "Sig.", "Not Sig.")
 
     # -----------------------
     # RESULTS TABLE
