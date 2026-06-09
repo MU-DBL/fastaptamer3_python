@@ -65,6 +65,7 @@ export class Count implements OnDestroy {
   
   // Reads per Rank plot customization
   adjustReadsPerRank: string = 'no';
+  rprYMetric: string = 'reads';
   rprXAxis: string = 'Ranks of unique sequences';
   rprYAxis: string = 'Total reads per unique sequence';
   rprTitle: string = 'Read count for each rank';
@@ -320,10 +321,11 @@ export class Count implements OnDestroy {
       console.info(`Max rank adjusted from ${this.maxRankToPlot} to ${maxAvailableRank} (maximum available rank)`);
     }
     
+    const defaultYLabel = this.rprYMetric === 'rpu' ? 'RPU per unique sequence' : 'Total reads per unique sequence';
     const params = {
       title: this.rprTitle,
       xAxisLabel: this.rprXAxis,
-      yAxisLabel: this.rprYAxis,
+      yAxisLabel: this.adjustReadsPerRank === 'yes' ? this.rprYAxis : defaultYLabel,
       lineColor: this.rprLineColor
     };
     
@@ -395,13 +397,13 @@ export class Count implements OnDestroy {
   }
 
   getReadsPerRankData(): any[] {
-    // Get all data within the rank range, regardless of minReadsToPlot
     const maxAvailableRank = this.tableData.reduce((max, item) => item.rank > max ? item.rank : max, 0);
     const effectiveMaxRank = Math.min(this.maxRankToPlot, maxAvailableRank);
-    
+    const useRpu = this.rprYMetric === 'rpu';
+
     return this.tableData
       .filter(item => item.reads >= this.minReadsToPlot && item.rank <= effectiveMaxRank)
-      .map(item => ({ rank: item.rank, reads: item.reads }))
+      .map(item => ({ rank: item.rank, reads: useRpu ? item.rpm : item.reads }))
       .sort((a, b) => a.rank - b.rank);
   }
 

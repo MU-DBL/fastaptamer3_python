@@ -109,6 +109,12 @@
       </div>
 
       <!-- Reads per Rank Section -->
+      <h3 class="section-title">Y-axis metric for reads-per-rank plot:</h3>
+      <mat-radio-group [(ngModel)]="rprYMetric" class="radio-group">
+        <mat-radio-button value="reads">Reads</mat-radio-button>
+        <mat-radio-button value="rpu">RPU</mat-radio-button>
+      </mat-radio-group>
+
       <h3 class="section-title">Adjust default reads-per-rank plot?</h3>
       <mat-radio-group [(ngModel)]="adjustReadsPerRank" class="radio-group">
         <mat-radio-button value="yes">Yes</mat-radio-button>

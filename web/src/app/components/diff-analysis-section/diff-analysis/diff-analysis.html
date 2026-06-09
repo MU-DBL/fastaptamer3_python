@@ -1,11 +1,11 @@
 <div class="page-note">
   Performs differential expression analysis between two experimental conditions (each with at least one counted FASTA files).
-  Sequences are compared using statistics: <strong>logFC</strong> log₂ fold change between conditions;
-  <strong>logCPM</strong> log₂ of average counts per million across all replicates from both conditions combined — a measure of overall abundance, not a comparison between conditions;
+  Sequences are compared using statistics: <strong>log₂FC</strong> log₂ fold change between conditions;
+  <strong>log₂CPM</strong> log₂ of average counts per million across all replicates from both conditions combined — a measure of overall abundance, not a comparison between conditions;
   <strong>PValue</strong> — Benjamini-Hochberg FDR-adjusted p-value, which accounts for testing thousands of sequences simultaneously and is therefore more conservative than a standard p-value.
   A value of 0.05 means there is a 5% chance the observed difference is due to random variation; values closer to 0 indicate stronger evidence of a real difference between conditions.
   Requires ≥ 3 replicates per condition — otherwise shown as -.
-  Sequences are classified as significant by the |log₂FC| and logCPM cutoffs; the adjusted p-value cutoff is optional and only applies when ≥ 3 replicates per condition are provided.
+  Sequences are classified as significant by the |log₂FC| and log₂CPM cutoffs; the adjusted p-value cutoff is optional and only applies when ≥ 3 replicates per condition are provided.
 </div>
 <app-split-panel>
   <div left>
@@ -64,7 +64,7 @@
 
     <hr class="section-divider">
 
-    <h2 class="pclass-section-title">Parameters that define PClass</h2>
+    <h3 class="pclass-section-title">Parameters that define PClass</h3>
 
     <!-- LFC CUTOFF SLIDER -->
     <h3 class="section-title">
@@ -88,9 +88,9 @@
 
     <!-- LOGCPM CUTOFF SLIDER -->
     <h3 class="section-title">
-      Minimum logCPM cutoff:
+      Minimum log₂CPM cutoff:
       <mat-icon class="info-icon"
-        matTooltip="Minimum average abundance (logCPM) required to classify a sequence as significant. Set to 0 to disable. Filters out low-abundance sequences where fold changes may be unreliable."
+        matTooltip="Minimum average abundance (log₂CPM) required to classify a sequence as significant. Set to 0 to disable. Filters out low-abundance sequences where fold changes may be unreliable."
         matTooltipPosition="right">help_outline</mat-icon>
     </h3>
     <div class="slider-group">

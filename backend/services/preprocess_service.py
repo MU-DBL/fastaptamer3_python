@@ -55,11 +55,11 @@ def run_preprocess_slow(input_path=None, const5p="", const3p="",
     
     # Trim 5' constant region
     if const5p != "":
-        seq_df = trim_constant_region(seq_df, const5p, file_format)
-    
+        seq_df = trim_constant_region(seq_df, const5p, '5p', file_format)
+
     # Trim 3' constant region
     if const3p != "":
-        seq_df = trim_constant_region(seq_df, const3p, file_format)
+        seq_df = trim_constant_region(seq_df, const3p, '3p', file_format)
     
     # Length filtering
     seq_df = seq_df[
@@ -79,43 +79,49 @@ def run_preprocess_slow(input_path=None, const5p="", const3p="",
     return output_path
 
 
-def trim_constant_region(seq_df, const_region, file_format):
-    """Trim constant region with fuzzy matching"""
-    # max.distance = 0.1
+def trim_constant_region(seq_df, const_region, side, file_format):
+    """Trim constant region with fuzzy matching.
+
+    side='5p': keep everything after the match (drop primer + anything before it)
+    side='3p': keep everything before the match (drop primer + any trailing sequence)
+    """
     max_distance = int(len(const_region) * 0.1) + 1
-    
+
     trimmed_sequences = []
     trimmed_qualities = []
-    
+
     for idx, row in seq_df.iterrows():
         sequence = row['Sequence']
-        
-        # Fuzzy search for pattern
+
         match = regex.search(
-            f"({const_region}){{e<={max_distance}}}", 
+            f"({const_region}){{e<={max_distance}}}",
             sequence
         )
-        
+
         if match:
-            # Remove matched region
             start, end = match.span()
-            new_seq = sequence[:start] + sequence[end:]
+            if side == '5p':
+                new_seq = sequence[end:]
+            else:
+                new_seq = sequence[:start]
             trimmed_sequences.append(new_seq)
-            
-            # Handle quality scores
+
             if file_format == 'fastq':
                 quality = row['Quality']
-                new_qual = quality[:start] + quality[end:]
+                if side == '5p':
+                    new_qual = quality[end:]
+                else:
+                    new_qual = quality[:start]
                 trimmed_qualities.append(new_qual)
         else:
             trimmed_sequences.append(sequence)
             if file_format == 'fastq':
                 trimmed_qualities.append(row['Quality'])
-    
+
     seq_df['Sequence'] = trimmed_sequences
     if file_format == 'fastq':
         seq_df['Quality'] = trimmed_qualities
-    
+
     return seq_df
 
 
