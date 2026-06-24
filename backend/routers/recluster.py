@@ -23,6 +23,8 @@ class ReclusterInput(BaseModel):
     fadf2_cluster_path: str = ""
     led_threshold: int = 7
     output_format: str = "csv"
+    enrichment_type: str = "avg"       # "avg" (AvgRPU) or "seed" (SeedRPU)
+    enrichment_threshold: float = 1.0  # log2E cutoff: >= threshold → enriched, <= -threshold → depleted
 
 
 class ReclusterMultiInput(BaseModel):
@@ -66,6 +68,8 @@ async def fa_recluster_endpoint(params: ReclusterInput):
             fadf1_cluster=fadf1_cluster,
             fadf2_cluster=fadf2_cluster,
             led_threshold=params.led_threshold,
+            enrichment_type=params.enrichment_type,
+            enrichment_threshold=params.enrichment_threshold,
         )
 
         # Save both outputs
@@ -220,6 +224,8 @@ def fa_recluster(
     fadf1_cluster: pd.DataFrame,
     fadf2_cluster: pd.DataFrame,
     led_threshold: int = 7,
+    enrichment_type: str = "avg",
+    enrichment_threshold: float = 1.0,
     use_parallel: bool = True,
     n_jobs: Optional[int] = None,
 ) -> pd.DataFrame:
@@ -247,11 +253,15 @@ def fa_recluster(
 
     result_df = calculate_led_to_seeds_fast(merge_df)
 
-    summary_df = summarize_to_cluster_level(result_df)
+    summary_df = summarize_to_cluster_level(result_df, enrichment_type, enrichment_threshold)
     return summary_df, result_df
 
 
-def summarize_to_cluster_level(merged_df: pd.DataFrame) -> pd.DataFrame:
+def summarize_to_cluster_level(
+    merged_df: pd.DataFrame,
+    enrichment_type: str = "avg",
+    enrichment_threshold: float = 1.0,
+) -> pd.DataFrame:
     """Aggregate sequence-level merged data to cluster-level summary."""
     results = []
     rpu_a_col = f'{ColumnName.RPU}.a'
@@ -286,13 +296,6 @@ def summarize_to_cluster_level(merged_df: pd.DataFrame) -> pd.DataFrame:
         else:
             seed_rpu_pop2 = np.nan
 
-        if has_pop1 and has_pop2:
-            status = 'inherited'
-        elif has_pop2:
-            status = 'emerged'
-        else:
-            status = 'lost'
-
         # Enrichment based on AvgRPU
         if has_pop1 and has_pop2 and not np.isnan(avg_rpu_pop1) and avg_rpu_pop1 > 0:
             enrichment = round(float(avg_rpu_pop2 / avg_rpu_pop1), 3)
@@ -310,6 +313,20 @@ def summarize_to_cluster_level(merged_df: pd.DataFrame) -> pd.DataFrame:
         else:
             seed_enrichment = np.nan
             seed_log2e = np.nan
+
+        # Status: compare log2E against the threshold (symmetric: enriched >= t, depleted <= -t)
+        metric = seed_log2e if enrichment_type == "seed" else log2e
+        if has_pop1 and has_pop2:
+            if not np.isnan(metric) and metric >= enrichment_threshold:
+                status = 'enriched'
+            elif not np.isnan(metric) and metric <= -enrichment_threshold:
+                status = 'depleted'
+            else:
+                status = 'inherited'
+        elif has_pop2:
+            status = 'emerged'
+        else:
+            status = 'lost'
 
         results.append({
             'SuperCluster': int(cluster_id),

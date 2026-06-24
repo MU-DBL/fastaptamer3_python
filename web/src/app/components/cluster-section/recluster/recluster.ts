@@ -121,6 +121,8 @@ export class Recluster implements OnDestroy {
   // PARAMETERS
   // ========================================================================
   ledThreshold = 7;
+  enrichmentType: 'avg' | 'seed' = 'avg';
+  enrichmentThreshold = 1.0;
 
   // ========================================================================
   // HEATMAP CUSTOMIZATION
@@ -346,6 +348,8 @@ export class Recluster implements OnDestroy {
       fadf1_cluster_path: this.savedFileName1,
       fadf2_cluster_path: this.savedFileName2,
       led_threshold: this.ledThreshold,
+      enrichment_type: this.enrichmentType,
+      enrichment_threshold: this.enrichmentThreshold,
       output_format: 'csv',
     }).pipe(
       switchMap((response: any) => {

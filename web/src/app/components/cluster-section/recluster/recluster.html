@@ -93,6 +93,35 @@
       </div>
     </div>
 
+    @if (mode === 'two-pop') {
+    <!-- STATUS CLASSIFICATION -->
+    <label class="section-label">Status classification metric:
+      <mat-icon class="info-icon"
+        matTooltip="Choose which enrichment value is used to assign cluster status (enriched / depleted / inherited)">help_outline</mat-icon>
+    </label>
+    <mat-radio-group [(ngModel)]="enrichmentType" class="radio-group">
+      <mat-radio-button value="avg">Avg RPU enrichment</mat-radio-button>
+      <mat-radio-button value="seed">Seed RPU enrichment</mat-radio-button>
+    </mat-radio-group>
+
+    <label class="section-label">log2E threshold:
+      <mat-icon class="info-icon"
+        matTooltip="Sets the log2 fold-change cutoff for status assignment. Example: threshold = 1 means log2E ≥ 1 → Enriched (2× increase); log2E ≤ −1 → Depleted (2× decrease); between −1 and 1 → Inherited.">help_outline</mat-icon>
+    </label>
+    <div class="slider-group">
+      <div class="slider-header">
+        <span class="value-chip range-min">0.5</span>
+        <input type="number" [min]="0.5" [max]="10" [step]="0.5" [(ngModel)]="enrichmentThreshold">
+        <span class="value-chip range-max">10</span>
+      </div>
+      <div class="dual-range-container">
+        <mat-slider [min]="0.5" [max]="10" [step]="0.5" discrete class="range-slider">
+          <input matSliderThumb [(ngModel)]="enrichmentThreshold">
+        </mat-slider>
+      </div>
+    </div>
+    }
+
     <!-- ACTION BUTTONS -->
     <div class="action-buttons">
       @if (mode === 'two-pop') {

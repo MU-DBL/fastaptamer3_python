@@ -1,3 +1,4 @@
+import asyncio
 import mimetypes
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from pathlib import Path
@@ -24,11 +25,16 @@ async def count(params:CountInput):
     output_format=params.output_format
     output_path=f"{UPLOAD_DIR}/{base_name}_count.{output_format}"
 
-    output_path = count_service.run_count(
-        inputpath=filepath,  
-        reverseComplement=params.reverseComplement, 
-        scaling_factor=params.scaling_factor, 
-        output_format=output_format, 
-        output_path=output_path)
-    
+    loop = asyncio.get_event_loop()
+    output_path = await loop.run_in_executor(
+        None,
+        lambda: count_service.run_count(
+            inputpath=filepath,
+            reverseComplement=params.reverseComplement,
+            scaling_factor=params.scaling_factor,
+            output_format=output_format,
+            output_path=output_path,
+        )
+    )
+
     return {"status": "ok", "result": os.path.basename(output_path)}

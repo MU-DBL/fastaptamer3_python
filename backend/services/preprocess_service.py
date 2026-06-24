@@ -207,7 +207,8 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
             # Stream records one by one — no full list in memory
             after_qc = 0
             processed = 0
-            batch_size = max(1, before_qc // 10) if before_qc else 10000
+            progress_batch = max(1, before_qc // 10) if before_qc else 10000
+            yield_batch = 10000  # yield to event loop every 10k records
 
             with open(output_path, 'w') as out_handle:
                 for rec in SeqIO.parse(temp_trimmed, 'fastq'):
@@ -219,7 +220,9 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
                         after_qc += 1
 
                     processed += 1
-                    if before_qc and processed % batch_size == 0:
+                    if processed % yield_batch == 0:
+                        await asyncio.sleep(0)
+                    if before_qc and processed % progress_batch == 0:
                         progress = 55 + int(30 * processed / before_qc)
                         await send_progress(job_id, 'QC', f'Filtered {processed:,}/{before_qc:,} sequences', progress)
 

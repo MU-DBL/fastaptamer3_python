@@ -43,7 +43,6 @@ def format_motif(motif_str: str, motif_type: str = "Nucleotide") -> str:
         # For amino acids: convert to uppercase, no special codes
         motif = motif.upper()
     # For "String" type: keep original case, no transformations
-    
     return motif
 
 
@@ -89,6 +88,7 @@ def search_motif(
         # Partial filter uses OR operation (any motif matches)
         # Combine all patterns with OR
         combined_pattern = "|".join(formatted_patterns)
+        print(f"Combined pattern for partial search: {combined_pattern}")
         mask = seq_df[ColumnName.SEQUENCES].str.contains(
             combined_pattern, 
             regex=True, 

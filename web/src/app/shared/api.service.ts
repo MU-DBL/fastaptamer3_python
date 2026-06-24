@@ -268,6 +268,8 @@ export class ApiService {
     fadf1_cluster_path: string;
     fadf2_cluster_path: string;
     led_threshold: number;
+    enrichment_type: string;
+    enrichment_threshold: number;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/recluster`, params);
