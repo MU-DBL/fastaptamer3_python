@@ -298,18 +298,20 @@ def summarize_to_cluster_level(
 
         # Enrichment based on AvgRPU
         if has_pop1 and has_pop2 and not np.isnan(avg_rpu_pop1) and avg_rpu_pop1 > 0:
-            enrichment = round(float(avg_rpu_pop2 / avg_rpu_pop1), 3)
+            raw_enrichment = float(avg_rpu_pop2 / avg_rpu_pop1)
+            enrichment = round(raw_enrichment, 3)
             with np.errstate(divide='ignore', invalid='ignore'):
-                log2e = round(float(np.log2(enrichment)), 3)
+                log2e = round(float(np.log2(raw_enrichment)), 3)
         else:
             enrichment = np.nan
             log2e = np.nan
 
         # Seed enrichment based on SeedRPU
         if not np.isnan(seed_rpu_pop1) and not np.isnan(seed_rpu_pop2) and seed_rpu_pop1 > 0:
-            seed_enrichment = round(float(seed_rpu_pop2 / seed_rpu_pop1), 3)
+            raw_seed_enrichment = float(seed_rpu_pop2 / seed_rpu_pop1)
+            seed_enrichment = round(raw_seed_enrichment, 3)
             with np.errstate(divide='ignore', invalid='ignore'):
-                seed_log2e = round(float(np.log2(seed_enrichment)), 3)
+                seed_log2e = round(float(np.log2(raw_seed_enrichment)), 3)
         else:
             seed_enrichment = np.nan
             seed_log2e = np.nan
