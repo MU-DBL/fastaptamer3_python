@@ -27,6 +27,13 @@
       <mat-radio-button value="no">No</mat-radio-button>
     </mat-radio-group>
 
+    <h3 class="section-title">Max mismatches allowed (0 = exact match)
+      <mat-icon class="info-icon" matTooltip="This mismatch tolerance is applied to all motif patterns. For example, if you enter 3 patterns and set max mismatches to 1, each pattern is searched with up to 1 mismatch.">help_outline</mat-icon>
+    </h3>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput type="number" [(ngModel)]="maxMismatches" min="0" max="10" step="1" placeholder="0" />
+    </mat-form-field>
+
     <h3 class="section-title">Type of pattern?</h3>
     <mat-radio-group 
       [(ngModel)]="motifType"

@@ -44,6 +44,7 @@ export class MotifOmit implements OnDestroy {
   motifPattern: string = '';
   partialMatch: string = 'no';
   motifType: string = 'Nucleotide';
+  maxMismatches: number = 0;
   downloadFormat: string = 'fasta';
   uploadComplete: boolean = false;
   
@@ -113,6 +114,7 @@ export class MotifOmit implements OnDestroy {
       motif: this.motifPattern.trim(),
       partial: this.partialMatch === 'yes',
       motif_type: this.motifType,
+      max_mismatches: this.maxMismatches,
       output_format: this.downloadFormat
     };
 

@@ -147,15 +147,20 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
         
         # Cutadapt command
         cmd = ['cutadapt']
-        
+
         if trim5_fixed > 0:
             cmd.extend(['-u', str(trim5_fixed)])
         if trim3_fixed > 0:
             cmd.extend(['-u', str(-trim3_fixed)])
-        if const5p:
-            cmd.extend(['-g', f'{const5p}'])
-        if const3p:
-            cmd.extend(['-a', f'{const3p}'])
+        # Use linked adapter syntax when both adapters are specified.
+        # Combining -g and -a in a single cutadapt 5.x run silently skips
+        # 5' trimming; the linked FORWARD...REVERSE syntax trims both correctly.
+        if const5p and const3p:
+            cmd.extend(['-a', f'{const5p}...{const3p}'])
+        elif const5p:
+            cmd.extend(['-g', const5p])
+        elif const3p:
+            cmd.extend(['-a', const3p])
         
         cmd.extend([
             '-j', '0',  # use all available cores

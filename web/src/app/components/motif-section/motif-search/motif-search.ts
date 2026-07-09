@@ -53,6 +53,7 @@ export class MotifSearch implements OnDestroy {
   highlightMotifs: string = 'no';
   partialMatch: string = 'no';
   motifType: string = 'Nucleotide';
+  maxMismatches: number = 0;
   downloadFormat: string = 'fasta';
   uploadComplete: boolean = false;
   
@@ -117,10 +118,12 @@ export class MotifSearch implements OnDestroy {
     this.processedFileName.set('');
     this.tableData = [];
 
-    // Store motif patterns for frontend highlighting
+    // Store motif patterns for frontend highlighting (disabled when fuzzy matching is active)
     this.currentMotifPatterns = this.motifPattern.split(',').map(p => p.trim());
     this.currentMotifType = this.motifType;
-    this.shouldHighlight = this.highlightMotifs === 'yes';
+    // Skip frontend highlighting for fuzzy matches — browser JS lacks fuzzy regex support;
+    // the backend handles highlighting in that case.
+    this.shouldHighlight = this.maxMismatches === 0;
 
     const params = {
       input_path: this.savedFileName,
@@ -128,6 +131,7 @@ export class MotifSearch implements OnDestroy {
       highlight: this.highlightMotifs === 'yes',
       partial: this.partialMatch === 'yes',
       motif_type: this.motifType,
+      max_mismatches: this.maxMismatches,
       output_format: this.downloadFormat
     };
 

@@ -14,6 +14,7 @@ class MotifSearchInput(BaseModel):
     highlight: bool = False
     partial: bool = False
     motif_type: str = "Nucleotide"
+    max_mismatches: int = 0
     output_format: str = "fasta"
 
 
@@ -45,6 +46,7 @@ async def motif_search(params: MotifSearchInput):
         highlight=params.highlight,
         partial=params.partial,
         motif_type=params.motif_type,
+        max_mismatches=params.max_mismatches,
         output_format=output_format,
         output_path=output_path
     )
@@ -57,6 +59,7 @@ class MotifOmitInput(BaseModel):
     motif: str = ""
     partial: bool = False
     motif_type: str = "Nucleotide"
+    max_mismatches: int = 0
     output_format: str = "fasta"
 
 
@@ -86,6 +89,7 @@ async def motif_omit(params: MotifOmitInput):
         motif=params.motif,
         partial=params.partial,
         motif_type=params.motif_type,
+        max_mismatches=params.max_mismatches,
         output_format=output_format,
         output_path=output_path
     )

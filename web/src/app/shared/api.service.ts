@@ -306,6 +306,7 @@ export class ApiService {
     highlight: boolean;
     partial: boolean;
     motif_type: string;
+    max_mismatches: number;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-search`, params);
@@ -317,6 +318,7 @@ export class ApiService {
     motif: string;
     partial: boolean;
     motif_type: string;
+    max_mismatches: number;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-omit`, params);
