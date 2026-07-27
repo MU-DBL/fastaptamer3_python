@@ -39,8 +39,16 @@ async def cluster(params:ClusterInput):
                 total_clusters=params.total_clusters,
                 keep_nc=params.keep_nc
             )
-        
+
+        if output_path is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"No sequences remain after filtering with min_reads={params.min_reads}. Try lowering the minimum reads threshold."
+            )
+
         return {"status": "ok", "result": os.path.basename(output_path)}
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Clustering failed ({type(e).__name__}): {str(e)}")

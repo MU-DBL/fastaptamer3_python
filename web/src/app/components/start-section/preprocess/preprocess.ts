@@ -47,6 +47,7 @@ export class Preprocess implements OnDestroy {
   sequenceLengthRange: number = 500;
   maxAllowedError: number = 0.005;
   maxErrorRange: number = 1;
+  maxPositionError: number | null = null;
   adapterErrorRate: number = 0.1;
   adapterErrorRateRange: number = 0.5;
   progressSubscription: any;
@@ -103,6 +104,7 @@ export class Preprocess implements OnDestroy {
       min_length: this.sequenceLengthMin,
       max_length: this.sequenceLengthMax,
       max_error: this.maxAllowedError,
+      max_position_error: this.maxPositionError,
       adapter_error_rate: this.adapterErrorRate,
       output_format: this.downloadFormat
     };

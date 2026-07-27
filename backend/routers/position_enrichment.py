@@ -147,11 +147,15 @@ def fa_pos_enrich(
     or any file with an Enrichment column (no cluster filter when cluster_selection is None).
     """
     
-    # Define acceptable alphabets for each sequence type
+    # Define acceptable alphabets for each sequence type, including non-canonical/ambiguous
+    # residues (IUPAC nucleotide ambiguity codes; extended amino acid codes) so the heatmap's
+    # y-axis can show them instead of silently dropping sequences that contain them.
     seq_alphabets = {
-        "dna": ["A", "C", "G", "T", "-"],
-        "protein": ["A", "C", "D", "E", "F", "G", "H", "I", "K", "L", 
-                   "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y", "-"]
+        "dna": ["A", "C", "G", "T",
+                "R", "Y", "W", "S", "M", "K", "B", "D", "H", "V", "N", "-"],
+        "protein": ["A", "C", "D", "E", "F", "G", "H", "I", "K", "L",
+                   "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y",
+                   "B", "Z", "X", "J", "U", "O", "*", "-"]
     }
     seq_alphabet = seq_alphabets[seq_type]
     

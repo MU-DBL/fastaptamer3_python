@@ -41,19 +41,12 @@
   }
 }
 
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+.pdf-preview {
+  width: 100%;
+  height: 100vh;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   margin-top: 8px;
-}
-
-.tool-card {
-  mat-card-content {
-    font-size: 0.9rem;
-    color: #555;
-    margin-top: 8px;
-  }
 }
 
 .citation-box {

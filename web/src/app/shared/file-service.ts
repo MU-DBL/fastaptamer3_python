@@ -132,7 +132,6 @@ export class FileService {
       };
 
       const parts = entry.header.split(';');
-      console.log('Parsing FASTA header parts:', parts);
 
       for (const part of parts) {
         if (!part.includes('=')) continue;
@@ -151,7 +150,6 @@ export class FileService {
       }
       data.push(row);
     })
-    console.log('Parsing FASTA  data:', data);
     return data;
   }
 
@@ -288,7 +286,6 @@ export class FileService {
       data.push(row);
     }
 
-    console.log('Parsed CSV data:', data);
     return data;
   }
 

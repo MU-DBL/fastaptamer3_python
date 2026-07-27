@@ -52,11 +52,10 @@
       </mat-form-field>
       <p><i>These alphanumeric codons will have altered translations</i></p>
       
-      <mat-label>Comma-separated translations</mat-label>
+      <mat-label>Comma-separated single-letter or numeric amino acid outputs, in the same order as the codons above (e.g., Z, X, 1)</mat-label>
       <mat-form-field appearance="outline" class="full-width">
-        <input matInput [(ngModel)]="translateInputChangesOutputs" placeholder="e.g., Z, X, Y">
+        <input matInput [(ngModel)]="translateInputChangesOutputs" placeholder="e.g., Z, X, 1">
       </mat-form-field>
-      <mat-label><i>These must correspond to the same order as input codons</i></mat-label>
     </div>
     }
 

@@ -2,32 +2,45 @@ from pathlib import Path
 import re
 from typing import Any
 import pandas as pd
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
 from Bio import SeqIO
 from services.constants import ColumnName
 
+_FASTA_WRAP = 60
+
+
+def _wrap_seq(seq, width=_FASTA_WRAP):
+    if len(seq) <= width:
+        return seq
+    return '\n'.join(seq[i:i + width] for i in range(0, len(seq), width))
+
+
+def _sanger_quality_str(qualities):
+    return ''.join(chr(min(126, int(round(q)) + 33)) for q in qualities)
+
+
 def save_sequences(seq_df, output_path, output_format='fasta'):
-    if output_format in ['fastq', 'fasta']:
-        records = []
-        for idx, row in seq_df.iterrows():
-            seq_record = SeqRecord(
-                Seq(row[ColumnName.SEQUENCES]),
-                id=row[ColumnName.ID].split()[0],
-                description=row[ColumnName.ID] 
-            )
-            
-            # Add quality scores for FASTQ output
-            if output_format == 'fastq' and 'Quality' in seq_df.columns:
-                seq_record.letter_annotations["phred_quality"] = row['Quality']
-            
-            records.append(seq_record)
-        
-        # Write to file
-        SeqIO.write(records, output_path, output_format)
+    # Bypasses Biopython's per-record SeqRecord/SeqIO.write machinery, which is
+    # extremely slow (minutes) once seq_df reaches millions of rows.
+    if output_format == 'fasta':
+        ids = seq_df[ColumnName.ID].to_numpy()
+        seqs = seq_df[ColumnName.SEQUENCES].to_numpy()
+        with open(output_path, 'w') as f:
+            f.write(''.join(f'>{header}\n{_wrap_seq(seq)}\n' for header, seq in zip(ids, seqs)))
+
+    elif output_format == 'fastq':
+        if 'Quality' not in seq_df.columns:
+            raise ValueError("No suitable quality scores found in data for FASTQ output")
+        ids = seq_df[ColumnName.ID].to_numpy()
+        seqs = seq_df[ColumnName.SEQUENCES].to_numpy()
+        quals = seq_df['Quality'].to_numpy()
+        with open(output_path, 'w') as f:
+            f.write(''.join(
+                f'@{header}\n{seq}\n+\n{_sanger_quality_str(qual)}\n'
+                for header, seq, qual in zip(ids, seqs, quals)
+            ))
 
     elif output_format == 'csv':
-        seq_df.to_csv(output_path, index=False) 
+        seq_df.to_csv(output_path, index=False)
     else:
         raise ValueError(f"Unsupported output format: {output_format}. Choose from: 'fasta', 'fastq', 'csv'")
 

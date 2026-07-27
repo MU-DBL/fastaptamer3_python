@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from services import motif_service
 
@@ -15,6 +15,7 @@ class MotifSearchInput(BaseModel):
     partial: bool = False
     motif_type: str = "Nucleotide"
     max_mismatches: int = 0
+    max_mismatches_per_motif: str = ""
     output_format: str = "fasta"
 
 
@@ -22,7 +23,7 @@ class MotifSearchInput(BaseModel):
 async def motif_search(params: MotifSearchInput):
     """
     Search for sequences containing user-defined motifs.
-    
+
     Args:
         params: MotifSearchInput containing:
             - input_path: Name of the input FASTA file
@@ -30,8 +31,11 @@ async def motif_search(params: MotifSearchInput):
             - highlight: Whether to highlight motifs in output
             - partial: Whether to allow partial matches (OR vs AND)
             - motif_type: Type of motif (Nucleotide, AminoAcid, String)
+            - max_mismatches: Mismatch tolerance applied to every motif
+            - max_mismatches_per_motif: Optional comma-separated per-motif mismatch tolerances,
+              same order and count as `motif`; overrides max_mismatches when provided
             - output_format: Output format (fasta or csv)
-    
+
     Returns:
         JSON response with status and result filename
     """
@@ -40,17 +44,21 @@ async def motif_search(params: MotifSearchInput):
     output_format = params.output_format
     output_path = f"{UPLOAD_DIR}/{base_name}_motif_search.{output_format}"
 
-    output_path = motif_service.search_motif(
-        fasta_input=filepath,
-        motif=params.motif,
-        highlight=params.highlight,
-        partial=params.partial,
-        motif_type=params.motif_type,
-        max_mismatches=params.max_mismatches,
-        output_format=output_format,
-        output_path=output_path
-    )
-    
+    try:
+        output_path = motif_service.search_motif(
+            fasta_input=filepath,
+            motif=params.motif,
+            highlight=params.highlight,
+            partial=params.partial,
+            motif_type=params.motif_type,
+            max_mismatches=params.max_mismatches,
+            max_mismatches_per_motif=params.max_mismatches_per_motif,
+            output_format=output_format,
+            output_path=output_path
+        )
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+
     return {"status": "ok", "result": os.path.basename(output_path)}
 
 
@@ -60,6 +68,7 @@ class MotifOmitInput(BaseModel):
     partial: bool = False
     motif_type: str = "Nucleotide"
     max_mismatches: int = 0
+    max_mismatches_per_motif: str = ""
     output_format: str = "fasta"
 
 
@@ -67,15 +76,18 @@ class MotifOmitInput(BaseModel):
 async def motif_omit(params: MotifOmitInput):
     """
     Omit sequences containing user-defined motifs.
-    
+
     Args:
         params: MotifOmitInput containing:
             - input_path: Name of the input FASTA file
             - motif: Comma-separated list of motifs
             - partial: Whether to allow partial matches (OR vs AND)
             - motif_type: Type of motif (Nucleotide, AminoAcid, String)
+            - max_mismatches: Mismatch tolerance applied to every motif
+            - max_mismatches_per_motif: Optional comma-separated per-motif mismatch tolerances,
+              same order and count as `motif`; overrides max_mismatches when provided
             - output_format: Output format (fasta or csv)
-    
+
     Returns:
         JSON response with status and result filename
     """
@@ -84,14 +96,18 @@ async def motif_omit(params: MotifOmitInput):
     output_format = params.output_format
     output_path = f"{UPLOAD_DIR}/{base_name}_motif_omit.{output_format}"
 
-    output_path = motif_service.omit_motif(
-        fasta_input=filepath,
-        motif=params.motif,
-        partial=params.partial,
-        motif_type=params.motif_type,
-        max_mismatches=params.max_mismatches,
-        output_format=output_format,
-        output_path=output_path
-    )
-    
+    try:
+        output_path = motif_service.omit_motif(
+            fasta_input=filepath,
+            motif=params.motif,
+            partial=params.partial,
+            motif_type=params.motif_type,
+            max_mismatches=params.max_mismatches,
+            max_mismatches_per_motif=params.max_mismatches_per_motif,
+            output_format=output_format,
+            output_path=output_path
+        )
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+
     return {"status": "ok", "result": os.path.basename(output_path)}

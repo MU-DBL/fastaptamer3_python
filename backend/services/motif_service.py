@@ -53,6 +53,13 @@ def format_motif(motif_str: str, motif_type: str = "Nucleotide") -> str:
     return motif
 
 
+def _matches_series(series: pd.Series, pattern: str, mismatches: int) -> pd.Series:
+    """Match a pandas Series of sequences against a pattern, exact or fuzzy depending on mismatches."""
+    if mismatches > 0:
+        return _fuzzy_match_series(series, pattern, mismatches)
+    return series.str.contains(pattern, regex=True, case=True)
+
+
 def search_motif(
     fasta_input: str,
     motif: str,
@@ -60,6 +67,7 @@ def search_motif(
     partial: bool = False,
     motif_type: str = "Nucleotide",
     max_mismatches: int = 0,
+    max_mismatches_per_motif: str = "",
     output_format: str = "fasta",
     output_path: str = None
 ) -> str:
@@ -72,7 +80,10 @@ def search_motif(
         highlight: Whether motifs should be placed inside parentheses in output
         partial: Whether partial matches are allowed (True: OR operation, False: AND operation)
         motif_type: Type of motif - "Nucleotide", "AminoAcid", or "String"
-        max_mismatches: Maximum number of allowed substitutions (0 = exact match)
+        max_mismatches: Maximum number of allowed substitutions applied to every motif (0 = exact match)
+        max_mismatches_per_motif: Optional comma-separated list of per-motif mismatch tolerances
+            (e.g., "0,2,1"), applied in the same order as `motif`. Must have the same number of
+            entries as `motif`. Overrides `max_mismatches` when provided.
         output_format: Output format - "fasta" or "csv"
         output_path: Path for output file
 
@@ -81,49 +92,44 @@ def search_motif(
     """
     # Parse input FASTA file
     seq_df = file_service.parse_fasta(fasta_input)
-    
+
     # Split motifs and format each one
     motif_list = [m.strip() for m in motif.split(',') if m.strip()]
-    
+
     # Format each motif pattern individually
     formatted_patterns = []
     for m in motif_list:
         formatted_patterns.append(format_motif(m, motif_type))
-    
+
+    # Resolve per-motif mismatch tolerances, falling back to the single global value
+    if max_mismatches_per_motif.strip():
+        try:
+            mismatches_per_pattern = [
+                int(v.strip()) for v in max_mismatches_per_motif.split(',') if v.strip()
+            ]
+        except ValueError:
+            raise ValueError("Per-motif mismatches must be a comma-separated list of integers")
+        if len(mismatches_per_pattern) != len(formatted_patterns):
+            raise ValueError(
+                f"Number of per-motif mismatch values ({len(mismatches_per_pattern)}) must match "
+                f"the number of motif patterns ({len(formatted_patterns)})"
+            )
+    else:
+        mismatches_per_pattern = [max_mismatches] * len(formatted_patterns)
+
     # Filter sequences based on motif matching
     # Note: Using case-sensitive matching to match R behavior (grepl default)
     # format_motif already handles uppercase conversion for Nucleotide/AminoAcid
-    if max_mismatches > 0:
-        # Fuzzy matching using the regex module with substitution tolerance
-        if partial:
-            # OR: any motif fuzzy-matches
-            mask = pd.Series([False] * len(seq_df), index=seq_df.index)
-            for pattern in formatted_patterns:
-                mask = mask | _fuzzy_match_series(seq_df[ColumnName.SEQUENCES], pattern, max_mismatches)
-        else:
-            # AND: all motifs must fuzzy-match
-            mask = pd.Series([True] * len(seq_df), index=seq_df.index)
-            for pattern in formatted_patterns:
-                mask = mask & _fuzzy_match_series(seq_df[ColumnName.SEQUENCES], pattern, max_mismatches)
-    elif partial:
-        # Partial filter uses OR operation (any motif matches)
-        combined_pattern = "|".join(formatted_patterns)
-        print(f"Combined pattern for partial search: {combined_pattern}")
-        mask = seq_df[ColumnName.SEQUENCES].str.contains(
-            combined_pattern,
-            regex=True,
-            case=True
-        )
+    if partial:
+        # OR: any motif matches (respecting its own mismatch tolerance)
+        mask = pd.Series([False] * len(seq_df), index=seq_df.index)
+        for pattern, mismatches in zip(formatted_patterns, mismatches_per_pattern):
+            mask = mask | _matches_series(seq_df[ColumnName.SEQUENCES], pattern, mismatches)
     else:
-        # Full filter requires ALL motifs to be present (AND operation)
+        # AND: all motifs must match (respecting their own mismatch tolerance)
         mask = pd.Series([True] * len(seq_df), index=seq_df.index)
-        for pattern in formatted_patterns:
-            pattern_mask = seq_df[ColumnName.SEQUENCES].str.contains(
-                pattern,
-                regex=True,
-                case=True
-            )
-            mask = mask & pattern_mask
+        for pattern, mismatches in zip(formatted_patterns, mismatches_per_pattern):
+            mask = mask & _matches_series(seq_df[ColumnName.SEQUENCES], pattern, mismatches)
 
     # Apply filter
     filtered_df = seq_df[mask].copy()
@@ -132,9 +138,9 @@ def search_motif(
     if highlight:
         def highlight_sequence(seq):
             result = seq
-            for pattern in formatted_patterns:
-                if max_mismatches > 0:
-                    fuzzy_pat = regex.compile(f"(?:{pattern}){{s<={max_mismatches}}}")
+            for pattern, mismatches in zip(formatted_patterns, mismatches_per_pattern):
+                if mismatches > 0:
+                    fuzzy_pat = regex.compile(f"(?:{pattern}){{s<={mismatches}}}")
                     result = fuzzy_pat.sub(lambda m: f"({m.group(0)})", result)
                 else:
                     result = re.sub(f"({pattern})", r"(\1)", result)
@@ -171,6 +177,7 @@ def omit_motif(
     partial: bool = False,
     motif_type: str = "Nucleotide",
     max_mismatches: int = 0,
+    max_mismatches_per_motif: str = "",
     output_format: str = "fasta",
     output_path: str = None
 ) -> str:
@@ -183,7 +190,10 @@ def omit_motif(
         partial: When True (Yes), omits sequences with at least one motif (OR operation - more aggressive)
                  When False (No), omits only sequences with ALL motifs (AND operation - less aggressive)
         motif_type: Type of motif - "Nucleotide", "AminoAcid", or "String"
-        max_mismatches: Maximum number of allowed substitutions (0 = exact match)
+        max_mismatches: Maximum number of allowed substitutions applied to every motif (0 = exact match)
+        max_mismatches_per_motif: Optional comma-separated list of per-motif mismatch tolerances
+            (e.g., "0,2,1"), applied in the same order as `motif`. Must have the same number of
+            entries as `motif`. Overrides `max_mismatches` when provided.
         output_format: Output format - "fasta" or "csv"
         output_path: Path for output file
 
@@ -192,52 +202,47 @@ def omit_motif(
     """
     # Parse input FASTA file
     seq_df = file_service.parse_fasta(fasta_input)
-    
+
     # Split motifs and format each one
     motif_list = [m.strip() for m in motif.split(',') if m.strip()]
-    
+
     # Format each motif pattern individually
     formatted_patterns = []
     for m in motif_list:
         formatted_patterns.append(format_motif(m, motif_type))
-    
+
+    # Resolve per-motif mismatch tolerances, falling back to the single global value
+    if max_mismatches_per_motif.strip():
+        try:
+            mismatches_per_pattern = [
+                int(v.strip()) for v in max_mismatches_per_motif.split(',') if v.strip()
+            ]
+        except ValueError:
+            raise ValueError("Per-motif mismatches must be a comma-separated list of integers")
+        if len(mismatches_per_pattern) != len(formatted_patterns):
+            raise ValueError(
+                f"Number of per-motif mismatch values ({len(mismatches_per_pattern)}) must match "
+                f"the number of motif patterns ({len(formatted_patterns)})"
+            )
+    else:
+        mismatches_per_pattern = [max_mismatches] * len(formatted_patterns)
+
     # Filter sequences based on motif matching
     # Note: Using case-sensitive matching to match R behavior (grepl default)
     # format_motif already handles uppercase conversion for Nucleotide/AminoAcid
     # OMIT logic: opposite of search - we keep sequences that DON'T match
-    if max_mismatches > 0:
-        # Fuzzy matching using the regex module with substitution tolerance
-        if partial:
-            # OR: omit if any motif fuzzy-matches
-            hit_mask = pd.Series([False] * len(seq_df), index=seq_df.index)
-            for pattern in formatted_patterns:
-                hit_mask = hit_mask | _fuzzy_match_series(seq_df[ColumnName.SEQUENCES], pattern, max_mismatches)
-        else:
-            # AND: omit only if all motifs fuzzy-match
-            hit_mask = pd.Series([True] * len(seq_df), index=seq_df.index)
-            for pattern in formatted_patterns:
-                hit_mask = hit_mask & _fuzzy_match_series(seq_df[ColumnName.SEQUENCES], pattern, max_mismatches)
-        mask = ~hit_mask
-    elif partial:
-        # partial=True (Yes): Omit sequences with ANY motif (OR operation)
-        combined_pattern = "|".join(formatted_patterns)
-        mask = ~seq_df[ColumnName.SEQUENCES].str.contains(
-            combined_pattern,
-            regex=True,
-            case=True
-        )
+    if partial:
+        # OR: omit if any motif matches (respecting its own mismatch tolerance)
+        hit_mask = pd.Series([False] * len(seq_df), index=seq_df.index)
+        for pattern, mismatches in zip(formatted_patterns, mismatches_per_pattern):
+            hit_mask = hit_mask | _matches_series(seq_df[ColumnName.SEQUENCES], pattern, mismatches)
     else:
-        # partial=False (No): Omit sequences only if they have ALL motifs (AND operation)
+        # AND: omit only if all motifs match (respecting their own mismatch tolerance)
         hit_mask = pd.Series([True] * len(seq_df), index=seq_df.index)
-        for pattern in formatted_patterns:
-            pattern_mask = seq_df[ColumnName.SEQUENCES].str.contains(
-                pattern,
-                regex=True,
-                case=True
-            )
-            hit_mask = hit_mask & pattern_mask
-        mask = ~hit_mask
-    
+        for pattern, mismatches in zip(formatted_patterns, mismatches_per_pattern):
+            hit_mask = hit_mask & _matches_series(seq_df[ColumnName.SEQUENCES], pattern, mismatches)
+    mask = ~hit_mask
+
     # Apply filter
     filtered_df = seq_df[mask].copy()
     

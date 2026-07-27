@@ -38,12 +38,17 @@ export class ClusterMsa implements OnDestroy {
   isProcessing = signal(false);
   isProcessingEntropy = signal(false);
   isProcessingMutInfo = signal(false);
+  isProcessingGapTrim = signal(false);
   processedFileName = signal('');
+  gapTrimmedFileName = signal('');
 
   availableClusters: number[] = []; // Populates the mat-select
   selectedCluster: number | null = null;
   sequenceType: 'nucleotide' | 'aminoacid' = 'nucleotide';
   msaDownloadFormat: 'fasta' | 'csv' = 'fasta';
+
+  // Shared gap-filtering option for downstream plots (entropy, mutual information)
+  maxGapPercent: number | null = null;
 
   // Entropy plot parameters
   adjustEntropyPlot = 'no';
@@ -54,6 +59,10 @@ export class ClusterMsa implements OnDestroy {
   entropyBarOutlineColor = '#000000';
   entropyBarFillColor = '#87CEEB';
 
+  // Cache of the last computed entropy values, reused when only appearance settings change
+  private lastEntropyResponse: any = null;
+  private lastEntropyParams: { input_path: string; max_gap_percent: number | null } | null = null;
+
   // Mutual information plot parameters
   adjustMIPlot = 'no';
   miXAxis = 'MSA position';
@@ -62,6 +71,12 @@ export class ClusterMsa implements OnDestroy {
   miPlotTitle = 'Pairwise mutual information in MSA';
   miFillPalette = 'magma';
   availablePalettes = ['Magma', 'Viridis', 'Plasma', 'Inferno', 'Cividis', 'Blues', 'Turbo'];
+  miColorScaleMin: number | null = null;
+  miColorScaleMax: number | null = null;
+
+  // Cache of the last computed MI matrix, reused when only appearance settings change
+  private lastMIResponse: any = null;
+  private lastMIParams: { input_path: string; max_gap_percent: number | null } | null = null;
 
   processedFile = '';
 
@@ -203,6 +218,7 @@ export class ClusterMsa implements OnDestroy {
       alert('Please run MSA first.');
       return;
     }
+    if (!this.isMaxGapPercentValid()) return;
     this.createAlignmentGridPlot();
   }
 
@@ -216,8 +232,23 @@ export class ClusterMsa implements OnDestroy {
 
     if (rows.length === 0) return;
 
-    const seqLen = rows[0].seq.length;
-    const positions = Array.from({ length: seqLen }, (_, i) => i + 1);
+    const fullSeqLen = rows[0].seq.length;
+    let keptPositions = Array.from({ length: fullSeqLen }, (_, i) => i); // 0-based indices into row.seq
+
+    if (this.maxGapPercent !== null && this.maxGapPercent !== undefined) {
+      const maxGapFraction = this.maxGapPercent / 100;
+      keptPositions = keptPositions.filter(pos => {
+        const gapCount = rows.reduce((count, row) => count + ((row.seq[pos] ?? '-') === '-' ? 1 : 0), 0);
+        return gapCount / rows.length <= maxGapFraction;
+      });
+    }
+
+    if (keptPositions.length === 0) {
+      alert('No positions remain after applying the gap threshold - choose a higher percentage.');
+      return;
+    }
+
+    const positions = keptPositions.map((_, i) => i + 1); // renumbered consecutively after filtering
     const rowNumbers = rows.map((_, i) => i + 1);
 
     const isProtein = this.sequenceType === 'aminoacid';
@@ -292,7 +323,7 @@ export class ClusterMsa implements OnDestroy {
     for (const row of rows) {
       const zRow: number[] = [];
       const textRow: string[] = [];
-      for (let pos = 0; pos < seqLen; pos++) {
+      for (const pos of keptPositions) {
         const ch = row.seq[pos] ?? '-';
         zRow.push(charToNum[ch] ?? 0);
         textRow.push(ch === '-' ? '_' : ch);
@@ -308,7 +339,7 @@ export class ClusterMsa implements OnDestroy {
       texttemplate: '%{text}',
       x: positions,
       y: rowNumbers,
-      customdata: rows.map(r => Array(seqLen).fill(r.id)),
+      customdata: rows.map(r => Array(keptPositions.length).fill(r.id)),
       colorscale,
       showscale: false,
       zmin: 0,
@@ -384,6 +415,9 @@ export class ClusterMsa implements OnDestroy {
     if (this.processedFileName()) {
       this.apiService.deleteFile(this.processedFileName()).subscribe();
     }
+    if (this.gapTrimmedFileName()) {
+      this.apiService.deleteFile(this.gapTrimmedFileName()).subscribe();
+    }
   }
 
   cancelProcessing(): void {
@@ -391,6 +425,7 @@ export class ClusterMsa implements OnDestroy {
     this.isProcessing.set(false);
     this.isProcessingEntropy.set(false);
     this.isProcessingMutInfo.set(false);
+    this.isProcessingGapTrim.set(false);
   }
 
   onMSADownload(): void {
@@ -403,21 +438,84 @@ export class ClusterMsa implements OnDestroy {
     this.fileService.downloadFile(filename)
   }
 
+  onDownloadGapTrimmed(): void {
+    if (!this.processedFileName()) {
+      alert('Please run MSA first.');
+      return;
+    }
+    if (this.maxGapPercent === null || this.maxGapPercent === undefined) {
+      alert('Set a maximum gap percentage first.');
+      return;
+    }
+    if (!this.isMaxGapPercentValid()) return;
+
+    this.isProcessingGapTrim.set(true);
+
+    const params = {
+      input_path: this.processedFileName(),
+      max_gap_percent: this.maxGapPercent,
+      output_format: this.msaDownloadFormat
+    };
+
+    this.apiService.clusterMsaTrimGaps(params).pipe(
+      tap(response => {
+        if (response.status === 'ok' && response.result) {
+          if (this.gapTrimmedFileName()) {
+            this.apiService.deleteFile(this.gapTrimmedFileName()).subscribe();
+          }
+          this.gapTrimmedFileName.set(response.result);
+          this.fileService.downloadFile(response.result);
+        }
+      }),
+      catchError(error => {
+        const errorMessage = error.error?.detail || error.message || 'Gap trimming failed';
+        alert(`Gap trimming failed: ${errorMessage}`);
+        return of(null);
+      }),
+      finalize(() => {
+        this.isProcessingGapTrim.set(false);
+      })
+    ).subscribe();
+  }
+
+  private isMaxGapPercentValid(): boolean {
+    if (this.maxGapPercent === null || this.maxGapPercent === undefined) return true;
+    if (this.maxGapPercent < 0 || this.maxGapPercent > 100) {
+      alert('Maximum gap percentage must be between 0 and 100.');
+      return false;
+    }
+    return true;
+  }
+
   onEntropyPlot(): void {
     if (!this.processedFileName()) {
       alert('Please run MSA first before generating entropy plot.');
       return;
     }
+    if (!this.isMaxGapPercentValid()) return;
+
+    const params = {
+      input_path: this.processedFileName(),
+      max_gap_percent: this.maxGapPercent
+    };
+
+    // Appearance-only settings (bar colors, titles) are applied at render time from component
+    // fields, not from the API response - so if the underlying data hasn't changed, just redraw
+    // from the cached values instead of recomputing on the backend.
+    if (this.lastEntropyResponse &&
+        this.lastEntropyParams?.input_path === params.input_path &&
+        this.lastEntropyParams?.max_gap_percent === params.max_gap_percent) {
+      this.createEntropyPlot(this.lastEntropyResponse);
+      return;
+    }
 
     this.isProcessingEntropy.set(true);
-    
-    const params = {
-      input_path: this.processedFileName()
-    };
 
     this.apiService.clusterMsaEntropy(params).pipe(
       tap(response => {
         if (response.status === 'ok') {
+          this.lastEntropyResponse = response;
+          this.lastEntropyParams = params;
           this.createEntropyPlot(response);
         }
       }),
@@ -437,16 +535,30 @@ export class ClusterMsa implements OnDestroy {
       alert('Please run MSA first before generating mutual information plot.');
       return;
     }
+    if (!this.isMaxGapPercentValid()) return;
+
+    const params = {
+      input_path: this.processedFileName(),
+      max_gap_percent: this.maxGapPercent
+    };
+
+    // Appearance-only settings (palette, color scale, titles) are applied at render time from
+    // component fields, not from the API response - so if the underlying data hasn't changed,
+    // just redraw from the cached matrix instead of recomputing it on the backend.
+    if (this.lastMIResponse &&
+        this.lastMIParams?.input_path === params.input_path &&
+        this.lastMIParams?.max_gap_percent === params.max_gap_percent) {
+      this.createMutualInfoPlot(this.lastMIResponse);
+      return;
+    }
 
     this.isProcessingMutInfo.set(true);
-    
-    const params = {
-      input_path: this.processedFileName()
-    };
 
     this.apiService.clusterMsaMutInfo(params).pipe(
       tap(response => {
         if (response.status === 'ok') {
+          this.lastMIResponse = response;
+          this.lastMIParams = params;
           this.createMutualInfoPlot(response);
         }
       }),
@@ -510,7 +622,7 @@ export class ClusterMsa implements OnDestroy {
   }
 
   private createMutualInfoPlot(response: any): void {
-    const plotData = [{
+    const heatmapTrace: any = {
       z: response.mutual_info_matrix,
       x: response.positions,
       y: response.positions,
@@ -521,7 +633,16 @@ export class ClusterMsa implements OnDestroy {
         title: { text: this.miLegendTitle }
       },
       hovertemplate: 'Position 1: %{x}<br>Position 2: %{y}<br>MI: %{z:.3f}<extra></extra>'
-    }];
+    };
+
+    if (this.miColorScaleMin !== null && this.miColorScaleMin !== undefined) {
+      heatmapTrace.zmin = this.miColorScaleMin;
+    }
+    if (this.miColorScaleMax !== null && this.miColorScaleMax !== undefined) {
+      heatmapTrace.zmax = this.miColorScaleMax;
+    }
+
+    const plotData = [heatmapTrace];
 
     const layout = {
       title: { text: this.miPlotTitle },

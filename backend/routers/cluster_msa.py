@@ -7,12 +7,12 @@ import os
 from pathlib import Path
 from routers.position_enrichment import perform_msa
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from services.constants import ColumnName
 from services.file_service import save_sequences,read_file
 from fastapi import APIRouter, HTTPException
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import numpy as np
 from sklearn.metrics import mutual_info_score
 import subprocess
@@ -79,6 +79,53 @@ async def cluster_msa_endpoint(params: ClusterMSAInput):
 
 class MSAAnalysisInput(BaseModel):
     input_path: str = ""
+    max_gap_percent: Optional[float] = Field(default=None, ge=0, le=100)
+
+class TrimGapsInput(BaseModel):
+    input_path: str = ""
+    max_gap_percent: float = Field(ge=0, le=100)
+    output_format: str = "fasta"
+
+@router.post("/cluster-msa-trim-gaps")
+async def trim_gapped_positions(params: TrimGapsInput):
+    """
+    Remove MSA positions gapped in more than max_gap_percent% of sequences
+    and save the trimmed alignment as a new downloadable file.
+    """
+    if not params.input_path:
+        raise HTTPException(status_code=400, detail="input_path is required")
+
+    filepath = UPLOAD_DIR / params.input_path
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {params.input_path}")
+
+    try:
+        df = read_file(filepath)
+        original_length = len(df[ColumnName.SEQUENCES].iloc[0])
+
+        msa_matrix, positions = sequences_to_matrix(df, params.max_gap_percent)
+
+        trimmed_df = df.copy()
+        trimmed_df[ColumnName.SEQUENCES] = [''.join(row) for row in msa_matrix]
+
+        base_name = filepath.stem
+        threshold_label = int(params.max_gap_percent) if params.max_gap_percent == int(params.max_gap_percent) else params.max_gap_percent
+        output_path = UPLOAD_DIR / f"{base_name}_gaptrim{threshold_label}.{params.output_format}"
+        save_sequences(trimmed_df, str(output_path), params.output_format)
+
+        return {
+            "status": "ok",
+            "result": output_path.name,
+            "num_sequences": len(trimmed_df),
+            "total_positions": len(positions),
+            "positions_removed": original_length - len(positions)
+        }
+
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gap trimming failed ({type(e).__name__}): {str(e)}")
+
 
 class EntropyResponse(BaseModel):
     status: str
@@ -106,9 +153,9 @@ async def calculate_msa_entropy(params: MSAAnalysisInput):
     try:
         df = read_file(filepath)
         
-        # Convert sequences to matrix
-        msa_matrix = sequences_to_matrix(df)
-        
+        # Convert sequences to matrix, optionally dropping highly-gapped positions
+        msa_matrix, positions = sequences_to_matrix(df, params.max_gap_percent)
+
         # Calculate entropy for each position (column)
         entropy_values = []
         for col_idx in range(msa_matrix.shape[1]):
@@ -116,9 +163,7 @@ async def calculate_msa_entropy(params: MSAAnalysisInput):
             # Calculate Shannon entropy in nats (natural log)
             col_entropy = calculate_shannon_entropy(column)
             entropy_values.append(round(col_entropy, 6))
-        
-        positions = list(range(1, len(entropy_values) + 1))
-        
+
         return {
             "status": "ok",
             "positions": positions,
@@ -148,14 +193,14 @@ async def calculate_msa_mutual_info(params: MSAAnalysisInput):
         # Read MSA file
         df = read_file(filepath)
         
-        # Convert sequences to matrix
-        msa_matrix = sequences_to_matrix(df)
-        
+        # Convert sequences to matrix, optionally dropping highly-gapped positions
+        msa_matrix, positions = sequences_to_matrix(df, params.max_gap_percent)
+
         n_positions = msa_matrix.shape[1]
-        
+
         # Calculate pairwise mutual information
         mi_matrix = np.zeros((n_positions, n_positions))
-        
+
         for i in range(n_positions):
             for j in range(n_positions):
                 if i == j:
@@ -164,15 +209,13 @@ async def calculate_msa_mutual_info(params: MSAAnalysisInput):
                 else:
                     # Mutual information between positions
                     mi_matrix[i, j] = calculate_mutual_information(
-                        msa_matrix[:, i], 
+                        msa_matrix[:, i],
                         msa_matrix[:, j]
                     )
-        
+
         # Round values for readability
         mi_matrix = np.round(mi_matrix, 6)
-        
-        positions = list(range(1, n_positions + 1))
-        
+
         return {
             "status": "ok",
             "mutual_info_matrix": mi_matrix.tolist(),
@@ -186,18 +229,31 @@ async def calculate_msa_mutual_info(params: MSAAnalysisInput):
         raise HTTPException(status_code=500, detail=f"Mutual information calculation failed ({type(e).__name__}): {str(e)}")
 
 
-def sequences_to_matrix(df: pd.DataFrame):
+def sequences_to_matrix(df: pd.DataFrame, max_gap_percent: Optional[float] = None):
     sequences = df[ColumnName.SEQUENCES].tolist()
-    
+
     # Check all sequences have same length (requirement for MSA)
     seq_lengths = [len(seq) for seq in sequences]
     if len(set(seq_lengths)) > 1:
         raise ValueError("Sequences have different lengths - not a valid MSA")
-    
+
     # Convert to matrix
     msa_matrix = np.array([list(seq) for seq in sequences])
-    
-    return msa_matrix
+    positions = list(range(1, msa_matrix.shape[1] + 1))
+
+    # Optionally drop positions that are gapped in more than max_gap_percent% of sequences
+    if max_gap_percent is not None:
+        gap_fraction = np.mean(msa_matrix == '-', axis=0)
+        keep_mask = gap_fraction <= (max_gap_percent / 100)
+        if not keep_mask.any():
+            raise ValueError(
+                "No positions remain after applying the gap threshold - choose a higher percentage"
+            )
+        msa_matrix = msa_matrix[:, keep_mask]
+        # Renumber remaining positions consecutively (1..N) rather than keeping gaps in the numbering
+        positions = list(range(1, msa_matrix.shape[1] + 1))
+
+    return msa_matrix, positions
 
 
 def calculate_shannon_entropy(column: np.ndarray) -> float:

@@ -22,6 +22,7 @@ class PreprocessInput(BaseModel):
     min_length: int = 0
     max_length: int = 100
     max_error: float = 0.005
+    max_position_error: float | None = None
     adapter_error_rate: float = 0.1
     output_format: str = "fasta"
 
@@ -46,6 +47,7 @@ async def preprocess(params: PreprocessInput, background_tasks: BackgroundTasks)
             trim3_fixed=params.trim3_fixed,
             length_range=[params.min_length, params.max_length],
             max_error=params.max_error,
+            max_position_error=params.max_position_error,
             adapter_error_rate=params.adapter_error_rate,
             output_path=output_path,
             output_format=output_format

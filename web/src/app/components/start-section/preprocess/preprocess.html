@@ -1,6 +1,6 @@
 
 <div class="page-note">
-  Trims constant 5' and 3' region from sequences in a FASTQ or FASTA file, then filters sequences by length range and maximum average error thresholds. Outputs a cleaned FASTA file ready for counting. Gzip-compressed files (.fastq.gz, .fasta.gz) are supported.
+  Trims constant 5' and 3' region from sequences in a FASTQ or FASTA file, then filters sequences by length range, maximum average error, and (optionally) maximum error at any single position. Outputs a cleaned FASTA file ready for counting. Gzip-compressed files (.fastq.gz, .fasta.gz) are supported.
 </div>
 <app-split-panel>
   <div left>
@@ -88,6 +88,12 @@
         </mat-slider>
       </div>
     </div>
+
+    <label class="section-label">Maximum allowed error probability at any single position (optional): <mat-icon class="info-icon"
+        matTooltip="Stricter than the average filter above: rejects a read if even one base has an error probability (from its Phred quality score) above this value, catching reads where a single bad base is hidden by an otherwise low average. Leave blank to disable. Setting this to 1 has the same effect as leaving it blank, since no base's error probability can exceed 1.">help_outline</mat-icon></label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput type="number" [(ngModel)]="maxPositionError" min="0" max="1" step="0.001" placeholder="No limit" />
+    </mat-form-field>
 
     <div class="action-buttons">
       <button mat-raised-button color="primary" class="start-button" [disabled]="!uploadComplete || isProcessing()"

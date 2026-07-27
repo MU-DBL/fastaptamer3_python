@@ -51,20 +51,28 @@ export class DiffAnalysis implements OnDestroy {
     pageSizeOptions: [10, 25, 50, 100]
   };
 
+  private readonly edgeRPlotDefaults = {
+    edgeRPlotXAxis: 'log₂CPM',
+    edgeRPlotYAxis: 'log₂FC',
+    edgeRPlotTitle: 'edgeR results',
+    edgeRPlotSigColor: '#FF0000',
+    edgeRPlotInsigColor: '#000000',
+    edgeRPlotSigSize: 9,
+    edgeRPlotInsigSize: 6
+  };
+
   adjustEdgeRPlot = 'no';
-  edgeRPlotXAxis = 'logCPM';
-  edgeRPlotYAxis = 'logFC';
-  edgeRPlotTitle = 'edgeR results';
-  edgeRPlotSigColor = '#FF0000';
-  edgeRPlotInsigColor = '#000000';
+  edgeRPlotXAxis = this.edgeRPlotDefaults.edgeRPlotXAxis;
+  edgeRPlotYAxis = this.edgeRPlotDefaults.edgeRPlotYAxis;
+  edgeRPlotTitle = this.edgeRPlotDefaults.edgeRPlotTitle;
+  edgeRPlotSigColor = this.edgeRPlotDefaults.edgeRPlotSigColor;
+  edgeRPlotInsigColor = this.edgeRPlotDefaults.edgeRPlotInsigColor;
+  edgeRPlotSigSize = this.edgeRPlotDefaults.edgeRPlotSigSize;
+  edgeRPlotInsigSize = this.edgeRPlotDefaults.edgeRPlotInsigSize;
 
   onAdjustEdgeRPlotChange(): void {
     if (this.adjustEdgeRPlot === 'no') {
-      this.edgeRPlotXAxis = 'logCPM';
-      this.edgeRPlotYAxis = 'logFC';
-      this.edgeRPlotTitle = 'edgeR results';
-      this.edgeRPlotSigColor = '#FF0000';
-      this.edgeRPlotInsigColor = '#000000';
+      Object.assign(this, this.edgeRPlotDefaults);
     }
   }
 
@@ -202,9 +210,9 @@ export class DiffAnalysis implements OnDestroy {
       traces.push({
         x: insigIdx.map(i => logCPM[i]), y: insigIdx.map(i => logFC[i]),
         mode: 'markers', type: 'scatter',
-        marker: { color: this.edgeRPlotInsigColor, size: 6, opacity: 0.5 },
+        marker: { color: this.edgeRPlotInsigColor, size: this.edgeRPlotInsigSize, opacity: 0.5 },
         text: insigIdx.map(i => sequences[i]),
-        hovertemplate: '%{text}<br>logCPM: %{x:.3f}<br>logFC: %{y:.3f}<extra></extra>',
+        hovertemplate: 'Sequence: %{text}<br>log₂CPM: %{x:.3f}<br>log₂FC: %{y:.3f}<extra></extra>',
         name: 'Not Significant'
       });
     }
@@ -212,9 +220,9 @@ export class DiffAnalysis implements OnDestroy {
       traces.push({
         x: sigIdx.map(i => logCPM[i]), y: sigIdx.map(i => logFC[i]),
         mode: 'markers', type: 'scatter',
-        marker: { color: this.edgeRPlotSigColor, size: 6, opacity: 0.7 },
+        marker: { color: this.edgeRPlotSigColor, size: this.edgeRPlotSigSize, opacity: 0.7 },
         text: sigIdx.map(i => sequences[i]),
-        hovertemplate: '%{text}<br>logCPM: %{x:.3f}<br>logFC: %{y:.3f}<extra></extra>',
+        hovertemplate: 'Sequence: %{text}<br>log₂CPM: %{x:.3f}<br>log₂FC: %{y:.3f}<extra></extra>',
         name: 'Significant'
       });
     }

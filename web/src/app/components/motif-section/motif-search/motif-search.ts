@@ -53,7 +53,7 @@ export class MotifSearch implements OnDestroy {
   highlightMotifs: string = 'no';
   partialMatch: string = 'no';
   motifType: string = 'Nucleotide';
-  maxMismatches: number = 0;
+  perMotifMismatches: string = '';
   downloadFormat: string = 'fasta';
   uploadComplete: boolean = false;
   
@@ -114,16 +114,28 @@ export class MotifSearch implements OnDestroy {
       return;
     }
 
+    this.currentMotifPatterns = this.motifPattern.split(',').map(p => p.trim());
+
+    const perMotifValues = this.perMotifMismatches.trim()
+      ? this.perMotifMismatches.split(',').map(v => v.trim()).filter(v => v.length > 0)
+      : [];
+
+    if (perMotifValues.length > 0 && perMotifValues.length !== this.currentMotifPatterns.length) {
+      alert(
+        `Number of per-motif mismatch values (${perMotifValues.length}) must match ` +
+        `the number of motif patterns (${this.currentMotifPatterns.length}).`
+      );
+      return;
+    }
+
     this.isProcessing.set(true);
     this.processedFileName.set('');
     this.tableData = [];
 
-    // Store motif patterns for frontend highlighting (disabled when fuzzy matching is active)
-    this.currentMotifPatterns = this.motifPattern.split(',').map(p => p.trim());
     this.currentMotifType = this.motifType;
     // Skip frontend highlighting for fuzzy matches — browser JS lacks fuzzy regex support;
     // the backend handles highlighting in that case.
-    this.shouldHighlight = this.maxMismatches === 0;
+    this.shouldHighlight = perMotifValues.every(v => v === '0');
 
     const params = {
       input_path: this.savedFileName,
@@ -131,7 +143,8 @@ export class MotifSearch implements OnDestroy {
       highlight: this.highlightMotifs === 'yes',
       partial: this.partialMatch === 'yes',
       motif_type: this.motifType,
-      max_mismatches: this.maxMismatches,
+      max_mismatches: 0,
+      max_mismatches_per_motif: perMotifValues.join(','),
       output_format: this.downloadFormat
     };
 

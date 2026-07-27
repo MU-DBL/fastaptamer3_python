@@ -1,6 +1,10 @@
 <div class="page-note">
-  Merges clusters from two separately clustered populations and computes pairwise Levenshtein Edit Distance between
-  cluster seeds. Use <strong>Multi-round</strong> mode to track cluster family convergence across 3 selection rounds.
+  Unify related aptamer families across multiple selection rounds. This module compares the seed sequences of clusters
+  from separately clustered FASTA files using pairwise Levenshtein Edit Distance. Cluster families whose seeds fall
+  within your chosen edit distance threshold are merged into a single super-cluster, making it easier to track
+  dominant aptamer families across populations. Use <strong>Multi-round</strong> mode to track cluster family
+  convergence across 3 selection rounds.
+  
   <p><strong>Avg RPU</strong> — mean RPU across <em>all sequences</em> assigned to the super-cluster in that population.
     Reflects the overall abundance of the cluster family, but is pulled down by low-read peripheral variants.
     <strong>Seed RPU</strong> — RPU of the original cluster seed (rank 1 sequence in the original cluster file, i.e.
@@ -96,6 +100,7 @@
     @if (mode === 'two-pop') {
     <hr class="section-divider">
     <!-- STATUS CLASSIFICATION -->
+    <h3 class="section-title">Parameter to define status column</h3>
     <label class="section-label">Status classification metric:
       <mat-icon class="info-icon"
         matTooltip="Choose which enrichment value is used to assign cluster status (enriched / depleted / inherited)">help_outline</mat-icon>
@@ -105,7 +110,7 @@
       <mat-radio-button value="seed">Seed RPU enrichment</mat-radio-button>
     </mat-radio-group>
 
-    <label class="section-label">log2E threshold:
+    <label class="section-label">|log2E| threshold:
       <mat-icon class="info-icon"
         matTooltip="Sets the log2 fold-change cutoff for status assignment. Example: threshold = 1 means log2E ≥ 1 → Enriched (2× increase); log2E ≤ −1 → Depleted (2× decrease); between −1 and 1 → Inherited.">help_outline</mat-icon>
     </label>

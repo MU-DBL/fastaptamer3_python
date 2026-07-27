@@ -1,5 +1,6 @@
 <div class="page-note">
   Performs differential expression analysis between two experimental conditions (each with at least one counted FASTA files).
+  In contrast to the Sequence Enrichment module, which computes a simple RPU ratio between exactly one sample per condition, the Differential Analysis module supports multiple replicates per condition and performs formal statistical testing (via edgeR) to determine whether an observed change between conditions is likely real rather than due to random variation.
   Sequences are compared using statistics: <strong>log₂FC</strong> log₂ fold change between conditions;
   <strong>log₂CPM</strong> log₂ of average counts per million across all replicates from both conditions combined — a measure of overall abundance, not a comparison between conditions;
   <strong>PValue</strong> — Benjamini-Hochberg FDR-adjusted p-value, which accounts for testing thousands of sequences simultaneously and is therefore more conservative than a standard p-value.
@@ -90,7 +91,7 @@
     <h3 class="section-title">
       Minimum log₂CPM cutoff:
       <mat-icon class="info-icon"
-        matTooltip="Minimum average abundance (log₂CPM) required to classify a sequence as significant. Set to 0 to disable. Filters out low-abundance sequences where fold changes may be unreliable."
+        matTooltip="Minimum average abundance (log₂CPM) required to classify a sequence as significant. Set to 0 to disable. Filters out low-abundance sequences where fold changes may be unreliable. Computed as log₂(mean CPM + 1), so it is always ≥ 0 — a sequence absent from all samples has log₂CPM = 0."
         matTooltipPosition="right">help_outline</mat-icon>
     </h3>
     <div class="slider-group">
@@ -181,6 +182,14 @@
           <label>Color for insignificant points:</label>
           <input type="color" [(ngModel)]="edgeRPlotInsigColor" class="color-input" />
           <span class="color-value">{{ edgeRPlotInsigColor }}</span>
+        </div>
+        <div class="color-picker-field">
+          <label>Size for significant points:</label>
+          <input type="number" min="1" max="30" [(ngModel)]="edgeRPlotSigSize" class="size-input" />
+        </div>
+        <div class="color-picker-field">
+          <label>Size for insignificant points:</label>
+          <input type="number" min="1" max="30" [(ngModel)]="edgeRPlotInsigSize" class="size-input" />
         </div>
       </div>
     }

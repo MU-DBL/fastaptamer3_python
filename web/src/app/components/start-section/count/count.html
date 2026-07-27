@@ -68,6 +68,10 @@
     <div *ngIf="totalSequences() > 0" class="stats-display">
       <p><strong>Total sequences:</strong> {{ totalSequences() }}</p>
       <p><strong>Unique sequences:</strong> {{ uniqueSequences() }}</p>
+      <p *ngIf="previewTruncated()" class="preview-note">
+        Table below shows a preview of the first {{ previewRowLimit | number }} rows (statistics above reflect the
+        full result). Use Download to get the complete file.
+      </p>
     </div>
 
     <!-- Plotting Section - Always visible but disabled until processing completes -->
@@ -143,7 +147,8 @@
         </div>
       </div>
 
-      <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="openReadsPerRankPlot()">
+      <button mat-raised-button class="plot-button" [disabled]="!processedFileName() || isLoadingReadsPerRank()" (click)="openReadsPerRankPlot()">
+        <mat-icon *ngIf="isLoadingReadsPerRank()" class="spinning">sync</mat-icon>
         Reads per rank
       </button>
 
@@ -188,8 +193,9 @@
         </div>
       </div>
 
-      <button mat-raised-button class="plot-button" [disabled]="!processedFileName()"
+      <button mat-raised-button class="plot-button" [disabled]="!processedFileName() || isLoadingSeqLengthHistogram()"
         (click)="openSeqLengthHistogram()">
+        <mat-icon *ngIf="isLoadingSeqLengthHistogram()" class="spinning">sync</mat-icon>
         Sequence-length histogram
       </button>
 
@@ -240,7 +246,8 @@
         </div>
       </div>
 
-      <button mat-raised-button class="plot-button" [disabled]="!processedFileName()" (click)="openAbundancePlot()">
+      <button mat-raised-button class="plot-button" [disabled]="!processedFileName() || isLoadingAbundancePlot()" (click)="openAbundancePlot()">
+        <mat-icon *ngIf="isLoadingAbundancePlot()" class="spinning">sync</mat-icon>
         Abundance plot
       </button>
     </div>

@@ -30,6 +30,7 @@ export class ApiService {
     min_length: number;
     max_length: number;
     max_error: number;
+    max_position_error: number | null;
     adapter_error_rate: number;
     output_format: string;
   }): Observable<string> {
@@ -130,6 +131,35 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/count`, params);
   }
 
+  // POST /count-preview
+  countPreview(params: { input_path: string; limit?: number }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/count-preview`, params);
+  }
+
+  // POST /count-reads-per-rank
+  countReadsPerRank(params: {
+    input_path: string;
+    min_reads: number;
+    max_rank: number | null;
+    metric: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/count-reads-per-rank`, params);
+  }
+
+  // POST /count-sequence-length-histogram
+  countSequenceLengthHistogram(params: { input_path: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/count-sequence-length-histogram`, params);
+  }
+
+  // POST /count-abundance
+  countAbundance(params: {
+    input_path: string;
+    breakpoints: number[];
+    use_singleton: boolean;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/count-abundance`, params);
+  }
+
   // Recount
   recount(params: {
     input_paths: string[];
@@ -226,6 +256,7 @@ export class ApiService {
   // POST /cluster-msa-entropy
   clusterMsaEntropy(params: {
     input_path: string;
+    max_gap_percent?: number | null;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/cluster-msa-entropy`, params);
   }
@@ -233,8 +264,18 @@ export class ApiService {
   // POST /cluster-msa-mutinfo
   clusterMsaMutInfo(params: {
     input_path: string;
+    max_gap_percent?: number | null;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/cluster-msa-mutinfo`, params);
+  }
+
+  // POST /cluster-msa-trim-gaps
+  clusterMsaTrimGaps(params: {
+    input_path: string;
+    max_gap_percent: number;
+    output_format: string;
+  }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/cluster-msa-trim-gaps`, params);
   }
 
   // POST /cluster-phmm-simulate
@@ -307,6 +348,7 @@ export class ApiService {
     partial: boolean;
     motif_type: string;
     max_mismatches: number;
+    max_mismatches_per_motif?: string;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-search`, params);
@@ -319,6 +361,7 @@ export class ApiService {
     partial: boolean;
     motif_type: string;
     max_mismatches: number;
+    max_mismatches_per_motif?: string;
     output_format: string;
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/motif-omit`, params);

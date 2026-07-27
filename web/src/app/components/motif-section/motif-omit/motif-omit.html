@@ -1,5 +1,5 @@
 <div class="page-note">
-  Removes sequences containing specified motifs from a counted FASTA file. Accepts comma-separated motif patterns and outputs a FASTA or CSV with all matching sequences excluded.
+  Removes sequences containing specified motifs from a counted FASTA file. Accepts comma-separated motif patterns with an optional per-motif mismatch tolerance, and outputs a FASTA or CSV with all matching sequences excluded.
 </div>
 <app-split-panel>
   <div left>
@@ -19,20 +19,20 @@
       <input matInput [(ngModel)]="motifPattern" placeholder="E.g., AAA,GTG,UUCG" />
     </mat-form-field>
 
+    <mat-label class="section-label">Comma-separated max mismatches per motif (optional)
+      <mat-icon class="info-icon" matTooltip="Apply a mismatch tolerance to each pattern, in the same order as the patterns above (e.g., 0,2,1 for 3 patterns). Must have the same number of values as patterns. Leave blank for exact matches (0 mismatches) on every pattern.">help_outline</mat-icon>
+    </mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <input matInput [(ngModel)]="perMotifMismatches" placeholder="E.g., 0,2,1" />
+    </mat-form-field>
+
     <h3 class="section-title">If multiple patterns, return partial matches?</h3>
-    <mat-radio-group 
+    <mat-radio-group
       [(ngModel)]="partialMatch"
       class="radio-group">
       <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>
     </mat-radio-group>
-
-    <h3 class="section-title">Max mismatches allowed (0 = exact match)
-      <mat-icon class="info-icon" matTooltip="This mismatch tolerance is applied to all motif patterns. For example, if you enter 3 patterns and set max mismatches to 1, each pattern is searched with up to 1 mismatch.">help_outline</mat-icon>
-    </h3>
-    <mat-form-field appearance="outline" class="full-width">
-      <input matInput type="number" [(ngModel)]="maxMismatches" min="0" max="10" step="1" placeholder="0" />
-    </mat-form-field>
 
     <h3 class="section-title">Type of pattern?</h3>
     <mat-radio-group 

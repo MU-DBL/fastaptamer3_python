@@ -22,6 +22,17 @@ def calculate_avg_error_fast(quality_scores):
     return total_error / len(quality_scores)
 
 
+@jit(nopython=True)
+def calculate_max_error_fast(quality_scores):
+    """JIT-compiled function for the worst single-base error probability in a read"""
+    max_error = 0.0
+    for q in quality_scores:
+        error = 10 ** (-q / 10.0)
+        if error > max_error:
+            max_error = error
+    return max_error
+
+
 def run_preprocess_slow(input_path=None, const5p="", const3p="", 
                   length_range=(10, 100), max_error=0.005,
                   output_path=None, output_format='fasta'):
@@ -129,6 +140,7 @@ def trim_constant_region(seq_df, const_region, side, file_format):
 async def run_preprocess(job_id, input_path, const5p="", const3p="",
                                   trim5_fixed=0, trim3_fixed=0,
                                   length_range=(10, 100), max_error=0.005,
+                                  max_position_error=None,
                                   adapter_error_rate=0.1,
                                   output_path=None, output_format='fasta'):
     """
@@ -220,7 +232,11 @@ async def run_preprocess(job_id, input_path, const5p="", const3p="",
                     qual_array = np.array(rec.letter_annotations['phred_quality'], dtype=np.float64)
                     avg_error = calculate_avg_error_fast(qual_array)
 
-                    if avg_error <= max_error:
+                    passes_filter = avg_error <= max_error
+                    if passes_filter and max_position_error is not None:
+                        passes_filter = calculate_max_error_fast(qual_array) <= max_position_error
+
+                    if passes_filter:
                         SeqIO.write([rec], out_handle, output_format)
                         after_qc += 1
 

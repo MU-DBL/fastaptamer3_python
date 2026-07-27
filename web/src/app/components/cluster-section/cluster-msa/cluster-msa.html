@@ -75,6 +75,24 @@
         </div>
         <hr class="section-divider">
         <div>
+            <h3 class="section-title">Maximum gap percentage (%)
+                <mat-icon class="info-icon" matTooltip="Positions gapped in more than this percentage of sequences are removed from the alignment chart, entropy plot, mutual information plot, and the gap-trimmed download below. Leave blank to keep all positions.">help_outline</mat-icon>
+            </h3>
+            <mat-form-field appearance="outline">
+                <input matInput type="number" min="0" max="100" step="1"
+                    [(ngModel)]="maxGapPercent" placeholder="Off" />
+            </mat-form-field>
+
+            <button mat-raised-button class="plot-button"
+                [disabled]="!processedFileName() || maxGapPercent === null || isProcessingGapTrim()"
+                (click)="onDownloadGapTrimmed()"
+                matTooltip="Save and download a new alignment file with the gapped positions removed.">
+                <mat-icon [class.spinning]="isProcessingGapTrim()">{{ isProcessingGapTrim() ? 'sync' : 'file_download' }}</mat-icon>
+                Download gap-trimmed alignment
+            </button>
+        </div>
+        <hr class="section-divider">
+        <div>
             <h3 class="section-title">Adjust default entropy plot?</h3>
             <mat-radio-group [(ngModel)]="adjustEntropyPlot" class="radio-group">
                 <mat-radio-button value="yes">Yes</mat-radio-button>
@@ -159,6 +177,20 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+
+                <label>Color scale range (optional)
+                    <mat-icon class="info-icon" matTooltip="Controls which MI values the color palette spans. By default, Plotly stretches the full color range across your data's min and max MI values, which can leave low values looking faint if a few positions have a much higher MI. Set a lower maximum to saturate those high values and bring out contrast among the smaller ones. Leave a field blank to auto-scale it from the data.">help_outline</mat-icon>
+                </label>
+                <div class="color-scale-range">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Minimum</mat-label>
+                        <input matInput type="number" step="0.01" [(ngModel)]="miColorScaleMin" placeholder="Auto" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Maximum</mat-label>
+                        <input matInput type="number" step="0.01" [(ngModel)]="miColorScaleMax" placeholder="Auto" />
+                    </mat-form-field>
+                </div>
             </div>
 
             <button mat-raised-button class="plot-button" [disabled]="!processedFileName() || isProcessingMutInfo()"

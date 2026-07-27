@@ -44,7 +44,7 @@ export class MotifOmit implements OnDestroy {
   motifPattern: string = '';
   partialMatch: string = 'no';
   motifType: string = 'Nucleotide';
-  maxMismatches: number = 0;
+  perMotifMismatches: string = '';
   downloadFormat: string = 'fasta';
   uploadComplete: boolean = false;
   
@@ -105,6 +105,20 @@ export class MotifOmit implements OnDestroy {
       return;
     }
 
+    const motifPatterns = this.motifPattern.split(',').map(p => p.trim());
+
+    const perMotifValues = this.perMotifMismatches.trim()
+      ? this.perMotifMismatches.split(',').map(v => v.trim()).filter(v => v.length > 0)
+      : [];
+
+    if (perMotifValues.length > 0 && perMotifValues.length !== motifPatterns.length) {
+      alert(
+        `Number of per-motif mismatch values (${perMotifValues.length}) must match ` +
+        `the number of motif patterns (${motifPatterns.length}).`
+      );
+      return;
+    }
+
     this.isProcessing.set(true);
     this.processedFileName.set('');
     this.tableData = [];
@@ -114,7 +128,8 @@ export class MotifOmit implements OnDestroy {
       motif: this.motifPattern.trim(),
       partial: this.partialMatch === 'yes',
       motif_type: this.motifType,
-      max_mismatches: this.maxMismatches,
+      max_mismatches: 0,
+      max_mismatches_per_motif: perMotifValues.join(','),
       output_format: this.downloadFormat
     };
 

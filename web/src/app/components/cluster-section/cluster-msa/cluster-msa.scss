@@ -32,15 +32,24 @@
   padding: 15px;
   border-radius: 4px;
   margin: 15px 0;
-  
+
   mat-form-field {
     margin-bottom: 10px;
-    
+
     ::ng-deep .mat-mdc-text-field-wrapper {
       background-color: white;
     }
   }
-  
+
+  .color-scale-range {
+    display: flex;
+    gap: 15px;
+
+    mat-form-field {
+      flex: 1;
+    }
+  }
+
   .input-label:first-child {
     margin-top: 0;
   }

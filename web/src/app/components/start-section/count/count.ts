@@ -98,6 +98,11 @@ export class Count implements OnDestroy {
   uniqueSequences = signal(0);
   elapsedTime = signal('0.00');
 
+  // Table preview is capped for very large result files (millions of rows would
+  // freeze/crash the tab); totals above are still computed over the full file.
+  readonly previewRowLimit = 50000;
+  previewTruncated = signal(false);
+
   // Helper method for slider label formatting
   formatLabel(value: number): string {
     return `${value}`;
@@ -126,10 +131,11 @@ export class Count implements OnDestroy {
   onLoadResult(): void {
     if (!this.savedFileName) return;
     this.tableData = [];
-    this.apiService.fetchFileText(this.savedFileName).pipe(
-      tap(text => this.parseResultFile(text, this.savedFileName))
-    ).subscribe();
     this.processedFileName.set(this.savedFileName);
+    this.apiService.countPreview({ input_path: this.savedFileName, limit: this.previewRowLimit }).subscribe({
+      next: (response) => this.applyPreviewResponse(response),
+      error: (error) => alert(`Failed to load preview: ${error.error?.detail || error.message}`)
+    });
   }
 
   ngOnDestroy(): void {
@@ -179,13 +185,14 @@ export class Count implements OnDestroy {
         }
       }),
       switchMap(response => {
-        // Automatically load results after successful count
+        // Automatically load a preview after successful count
         if (response.status === 'ok' && response.result) {
-          return this.apiService.fetchFileText(response.result).pipe(
-            tap(text => this.parseResultFile(text, response.result))
-          );
+          return this.apiService.countPreview({ input_path: response.result, limit: this.previewRowLimit });
         }
         return of(null);
+      }),
+      tap(response => {
+        if (response) this.applyPreviewResponse(response);
       }),
       catchError(error => {
         const errorMsg = error.error?.detail || error.message || 'Count failed';
@@ -198,77 +205,14 @@ export class Count implements OnDestroy {
     ).subscribe();
   }
 
-  parseResultFile(content: string, filename: string): void {
-    const isFasta = filename.endsWith('.fasta') || filename.endsWith('.fa');
-    const isCsv = filename.endsWith('.csv');
-    
-    this.tableData = [];
-    
-    if (isCsv) {
-      // Parse CSV
-      const lines = content.split('\n').filter(line => line.trim());
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',');
-        if (values.length >= 6) {
-          this.tableData.push({
-            id: values[0],
-            rank: parseInt(values[1]),
-            reads: parseInt(values[2]),
-            rpm: parseInt(values[3]),
-            length: parseInt(values[4]),
-            seqs: values[5]
-          });
-        }
-      }
-    } else if (isFasta) {
-      // Parse FASTA format
-      const lines = content.split('\n').filter(line => line.trim());
-      let currentId = '';
-      let currentSeq = '';
-      
-      for (const line of lines) {
-        if (line.startsWith('>')) {
-          if (currentId && currentSeq) {
-            this.addFastaEntry(currentId, currentSeq);
-          }
-          currentId = line.substring(1);
-          currentSeq = '';
-        } else {
-          currentSeq += line.trim();
-        }
-      }
-      
-      // Add the last entry
-      if (currentId && currentSeq) {
-        this.addFastaEntry(currentId, currentSeq);
-      }
-    }
-    
-    // Update statistics
-    this.uniqueSequences.set(this.tableData.length);
-    const totalReads = this.tableData.reduce((sum, item) => sum + item.reads, 0);
-    this.totalSequences.set(totalReads);
-    
-    // Emit the parsed data to the parent component
-    // this.resultsReady.emit(this.tableData);
-    
-  }
-
-  addFastaEntry(id: string, sequence: string): void {
-    // Parse ID format: "rank=1;read=20;RPU=200000"
-    const parts = id.split(';');
-    const rank = parts[0]?.split('=')[1] || '';
-    const reads = parts[1]?.split('=')[1] || '';
-    const rpm = parts[2]?.split('=')[1] || '';
-    
-    this.tableData.push({
-      id: id,
-      rank: parseInt(rank),
-      reads: parseInt(reads),
-      rpm: parseInt(rpm),
-      length: sequence.length,
-      seqs: sequence
-    });
+  // Preview rows + totals now come from the backend (/count-preview), computed
+  // in a single streaming pass over the result file - the frontend never
+  // downloads or parses the full file, so this scales to multi-GB results.
+  private applyPreviewResponse(response: any): void {
+    this.tableData = response.rows || [];
+    this.uniqueSequences.set(response.total_records || 0);
+    this.totalSequences.set(response.total_reads || 0);
+    this.previewTruncated.set(!!response.truncated);
   }
 
   onDownload(): void {
@@ -284,186 +228,155 @@ export class Count implements OnDestroy {
     link.click();
   }
 
-  // Plot methods - emit events to parent component
+  // Plot methods - fetch aggregated data from the backend (computed over the
+  // full result file, not just the capped table preview) and emit to parent.
+  isLoadingReadsPerRank = signal(false);
+  isLoadingSeqLengthHistogram = signal(false);
+  isLoadingAbundancePlot = signal(false);
+
   openReadsPerRankPlot(): void {
-    if (this.tableData.length === 0) {
+    if (!this.processedFileName()) {
       alert('No data available for plotting. Please run the count process first.');
       return;
     }
-    
-    // Validate slider values
+
     if (this.minReadsToPlot < 0) {
       alert('Minimum number of reads cannot be negative.');
       return;
     }
-    
-    if (this.maxRankToPlot < this.minReadsToPlot) {
-      alert('Maximum rank must be greater than or equal to minimum reads.');
-      return;
-    }
-    
+
     if (this.maxRankToPlot < 1) {
       alert('Maximum rank must be at least 1.');
       return;
     }
-    
-    // Check if max rank exceeds available data
-    const maxAvailableRank = this.tableData.reduce((max, item) => item.rank > max ? item.rank : max, 0);
-    const data = this.getReadsPerRankData();
-    
-    if (data.length === 0) {
-      alert('No data points match the specified criteria. Please adjust the min reads or max rank values.');
-      return;
-    }
-    
-    // Inform user if max rank was adjusted
-    if (this.maxRankToPlot > maxAvailableRank) {
-      console.info(`Max rank adjusted from ${this.maxRankToPlot} to ${maxAvailableRank} (maximum available rank)`);
-    }
-    
-    const defaultYLabel = this.rprYMetric === 'rpu' ? 'RPU per unique sequence' : 'Total reads per unique sequence';
-    const params = {
-      title: this.rprTitle,
-      xAxisLabel: this.rprXAxis,
-      yAxisLabel: this.adjustReadsPerRank === 'yes' ? this.rprYAxis : defaultYLabel,
-      lineColor: this.rprLineColor
-    };
-    
-    this.showReadsPerRankModal.emit({ data, params });
+
+    this.isLoadingReadsPerRank.set(true);
+    this.apiService.countReadsPerRank({
+      input_path: this.processedFileName(),
+      min_reads: this.minReadsToPlot,
+      max_rank: this.maxRankToPlot,
+      metric: this.rprYMetric
+    }).pipe(
+      finalize(() => this.isLoadingReadsPerRank.set(false))
+    ).subscribe({
+      next: (response) => {
+        const data = (response.data || []).map((d: any) => ({ rank: d.rank, reads: d.value }));
+        if (data.length === 0) {
+          alert('No data points match the specified criteria. Please adjust the min reads or max rank values.');
+          return;
+        }
+        const defaultYLabel = this.rprYMetric === 'rpu' ? 'RPU per unique sequence' : 'Total reads per unique sequence';
+        const params = {
+          title: this.rprTitle,
+          xAxisLabel: this.rprXAxis,
+          yAxisLabel: this.adjustReadsPerRank === 'yes' ? this.rprYAxis : defaultYLabel,
+          lineColor: this.rprLineColor
+        };
+        this.showReadsPerRankModal.emit({ data, params });
+      },
+      error: (error) => {
+        alert(`Failed to load plot data: ${error.error?.detail || error.message}`);
+      }
+    });
   }
 
   openSeqLengthHistogram(): void {
-    if (this.tableData.length === 0) {
+    if (!this.processedFileName()) {
       alert('No data available for plotting. Please run the count process first.');
       return;
     }
-    
-    const data = this.getSequenceLengthData();
-    
-    if (data.unique.length === 0 && data.total.length === 0) {
-      alert('No sequence length data available for plotting.');
-      return;
-    }
-    
-    const params = {
-      title: this.histTitle,
-      xAxisLabel: this.histXAxis,
-      yAxis1Label: this.histYAxis1,
-      yAxis2Label: this.histYAxis2,
-      barOutline: this.histBarOutline,
-      barFill: this.histBarFill,
-      barFill2: this.histBarFill2
-    };
-    this.showSeqLengthModal.emit({ data, params });
+
+    this.isLoadingSeqLengthHistogram.set(true);
+    this.apiService.countSequenceLengthHistogram({
+      input_path: this.processedFileName()
+    }).pipe(
+      finalize(() => this.isLoadingSeqLengthHistogram.set(false))
+    ).subscribe({
+      next: (response) => {
+        const lengths: number[] = response.lengths || [];
+        const data = {
+          unique: lengths.map((l, i) => ({ length: l, count: response.unique[i] })),
+          total: lengths.map((l, i) => ({ length: l, count: response.reads[i] }))
+        };
+        if (data.unique.length === 0 && data.total.length === 0) {
+          alert('No sequence length data available for plotting.');
+          return;
+        }
+        const outliers = response.excluded_outliers || [];
+        if (outliers.length > 0) {
+          const preview = outliers.slice(0, 5).map((o: any) => `${o.length} nt (${o.unique} seq)`).join(', ');
+          alert(
+            `${outliers.length} sequence length(s) far outside the normal range were excluded from this chart ` +
+            `so the real distribution stays readable: ${preview}${outliers.length > 5 ? ', ...' : ''}. ` +
+            `These are likely malformed records rather than real sequences - the full result file (via Download) still contains them.`
+          );
+        }
+        const params = {
+          title: this.histTitle,
+          xAxisLabel: this.histXAxis,
+          yAxis1Label: this.histYAxis1,
+          yAxis2Label: this.histYAxis2,
+          barOutline: this.histBarOutline,
+          barFill: this.histBarFill,
+          barFill2: this.histBarFill2
+        };
+        this.showSeqLengthModal.emit({ data, params });
+      },
+      error: (error) => {
+        alert(`Failed to load plot data: ${error.error?.detail || error.message}`);
+      }
+    });
   }
 
   openAbundancePlot(): void {
-    if (this.tableData.length === 0) {
+    if (!this.processedFileName()) {
       alert('No data available for plotting. Please run the count process first.');
       return;
     }
-    
-    // Validate breakpoints
+
     const breaks = this.abundanceBreakpoints.split(',').map(b => parseInt(b.trim())).filter(b => !isNaN(b));
-    
+
     if (breaks.length === 0) {
       alert('Invalid abundance breakpoints. Please enter comma-separated numbers (e.g., 10,100,1000).');
       return;
     }
-    
+
     if (breaks.some(b => b <= 0)) {
       alert('Abundance breakpoints must be positive numbers.');
       return;
     }
-    
-    const data = this.getAbundancePlotData();
-    
-    if (data.length === 0) {
-      alert('No abundance data available for plotting with the specified breakpoints.');
-      return;
-    }
-    
-    const params = {
-      title: this.abundancePlotTitle,
-      xAxisLabel: this.abundanceXAxis,
-      yAxisLabel: this.abundanceYAxis,
-      barOutline: this.abundanceBarOutline,
-      barFill: this.abundanceBarFill,
-      colorLight: this.abundanceColorLight,
-      colorDark: this.abundanceColorDark
-    };
-    
-    this.showAbundancePlotModal.emit({ data, params });
-  }
 
-  getReadsPerRankData(): any[] {
-    const maxAvailableRank = this.tableData.reduce((max, item) => item.rank > max ? item.rank : max, 0);
-    const effectiveMaxRank = Math.min(this.maxRankToPlot, maxAvailableRank);
-    const useRpu = this.rprYMetric === 'rpu';
-
-    return this.tableData
-      .filter(item => item.reads >= this.minReadsToPlot && item.rank <= effectiveMaxRank)
-      .map(item => ({ rank: item.rank, reads: useRpu ? item.rpm : item.reads }))
-      .sort((a, b) => a.rank - b.rank);
-  }
-
-  getSequenceLengthData(): any {
-    const uniqueLengths: { [key: number]: number } = {};
-    const totalReadsByLength: { [key: number]: number } = {};
-
-    this.tableData.forEach(item => {
-      uniqueLengths[item.length] = (uniqueLengths[item.length] || 0) + 1;
-      totalReadsByLength[item.length] = (totalReadsByLength[item.length] || 0) + item.reads;
-    });
-
-    return {
-      unique: Object.keys(uniqueLengths).map(len => ({ length: parseInt(len), count: uniqueLengths[parseInt(len)] })),
-      total: Object.keys(totalReadsByLength).map(len => ({ length: parseInt(len), count: totalReadsByLength[parseInt(len)] }))
-    };
-  }
-
-  getAbundancePlotData(): any[] {
-    const breaks = this.abundanceBreakpoints.split(',').map(b => parseInt(b.trim())).filter(b => !isNaN(b)).sort((a, b) => a - b);
-    const useSingleton = this.useSingleton === 'yes';
-    
-    // Create bins
-    const bins: { [key: string]: { count: number, totalReads: number } } = {};
-    
-    this.tableData.forEach(item => {
-      let binLabel = '';
-      
-      if (useSingleton && item.reads === 1) {
-        binLabel = 'Singleton';
-      } else {
-        for (let i = 0; i < breaks.length; i++) {
-          if (i === 0 && item.reads < breaks[i]) {
-            binLabel = `1 < Reads < ${breaks[i]}`;
-            break;
-          } else if (i > 0 && item.reads >= breaks[i - 1] && item.reads < breaks[i]) {
-            binLabel = `${breaks[i - 1]} ≤ Reads < ${breaks[i]}`;
-            break;
-          } else if (i === breaks.length - 1 && item.reads >= breaks[i]) {
-            binLabel = `${breaks[i]} ≤ Reads`;
-            break;
-          }
+    this.isLoadingAbundancePlot.set(true);
+    this.apiService.countAbundance({
+      input_path: this.processedFileName(),
+      breakpoints: breaks,
+      use_singleton: this.useSingleton === 'yes'
+    }).pipe(
+      finalize(() => this.isLoadingAbundancePlot.set(false))
+    ).subscribe({
+      next: (response) => {
+        const data = (response.data || []).map((d: any) => ({
+          bin: d.bin, fraction: d.fraction, uniqueCount: d.unique_count
+        }));
+        if (data.length === 0) {
+          alert('No abundance data available for plotting with the specified breakpoints.');
+          return;
         }
-      }
-      
-      if (binLabel) {
-        if (!bins[binLabel]) {
-          bins[binLabel] = { count: 0, totalReads: 0 };
-        }
-        bins[binLabel].count++;
-        bins[binLabel].totalReads += item.reads;
+        const params = {
+          title: this.abundancePlotTitle,
+          xAxisLabel: this.abundanceXAxis,
+          yAxisLabel: this.abundanceYAxis,
+          barOutline: this.abundanceBarOutline,
+          barFill: this.abundanceBarFill,
+          colorLight: this.abundanceColorLight,
+          colorDark: this.abundanceColorDark
+        };
+        this.showAbundancePlotModal.emit({ data, params });
+      },
+      error: (error) => {
+        alert(`Failed to load plot data: ${error.error?.detail || error.message}`);
       }
     });
-    
-    const totalReads = Object.values(bins).reduce((sum, bin) => sum + bin.totalReads, 0);
-    
-    return Object.keys(bins).map(label => ({
-      bin: label,
-      fraction: bins[label].totalReads / totalReads,
-      uniqueCount: bins[label].count
-    }));
   }
+
 }

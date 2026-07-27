@@ -59,14 +59,53 @@ export class ReadsPerRankChart implements AfterViewInit, OnChanges {
       const { default: Plotly } = await import('plotly.js-dist-min');
       this.Plotly = Plotly;
 
-      const xValues = this.data.map(d => d.rank);
-      const yValues = this.data.map(d => d.reads);
+      // Sort by rank and break the line wherever ranks aren't consecutive,
+      // so filtered-out/omitted ranks show as a gap instead of a misleading
+      // straight line connecting the surrounding points.
+      const sorted = [...this.data].sort((a, b) => a.rank - b.rank);
+      const xValues: (number | null)[] = [];
+      const yValues: (number | null)[] = [];
+
+      // Rank is always 1-indexed by definition, so a missing rank 1 is a
+      // leading gap with no preceding point to break against. Anchor the
+      // trace (and therefore the x-axis range) at rank 1 with a null value
+      // so the missing leading ranks are visible instead of the axis just
+      // autoranging to start at the first surviving rank.
+      if (sorted.length > 0 && sorted[0].rank > 1) {
+        xValues.push(1);
+        yValues.push(null);
+      }
+
+      for (let i = 0; i < sorted.length; i++) {
+        xValues.push(sorted[i].rank);
+        yValues.push(sorted[i].reads);
+        if (i < sorted.length - 1 && sorted[i + 1].rank - sorted[i].rank > 1) {
+          xValues.push(sorted[i].rank + 1);
+          yValues.push(null);
+        }
+      }
+
+      // With gaps now breaking the line, a real point whose neighbors on
+      // both sides are broken (e.g. rank 1 survives but rank 2 doesn't) has
+      // no line segment touching it and would be invisible in mode:'lines'.
+      // Give only those isolated points a visible marker so they still show.
+      const markerSizes = yValues.map((y, i) => {
+        if (y === null) return 0;
+        const leftBroken = i === 0 || yValues[i - 1] === null;
+        const rightBroken = i === yValues.length - 1 || yValues[i + 1] === null;
+        return leftBroken && rightBroken ? 6 : 0;
+      });
 
       const trace: any = {
         x: xValues,
         y: yValues,
         type: 'scatter',
-        mode: 'lines',
+        mode: 'lines+markers',
+        connectgaps: false,
+        marker: {
+          size: markerSizes,
+          color: this.lineColor
+        },
         line: {
           color: this.lineColor,
           width: 3
