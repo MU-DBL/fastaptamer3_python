@@ -9,6 +9,7 @@ python-multipart==0.0.6
 # Bioinformatics
 biopython>=1.81
 python-Levenshtein==0.27.3
+rapidfuzz==3.14.5
 
 # String processing
 regex>=2023.0.0

@@ -6,6 +6,8 @@ from Bio import SeqIO
 from services.constants import ColumnName
 
 _FASTA_WRAP = 60
+# Records per write, so large outputs are never held in memory as one string
+_WRITE_CHUNK = 100_000
 
 
 def _wrap_seq(seq, width=_FASTA_WRAP):
@@ -25,7 +27,9 @@ def save_sequences(seq_df, output_path, output_format='fasta'):
         ids = seq_df[ColumnName.ID].to_numpy()
         seqs = seq_df[ColumnName.SEQUENCES].to_numpy()
         with open(output_path, 'w') as f:
-            f.write(''.join(f'>{header}\n{_wrap_seq(seq)}\n' for header, seq in zip(ids, seqs)))
+            for start in range(0, len(ids), _WRITE_CHUNK):
+                end = start + _WRITE_CHUNK
+                f.write(''.join(f'>{header}\n{_wrap_seq(seq)}\n' for header, seq in zip(ids[start:end], seqs[start:end])))
 
     elif output_format == 'fastq':
         if 'Quality' not in seq_df.columns:
@@ -34,10 +38,12 @@ def save_sequences(seq_df, output_path, output_format='fasta'):
         seqs = seq_df[ColumnName.SEQUENCES].to_numpy()
         quals = seq_df['Quality'].to_numpy()
         with open(output_path, 'w') as f:
-            f.write(''.join(
-                f'@{header}\n{seq}\n+\n{_sanger_quality_str(qual)}\n'
-                for header, seq, qual in zip(ids, seqs, quals)
-            ))
+            for start in range(0, len(ids), _WRITE_CHUNK):
+                end = start + _WRITE_CHUNK
+                f.write(''.join(
+                    f'@{header}\n{seq}\n+\n{_sanger_quality_str(qual)}\n'
+                    for header, seq, qual in zip(ids[start:end], seqs[start:end], quals[start:end])
+                ))
 
     elif output_format == 'csv':
         seq_df.to_csv(output_path, index=False)

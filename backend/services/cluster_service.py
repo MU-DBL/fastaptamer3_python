@@ -1,8 +1,10 @@
 from pathlib import Path
 from Bio import SeqIO
+import numpy as np
 import pandas as pd
 import re
-import Levenshtein
+from rapidfuzz import process
+from rapidfuzz.distance import Levenshtein
 import time
 from services.file_service import parse_fasta,save_sequences
 from services.constants import ColumnName
@@ -10,14 +12,15 @@ from services.constants import ColumnName
 def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep_nc=True, output_path=None, output_format='fasta'):
     
     df = parse_fasta(input_path)
+    n_input = len(df)
 
-    # Filter by read count, initialize cluster-specific columns
-    cluster_data = df.copy()
-    cluster_data = cluster_data.sort_values(ColumnName.RPU, ascending=False)
+    # Filter by read count, initialize cluster-specific columns (sort_values already copies; drop df to free memory)
+    cluster_data = df.sort_values(ColumnName.RPU, ascending=False)
+    del df
     cluster_data = cluster_data[cluster_data[ColumnName.READS] >= min_reads].reset_index(drop=True)
     if len(cluster_data) == 0:
         print(f"WARNING: No sequences remain after filtering with min_reads={min_reads}")
-        print(f"Original data had {len(df)} sequences")
+        print(f"Original data had {n_input} sequences")
         return None
     
     cluster_data[ColumnName.CLUSTER] = pd.NA
@@ -28,72 +31,60 @@ def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep
     cluster_data[ColumnName.ORIGINAL_ID] = cluster_data[ColumnName.ID]
     cluster_data = cluster_data.drop(columns=[ColumnName.ID])
     
-    # Get sequences as a list
-    sequences = cluster_data[ColumnName.SEQUENCES].tolist()
-    
+    # Unclustered sequences, most abundant first
+    sequences = np.array(cluster_data[ColumnName.SEQUENCES].tolist(), dtype=object)
+
     # Create cluster iterator
     cluster_number = 1
-    
+
+    # Sequence -> cluster number, rank in cluster, and LED to seed
+    cluster_of, rank_of, led_of = {}, {}, {}
+
     # Only create a user-specified number of clusters and while you still have sequences
     while cluster_number <= total_clusters and len(sequences) > 0:
-        
+
         # Get start time
         start_time = time.time()
-        
-        # Reset iterator (counter)
-        counter = 0
-        
+
         # First element of seq. list (most abundant seq.) is seed; remove from seq. list
-        cluster_list = [sequences[0]]
+        seed = sequences[0]
         sequences = sequences[1:]
-        
-        # Make list for string distances
-        seq_led = [0]
-        
-        # Only iterate while you still have sequences
-        while len(sequences) > 0 and counter < len(sequences):
-            
-            # Check LED between seed and current sequence
-            if sequences[counter] is not None:
-                led_distance = Levenshtein.distance(cluster_list[0], sequences[counter])
-                
-                if led_distance <= max_led:
-                    # Add LED to seq_led list
-                    seq_led.append(led_distance)
-                    
-                    # If LED is <= maxLED, add sequence to cluster list; mark sequence as None
-                    cluster_list.append(sequences[counter])
-                    sequences[counter] = None
-            
-            # Check next sequence in list
-            counter += 1
-        
-        # Remove None values from sequence list; these seqs are now clustered
-        sequences = [s for s in sequences if s is not None]
-        
-        # Turn clustered sequences into DataFrame and merge back into cluster_data
-        seq_df = pd.DataFrame({
-            ColumnName.SEQUENCES: cluster_list,
-            ColumnName.CLUSTER: cluster_number,
-            ColumnName.RANK_IN_CLUSTER: range(1, len(cluster_list) + 1),
-            ColumnName.LED: seq_led
-        })
-        
-        # Update cluster_data with cluster information
-        for idx, row in seq_df.iterrows():
-            mask = cluster_data[ColumnName.SEQUENCES] == row[ColumnName.SEQUENCES]
-            cluster_data.loc[mask, ColumnName.CLUSTER] = row[ColumnName.CLUSTER]
-            cluster_data.loc[mask, ColumnName.RANK_IN_CLUSTER] = row[ColumnName.RANK_IN_CLUSTER]
-            cluster_data.loc[mask, ColumnName.LED] = row[ColumnName.LED]
-        
+
+        # LED between the seed and every remaining sequence in one multithreaded call (cdist splits
+        # work across threads by query row, so the remaining sequences are the queries);
+        # distances above max_led are returned as max_led + 1
+        if len(sequences) > 0:
+            led = process.cdist(sequences, [seed], scorer=Levenshtein.distance, score_cutoff=max_led, workers=-1)[:, 0]
+        else:
+            led = np.empty(0, dtype=np.int32)
+        in_cluster = led <= max_led
+
+        # Seed first, then members in abundance order, with their LED to the seed
+        cluster_list = [seed, *sequences[in_cluster]]
+        seq_led = [0, *led[in_cluster].tolist()]
+
+        # Remove clustered sequences from the unclustered list
+        sequences = sequences[~in_cluster]
+
+        # Record cluster information per sequence; written back to cluster_data once after the loop
+        for rank, (seq, led) in enumerate(zip(cluster_list, seq_led), start=1):
+            cluster_of[seq] = cluster_number
+            rank_of[seq] = rank
+            led_of[seq] = led
+
         # Message with number of unique sequences in cluster
         # elapsed_time = time.time() - start_time
-        # print(f"Finished cluster {cluster_number}: {len(seq_df)} unique sequences")
+        # print(f"Finished cluster {cluster_number}: {len(cluster_list)} unique sequences")
         # print(f"Elapsed time: {elapsed_time:.2f} seconds\n")
         
         # Bump the cluster number
         cluster_number += 1
-    
+
+    # Update cluster_data with cluster information (unclustered sequences stay NA)
+    cluster_data[ColumnName.CLUSTER] = cluster_data[ColumnName.SEQUENCES].map(cluster_of)
+    cluster_data[ColumnName.RANK_IN_CLUSTER] = cluster_data[ColumnName.SEQUENCES].map(rank_of)
+    cluster_data[ColumnName.LED] = cluster_data[ColumnName.SEQUENCES].map(led_of)
+
     # Keep or omit non-clustered sequences
     if keep_nc:
         # Replace NAs with 0
@@ -110,7 +101,7 @@ def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep
             
             # Compute LED between the cluster seed and every other sequence
             seed_sequence = cluster0.iloc[0][ColumnName.SEQUENCES]
-            cluster0[ColumnName.LED] = cluster0[ColumnName.SEQUENCES].apply(lambda x: Levenshtein.distance(seed_sequence, x))
+            cluster0[ColumnName.LED] = process.cdist(cluster0[ColumnName.SEQUENCES].tolist(), [seed_sequence], scorer=Levenshtein.distance, workers=-1)[:, 0]
 
         # Add cluster 0 back to main data
         cluster_data = pd.concat([cluster_data, cluster0], ignore_index=True)
@@ -122,10 +113,14 @@ def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep
     cluster_data[ColumnName.RANK_IN_CLUSTER] = cluster_data[ColumnName.RANK_IN_CLUSTER].astype(int)
     cluster_data[ColumnName.LED] = cluster_data[ColumnName.LED].astype(int)
     
-    # Add cluster information to sequence IDs
-    cluster_data[ColumnName.ID] = cluster_data.apply(
-        lambda row: f"{ColumnName.RANK}={row[ColumnName.RANK]};{ColumnName.READS}={row[ColumnName.READS]};{ColumnName.RPU}={row[ColumnName.RPU]};{ColumnName.CLUSTER}={row[ColumnName.CLUSTER]};{ColumnName.RANK_IN_CLUSTER}={row[ColumnName.RANK_IN_CLUSTER]};{ColumnName.LED}={row[ColumnName.LED]}", 
-        axis=1
+    # Add cluster information to sequence IDs (column-wise; a row-wise apply takes minutes on millions of rows)
+    cluster_data[ColumnName.ID] = (
+        f"{ColumnName.RANK}=" + cluster_data[ColumnName.RANK].astype(str)
+        + f";{ColumnName.READS}=" + cluster_data[ColumnName.READS].astype(str)
+        + f";{ColumnName.RPU}=" + cluster_data[ColumnName.RPU].astype(str)
+        + f";{ColumnName.CLUSTER}=" + cluster_data[ColumnName.CLUSTER].astype(str)
+        + f";{ColumnName.RANK_IN_CLUSTER}=" + cluster_data[ColumnName.RANK_IN_CLUSTER].astype(str)
+        + f";{ColumnName.LED}=" + cluster_data[ColumnName.LED].astype(str)
     )
     
     # Reorder columns to put ID first
