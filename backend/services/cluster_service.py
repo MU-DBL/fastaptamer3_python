@@ -6,7 +6,7 @@ import re
 from rapidfuzz import process
 from rapidfuzz.distance import Levenshtein
 import time
-from services.file_service import parse_fasta,save_sequences
+from services.file_service import parse_fasta, save_sequences, format_rpu
 from services.constants import ColumnName
 
 def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep_nc=True, output_path=None, output_format='fasta'):
@@ -117,7 +117,8 @@ def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep
     cluster_data[ColumnName.ID] = (
         f"{ColumnName.RANK}=" + cluster_data[ColumnName.RANK].astype(str)
         + f";{ColumnName.READS}=" + cluster_data[ColumnName.READS].astype(str)
-        + f";{ColumnName.RPU}=" + cluster_data[ColumnName.RPU].astype(str)
+        + f";{ColumnName.RPU}=" + format_rpu(cluster_data[ColumnName.RPU])
+        + (f";{ColumnName.U}=" + cluster_data[ColumnName.U].astype(str) if ColumnName.U in cluster_data.columns else "")
         + f";{ColumnName.CLUSTER}=" + cluster_data[ColumnName.CLUSTER].astype(str)
         + f";{ColumnName.RANK_IN_CLUSTER}=" + cluster_data[ColumnName.RANK_IN_CLUSTER].astype(str)
         + f";{ColumnName.LED}=" + cluster_data[ColumnName.LED].astype(str)
@@ -125,6 +126,8 @@ def run_cluster_led(input_path, min_reads=10, max_led=7, total_clusters=30, keep
     
     # Reorder columns to put ID first
     cols = [ColumnName.ID, ColumnName.RANK, ColumnName.READS,ColumnName.RPU,ColumnName.CLUSTER,ColumnName.RANK_IN_CLUSTER,ColumnName.SEQUENCES]
+    if ColumnName.U in cluster_data.columns:
+        cols.insert(cols.index(ColumnName.RPU) + 1, ColumnName.U)
     cluster_data = cluster_data[cols]
 
     save_sequences(cluster_data, output_path, output_format)

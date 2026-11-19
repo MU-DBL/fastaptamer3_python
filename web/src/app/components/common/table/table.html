@@ -7,6 +7,19 @@
       </select>
       entries
     </label>
+    <details *ngIf="config.columnToggle" class="column-toggle">
+      <summary class="column-toggle-button">Columns ({{ displayedColumns.length }}/{{ config.columns.length }})</summary>
+      <div class="column-toggle-menu">
+        <div class="column-toggle-actions">
+          <button type="button" (click)="showAllColumns()" class="pagination-button">Show all</button>
+          <button *ngIf="hasDefaultHiddenColumns()" type="button" (click)="resetColumns()" class="pagination-button">Reset</button>
+        </div>
+        <label *ngFor="let column of config.columns" class="column-toggle-item">
+          <input type="checkbox" [checked]="isColumnVisible(column.key)" (change)="toggleColumn(column.key)">
+          {{ column.label }}
+        </label>
+      </div>
+    </details>
     <div class="search-box">
       <label>Search: <input type="text" [(ngModel)]="searchText" (input)="onSearch()" class="search-input"></label>
     </div>

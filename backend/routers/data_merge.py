@@ -79,7 +79,7 @@ async def data_merge(params: DataMergeInput):
         fa_df_list.append(read_file(input_file))
     
     # Rename columns for each population
-    population_columns = ["ID", "Rank", "Reads", "RPU", "Cluster", "RankInCluster", "LED"]
+    population_columns = ["ID", "Rank", "Reads", "RPU", "U", "Cluster", "RankInCluster", "LED"]
     renamed_df_list = []
     
     for i, df in enumerate(fa_df_list):

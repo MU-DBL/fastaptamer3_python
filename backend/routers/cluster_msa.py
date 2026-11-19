@@ -198,20 +198,8 @@ async def calculate_msa_mutual_info(params: MSAAnalysisInput):
 
         n_positions = msa_matrix.shape[1]
 
-        # Calculate pairwise mutual information
-        mi_matrix = np.zeros((n_positions, n_positions))
-
-        for i in range(n_positions):
-            for j in range(n_positions):
-                if i == j:
-                    # Self-information equals entropy
-                    mi_matrix[i, j] = calculate_shannon_entropy(msa_matrix[:, i])
-                else:
-                    # Mutual information between positions
-                    mi_matrix[i, j] = calculate_mutual_information(
-                        msa_matrix[:, i],
-                        msa_matrix[:, j]
-                    )
+        # Calculate pairwise mutual information (diagonal = entropy, i.e. self-information)
+        mi_matrix = mutual_information_matrix(msa_matrix)
 
         # Round values for readability
         mi_matrix = np.round(mi_matrix, 6)
@@ -267,6 +255,29 @@ def calculate_shannon_entropy(column: np.ndarray) -> float:
     ent = -np.sum(probabilities * np.log(probabilities))
     
     return float(ent)
+
+
+def mutual_information_matrix(msa_matrix: np.ndarray) -> np.ndarray:
+    """Mutual information (nats) between every pair of MSA columns; same values as
+    calculate_mutual_information per pair, with entropy on the diagonal."""
+    n_seqs, n_positions = msa_matrix.shape
+    symbols, codes = np.unique(msa_matrix, return_inverse=True)
+    n_symbols = len(symbols)
+    codes = codes.reshape(n_seqs, n_positions)
+
+    # One-hot encode (sequence x position*symbol); one matrix product gives the joint
+    # counts of every symbol pair at every position pair
+    onehot = np.zeros((n_seqs, n_positions * n_symbols))
+    onehot[np.arange(n_seqs)[:, None], np.arange(n_positions) * n_symbols + codes] = 1
+    joint = (onehot.T @ onehot).reshape(n_positions, n_symbols, n_positions, n_symbols) / n_seqs
+    marginal = onehot.sum(axis=0).reshape(n_positions, n_symbols) / n_seqs
+
+    # MI = sum p(a,b) * log(p(a,b) / (p(a) * p(b))) over observed symbol pairs
+    expected = marginal[:, :, None, None] * marginal[None, None, :, :]
+    terms = np.zeros_like(joint)
+    observed = joint > 0
+    terms[observed] = joint[observed] * np.log(joint[observed] / expected[observed])
+    return np.clip(terms.sum(axis=(1, 3)), 0.0, None)
 
 
 def calculate_mutual_information(col1: np.ndarray, col2: np.ndarray) -> float:

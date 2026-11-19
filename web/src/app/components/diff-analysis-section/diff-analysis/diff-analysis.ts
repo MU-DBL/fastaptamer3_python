@@ -54,7 +54,7 @@ export class DiffAnalysis implements OnDestroy {
   private readonly edgeRPlotDefaults = {
     edgeRPlotXAxis: 'log₂CPM',
     edgeRPlotYAxis: 'log₂FC',
-    edgeRPlotTitle: 'edgeR results',
+    edgeRPlotTitle: 'MA Plot',
     edgeRPlotSigColor: '#FF0000',
     edgeRPlotInsigColor: '#000000',
     edgeRPlotSigSize: 9,

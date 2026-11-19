@@ -12,6 +12,31 @@ import { ColumnName, FileService } from '../../../shared/file-service';
 import { Table, TableConfig } from '../../common/table/table';
 import { PlotModalService } from '../../../shared/plot-modal.service';
 
+// Enrichment metric: decides the status column and what the RPU/enrichment plots show
+type EnrichmentMetric = 'total' | 'avg' | 'seed';
+
+// Summary-table columns plotted for each metric
+const METRIC_COLUMNS: Record<EnrichmentMetric, { rpu1: string; rpu2: string; enrichment: string }> = {
+  total: { rpu1: ColumnName.TOTAL_RPU_POP1, rpu2: ColumnName.TOTAL_RPU_POP2, enrichment: ColumnName.TOTAL_ENRICHMENT },
+  avg: { rpu1: ColumnName.AVG_RPU_POP1, rpu2: ColumnName.AVG_RPU_POP2, enrichment: ColumnName.ENRICHMENT },
+  seed: { rpu1: ColumnName.SEED_RPU_POP1, rpu2: ColumnName.SEED_RPU_POP2, enrichment: ColumnName.SEED_ENRICHMENT },
+};
+
+// Default plot labels for each metric; labels the user has edited are left alone when the metric changes
+function metricPlotLabels(metric: EnrichmentMetric) {
+  const rpu = { total: 'Total RPU', avg: 'Avg. RPU', seed: 'Seed RPU' }[metric];
+  const enrichment = { total: 'Enrichment (Total)', avg: 'Enrichment (Avg)', seed: 'Enrichment (Seed)' }[metric];
+  return {
+    rpuYAxis: rpu,
+    rpuTitle: `${rpu} per super-cluster`,
+    enrichmentYAxis: enrichment,
+    enrichmentTitle: `${enrichment} per super-cluster`,
+    rpuScatterXAxis: `Pop 1 ${rpu}`,
+    rpuScatterYAxis: `Pop 2 ${rpu}`,
+  };
+}
+type MetricPlotLabels = ReturnType<typeof metricPlotLabels>;
+
 @Component({
   selector: 'app-recluster',
   imports: [CommonModule, FormsModule, Upload, Table, SplitPanel, ...MATERIAL_IMPORTS],
@@ -32,6 +57,7 @@ export class Recluster implements OnDestroy {
   mode: 'two-pop' | 'multi-round' = 'two-pop';
 
   onModeChange(): void {
+    this.ledThreshold = this.mode === 'two-pop' ? 0 : 3;
     this.reclusterData = [];
     this.processedFileName.set('');
     this.multiRoundLabels = [];
@@ -46,16 +72,26 @@ export class Recluster implements OnDestroy {
       { key: ColumnName.SEED, label: 'Seed' },
       { key: ColumnName.SIZE_POP1, label: 'Size (Pop 1)' },
       { key: ColumnName.SIZE_POP2, label: 'Size (Pop 2)' },
-      { key: ColumnName.AVG_RPU_POP1, label: 'Avg RPU (Pop 1)' },
-      { key: ColumnName.AVG_RPU_POP2, label: 'Avg RPU (Pop 2)' },
-      { key: ColumnName.ENRICHMENT, label: 'Enrichment (Avg)' },
-      { key: ColumnName.LOG2E, label: 'log2E (Avg)' },
+      { key: ColumnName.SEED_LED, label: 'Seed LED' },
+      { key: ColumnName.MEDIAN_LED, label: 'Median LED to seed' },
+      { key: ColumnName.MAX_LED, label: 'Max LED to seed' },
+      { key: ColumnName.DIAMETER, label: 'Diameter' },
+      { key: ColumnName.U, label: 'U' },
+      { key: ColumnName.TOTAL_RPU_POP1, label: 'Total RPU (Pop 1)' },
+      { key: ColumnName.TOTAL_RPU_POP2, label: 'Total RPU (Pop 2)' },
+      { key: ColumnName.TOTAL_ENRICHMENT, label: 'Enrichment (Total)' },
+      { key: ColumnName.TOTAL_LOG2E, label: 'log2E (Total)' },
       { key: ColumnName.SEED_RPU_POP1, label: 'Seed RPU (Pop 1)' },
       { key: ColumnName.SEED_RPU_POP2, label: 'Seed RPU (Pop 2)' },
       { key: ColumnName.SEED_ENRICHMENT, label: 'Enrichment (Seed)' },
       { key: ColumnName.SEED_LOG2E, label: 'log2E (Seed)' },
+      { key: ColumnName.AVG_RPU_POP1, label: 'Avg RPU (Pop 1)' },
+      { key: ColumnName.AVG_RPU_POP2, label: 'Avg RPU (Pop 2)' },
+      { key: ColumnName.ENRICHMENT, label: 'Enrichment (Avg)' },
+      { key: ColumnName.LOG2E, label: 'log2E (Avg)' },
       { key: ColumnName.STATUS, label: 'Status' },
     ],
+    columnToggle: true,
     initialPageSize: 10,
     pageSizeOptions: [10, 25, 50, 100],
   };
@@ -120,9 +156,12 @@ export class Recluster implements OnDestroy {
   // ========================================================================
   // PARAMETERS
   // ========================================================================
-  ledThreshold = 7;
-  enrichmentType: 'avg' | 'seed' = 'avg';
+  // Seed LED for merging; 0 links only identical seeds (as in FASTAptameR 2.0). Defaults: 0 two-pop, 3 multi-round
+  ledThreshold = 0;
+  enrichmentType: EnrichmentMetric = 'total';
   enrichmentThreshold = 1.0;
+  // Metric of the results on screen (the one used in the last run), so plots agree with the status column
+  plotMetric: EnrichmentMetric = 'total';
 
   // ========================================================================
   // HEATMAP CUSTOMIZATION
@@ -150,9 +189,9 @@ export class Recluster implements OnDestroy {
   // ========================================================================
   adjustRPU = 'no';
   rpuXAxis = 'Super-cluster';
-  rpuYAxis = 'Avg. RPU';
+  rpuYAxis = metricPlotLabels('total').rpuYAxis;
   rpuLegend = 'Population';
-  rpuTitle = 'Avg. RPU per super-cluster';
+  rpuTitle = metricPlotLabels('total').rpuTitle;
   rpuColor1 = '#1b9e77';
   rpuColor2 = '#d95f02';
 
@@ -161,8 +200,8 @@ export class Recluster implements OnDestroy {
   // ========================================================================
   adjustEnrichment = 'no';
   enrichmentXAxis = 'Super-cluster';
-  enrichmentYAxis = 'Enrichment';
-  enrichmentTitle = 'Enrichment per super-cluster';
+  enrichmentYAxis = metricPlotLabels('total').enrichmentYAxis;
+  enrichmentTitle = metricPlotLabels('total').enrichmentTitle;
   enrichmentBarFill = '#87ceeb';
   enrichmentBarOutline = '#000000';
 
@@ -170,8 +209,8 @@ export class Recluster implements OnDestroy {
   // RPU SCATTER PLOT CUSTOMIZATION (two-pop)
   // ========================================================================
   adjustRPUScatter = 'no';
-  rpuScatterXAxis = 'Pop 1 Avg. RPU';
-  rpuScatterYAxis = 'Pop 2 Avg. RPU';
+  rpuScatterXAxis = metricPlotLabels('total').rpuScatterXAxis;
+  rpuScatterYAxis = metricPlotLabels('total').rpuScatterYAxis;
   rpuScatterTitle = 'RPU scatter: Pop 1 vs Pop 2';
   rpuScatterColor = '#1f77b4';
 
@@ -179,7 +218,7 @@ export class Recluster implements OnDestroy {
   // TRAJECTORY PLOT CUSTOMIZATION (multi-round)
   // ========================================================================
   adjustTrajectory = 'no';
-  trajectoryYAxis = 'Avg. RPU';
+  trajectoryYAxis = 'Total RPU';
   trajectoryTitle = 'Cluster trajectory across rounds';
   trajectoryTopN: number | null = null;
 
@@ -343,12 +382,13 @@ export class Recluster implements OnDestroy {
     this.processedSequenceFileName.set('');
     this.reclusterData = [];
     this.sequenceData = [];
+    const metric = this.enrichmentType;
 
     this.apiService.recluster({
       fadf1_cluster_path: this.savedFileName1,
       fadf2_cluster_path: this.savedFileName2,
       led_threshold: this.ledThreshold,
-      enrichment_type: this.enrichmentType,
+      enrichment_type: metric,
       enrichment_threshold: this.enrichmentThreshold,
       output_format: 'csv',
     }).pipe(
@@ -368,6 +408,7 @@ export class Recluster implements OnDestroy {
       tap(([clusterData, seqData]) => {
         this.reclusterData = clusterData;
         this.sequenceData = seqData;
+        this.setPlotMetric(metric);
       }),
       catchError(error => {
         alert(`Reclustering failed: ${error.error?.detail || error.message}`);
@@ -375,6 +416,18 @@ export class Recluster implements OnDestroy {
       }),
       finalize(() => { this.isProcessing.set(false); this.cdr.detectChanges(); })
     ).subscribe();
+  }
+
+  // Switch the plots to the metric of the new results; labels still at the old metric's default follow it
+  private setPlotMetric(metric: EnrichmentMetric): void {
+    const oldLabels = metricPlotLabels(this.plotMetric);
+    const newLabels = metricPlotLabels(metric);
+    (Object.keys(newLabels) as (keyof MetricPlotLabels)[]).forEach(key => {
+      if (this[key] === oldLabels[key]) {
+        this[key] = newLabels[key];
+      }
+    });
+    this.plotMetric = metric;
   }
 
   // ========================================================================
@@ -422,6 +475,16 @@ export class Recluster implements OnDestroy {
         { key: `Size.${r1}`, label: `Size (${r1})` },
         { key: `Size.${r2}`, label: `Size (${r2})` },
         { key: `Size.${r3}`, label: `Size (${r3})` },
+        { key: ColumnName.SEED_LED, label: 'Seed LED' },
+        { key: ColumnName.MEDIAN_LED, label: 'Median LED to seed' },
+        { key: ColumnName.MAX_LED, label: 'Max LED to seed' },
+        { key: ColumnName.DIAMETER, label: 'Diameter' },
+        { key: ColumnName.U, label: 'U' },
+        { key: `TotalRPU.${r1}`, label: `Total RPU (${r1})` },
+        { key: `TotalRPU.${r2}`, label: `Total RPU (${r2})` },
+        { key: `TotalRPU.${r3}`, label: `Total RPU (${r3})` },
+        { key: `TotalE.${r1}.${r2}`, label: `Total Enrichment (${r1}→${r2})` },
+        { key: `TotalE.${r2}.${r3}`, label: `Total Enrichment (${r2}→${r3})` },
         { key: `AvgRPU.${r1}`, label: `Avg RPU (${r1})` },
         { key: `AvgRPU.${r2}`, label: `Avg RPU (${r2})` },
         { key: `AvgRPU.${r3}`, label: `Avg RPU (${r3})` },
@@ -433,6 +496,7 @@ export class Recluster implements OnDestroy {
         { key: `SeedE.${r1}.${r2}`, label: `Seed Enrichment (${r1}→${r2})` },
         { key: `SeedE.${r2}.${r3}`, label: `Seed Enrichment (${r2}→${r3})` },
       ],
+      columnToggle: true,
       initialPageSize: 10,
       pageSizeOptions: [10, 25, 50, 100],
     };
@@ -469,9 +533,10 @@ export class Recluster implements OnDestroy {
   // ========================================================================
   onGenerateRPUPlot(): void {
     if (this.reclusterData.length === 0) return;
+    const cols = METRIC_COLUMNS[this.plotMetric];
     const clusters = this.reclusterData.map(r => r[ColumnName.SUPER_CLUSTER]);
-    const rpu1 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP1] ?? null);
-    const rpu2 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP2] ?? null);
+    const rpu1 = this.reclusterData.map(r => r[cols.rpu1] ?? null);
+    const rpu2 = this.reclusterData.map(r => r[cols.rpu2] ?? null);
 
     this.plotModalService.openPlot({
       data: [
@@ -496,8 +561,9 @@ export class Recluster implements OnDestroy {
   onGenerateEnrichmentPlot(): void {
     if (this.reclusterData.length === 0) return;
     const clusters = this.reclusterData.map(r => r[ColumnName.SUPER_CLUSTER]);
+    const enrichmentCol = METRIC_COLUMNS[this.plotMetric].enrichment;
     const enrichments = this.reclusterData.map(r => {
-      const v = parseFloat(r[ColumnName.ENRICHMENT]);
+      const v = parseFloat(r[enrichmentCol]);
       return isFinite(v) ? v : null;
     });
 
@@ -523,9 +589,10 @@ export class Recluster implements OnDestroy {
   // ========================================================================
   onGenerateRPUScatterPlot(): void {
     if (this.reclusterData.length === 0) return;
+    const cols = METRIC_COLUMNS[this.plotMetric];
     const clusters = this.reclusterData.map(r => r[ColumnName.SUPER_CLUSTER]);
-    const rpu1 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP1] ?? null);
-    const rpu2 = this.reclusterData.map(r => r[ColumnName.AVG_RPU_POP2] ?? null);
+    const rpu1 = this.reclusterData.map(r => r[cols.rpu1] ?? null);
+    const rpu2 = this.reclusterData.map(r => r[cols.rpu2] ?? null);
     const maxVal = Math.max(...rpu1.filter(v => v != null), ...rpu2.filter(v => v != null));
 
     this.plotModalService.openPlot({
@@ -576,7 +643,7 @@ export class Recluster implements OnDestroy {
       mode: 'lines+markers',
       name: `Cluster ${row['SuperCluster']}`,
       x: rounds,
-      y: [row[`AvgRPU.${r1}`] ?? null, row[`AvgRPU.${r2}`] ?? null, row[`AvgRPU.${r3}`] ?? null],
+      y: [row[`TotalRPU.${r1}`] ?? null, row[`TotalRPU.${r2}`] ?? null, row[`TotalRPU.${r3}`] ?? null],
       connectgaps: false,
     }));
 

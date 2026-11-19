@@ -29,7 +29,7 @@ export class MotifOmit implements OnDestroy {
       { key: 'id', label: 'id' },
       { key: 'rank', label: 'Rank' },
       { key: 'reads', label: 'Reads' },
-      { key: 'rpm', label: 'RPM' },
+      { key: 'rpm', label: 'RPU' },
       { key: 'seqs', label: 'Sequence' }
     ],
     initialPageSize: 10,
@@ -189,7 +189,7 @@ export class MotifOmit implements OnDestroy {
             id: values[idIdx] || '',
             rank: rankIdx >= 0 ? parseInt(values[rankIdx]) : 0,
             reads: readsIdx >= 0 ? parseInt(values[readsIdx]) : 0,
-            rpm: rpuIdx >= 0 ? parseInt(values[rpuIdx]) : 0,
+            rpm: rpuIdx >= 0 ? parseFloat(values[rpuIdx]) : 0,
             seqs: seqIdx >= 0 ? values[seqIdx] : ''
           });
         }
@@ -215,7 +215,7 @@ export class MotifOmit implements OnDestroy {
             id: header,
             rank: parseInt(parts['Rank'] || '0'),
             reads: parseInt(parts['Reads'] || '0'),
-            rpm: parseInt(parts['RPU'] || '0'),
+            rpm: parseFloat(parts['RPU'] || '0'),
             seqs: sequence
           });
         }

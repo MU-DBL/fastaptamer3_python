@@ -52,14 +52,15 @@ def run_count(inputpath=None, reverseComplement=False, scaling_factor=1e6, outpu
     seq_counts = pd.DataFrame(pairs, columns=[ColumnName.SEQUENCES, ColumnName.READS])
     seq_counts[ColumnName.RANK] = seq_counts.index + 1
 
-    total_reads = seq_counts[ColumnName.READS].sum()
-    seq_counts[ColumnName.RPU] = (seq_counts[ColumnName.READS] / (total_reads / scaling_factor)).round(0).astype(int)
+    seq_counts[ColumnName.RPU] = file_service.compute_rpu(seq_counts[ColumnName.READS], scaling_factor)
     seq_counts[ColumnName.LENGTH] = seq_counts[ColumnName.SEQUENCES].str.len()
+    seq_counts[ColumnName.U] = file_service.format_scaling_factor(scaling_factor)
     seq_counts[ColumnName.ID] = (ColumnName.RANK + '=' + seq_counts[ColumnName.RANK].astype(str) + ';' +
                                   ColumnName.READS + '=' + seq_counts[ColumnName.READS].astype(str) + ';' +
-                                  ColumnName.RPU + '=' + seq_counts[ColumnName.RPU].astype(str))
+                                  ColumnName.RPU + '=' + file_service.format_rpu(seq_counts[ColumnName.RPU]) + ';' +
+                                  ColumnName.U + '=' + seq_counts[ColumnName.U])
 
-    seq_counts = seq_counts[[ColumnName.ID, ColumnName.RANK, ColumnName.READS, ColumnName.RPU, ColumnName.LENGTH, ColumnName.SEQUENCES]]
+    seq_counts = seq_counts[[ColumnName.ID, ColumnName.RANK, ColumnName.READS, ColumnName.RPU, ColumnName.U, ColumnName.LENGTH, ColumnName.SEQUENCES]]
 
     if reverseComplement:
         seq_counts[ColumnName.SEQUENCES] = seq_counts[ColumnName.SEQUENCES].apply(_reverse_complement)
@@ -221,7 +222,7 @@ def _iter_count_rows(result_path):
                     'id': values[idx[ColumnName.ID]],
                     'rank': int(values[idx[ColumnName.RANK]]),
                     'reads': int(values[idx[ColumnName.READS]]),
-                    'rpm': int(float(values[idx[ColumnName.RPU]])),
+                    'rpm': float(values[idx[ColumnName.RPU]]),
                     'length': int(values[idx[ColumnName.LENGTH]]),
                     'seqs': values[idx[ColumnName.SEQUENCES]],
                 }
@@ -248,7 +249,7 @@ def _fasta_row(header_line, seq):
         'id': header_line,
         'rank': int(parts[ColumnName.RANK]),
         'reads': int(parts[ColumnName.READS]),
-        'rpm': int(float(parts[ColumnName.RPU])),
+        'rpm': float(parts[ColumnName.RPU]),
         'length': len(seq),
         'seqs': seq,
     }

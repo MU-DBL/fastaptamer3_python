@@ -1,4 +1,4 @@
-from services.file_service import read_file, save_sequences
+from services.file_service import read_file, save_sequences, check_same_scaling_factor
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from pathlib import Path
@@ -110,6 +110,12 @@ async def sequence_tracker(params: MotifTrackerInput):
     validate_inputs(params)
 
     dfs, _ = load_fasta_files(params)
+
+    # Sequence tracking compares RPU across populations, so U must match
+    try:
+        check_same_scaling_factor(dfs, params.input_paths)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
     rows = []
 

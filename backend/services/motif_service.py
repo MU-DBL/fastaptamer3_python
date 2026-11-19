@@ -5,6 +5,12 @@ from services.constants import ColumnName
 from services import file_service
 
 
+def _u_suffix(df: pd.DataFrame) -> str:
+    """';U=<U>' for rebuilt IDs, so U survives motif filtering; '' when the input does not record U."""
+    u = file_service.scaling_factor_of(df[ColumnName.U]) if ColumnName.U in df.columns else None
+    return f';{ColumnName.U}={u}' if u is not None else ''
+
+
 def _fuzzy_match_series(series: pd.Series, pattern: str, max_mismatches: int) -> pd.Series:
     """Apply fuzzy (approximate) matching to a pandas Series of sequences."""
     fuzzy_pattern = regex.compile(f"(?:{pattern}){{s<={max_mismatches}}}")
@@ -153,7 +159,7 @@ def search_motif(
     filtered_df[ColumnName.ID] = (
         'Rank=' + filtered_df[ColumnName.RANK].astype(str) + ';' +
         'Reads=' + filtered_df[ColumnName.READS].astype(str) + ';' +
-        'RPU=' + filtered_df[ColumnName.RPU].astype(str)
+        'RPU=' + file_service.format_rpu(filtered_df[ColumnName.RPU]) + _u_suffix(filtered_df)
     )
     
     # Save results
@@ -251,7 +257,7 @@ def omit_motif(
     filtered_df[ColumnName.ID] = (
         'Rank=' + filtered_df[ColumnName.RANK].astype(str) + ';' +
         'Reads=' + filtered_df[ColumnName.READS].astype(str) + ';' +
-        'RPU=' + filtered_df[ColumnName.RPU].astype(str)
+        'RPU=' + file_service.format_rpu(filtered_df[ColumnName.RPU]) + _u_suffix(filtered_df)
     )
     
     # Save results (no highlighting for omit functionality)

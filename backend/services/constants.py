@@ -8,6 +8,7 @@ class ColumnName:
     RANK = 'Rank'
     READS = 'Reads'
     RPU = 'RPU'
+    U = 'U'  # scaling factor used for RPU (reads per U)
     SEQUENCES = 'sequences'
     LENGTH='length'
     DISTANCE = 'Distance'

@@ -24,3 +24,5 @@ __pycache__/
 *$py.class
 setup.ps1
 run.ps1
+
+/benchmark

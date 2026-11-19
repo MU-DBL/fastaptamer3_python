@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MATERIAL_IMPORTS } from '../../../shared/material-imports';
 import { ApiService } from '../../../shared/api.service';
+import { ColumnName } from '../../../shared/file-service';
 import { switchMap, tap, catchError, finalize, map } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Table, TableConfig } from '../../common/table/table';
@@ -38,7 +39,7 @@ export class Recount implements OnDestroy {
       { key: 'id', label: 'id' },
       { key: 'rank', label: 'Rank' },
       { key: 'reads', label: 'Reads' },
-      { key: 'rpm', label: 'RPM' },
+      { key: 'rpm', label: 'RPU' },
       { key: 'length', label: 'Length' },
       { key: 'seqs', label: 'Sequence' }
     ],
@@ -225,18 +226,26 @@ export class Recount implements OnDestroy {
     if (isCsv) {
       // Parse CSV
       const lines = content.split('\n').filter(line => line.trim());
-      const headers = lines[0].split(',');
+      // Look up columns by header name so extra columns (e.g. U) don't shift positions
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const col = (name: ColumnName) => headers.indexOf(name.toLowerCase());
+      const idIdx = col(ColumnName.ID);
+      const rankIdx = col(ColumnName.RANK);
+      const readsIdx = col(ColumnName.READS);
+      const rpuIdx = col(ColumnName.RPU);
+      const lengthIdx = col(ColumnName.LENGTH);
+      const seqIdx = col(ColumnName.SEQUENCES);
 
       for (let i = 1; i < lines.length; i++) {
         const values = lines[i].split(',');
-        if (values.length >= 6) {
+        if (values.length >= headers.length) {
           this.tableData.push({
-            id: values[0],
-            rank: parseInt(values[1]),
-            reads: parseInt(values[2]),
-            rpm: parseInt(values[3]),
-            length: parseInt(values[4]),
-            seqs: values[5]
+            id: values[idIdx],
+            rank: parseInt(values[rankIdx]),
+            reads: parseInt(values[readsIdx]),
+            rpm: parseFloat(values[rpuIdx]),
+            length: parseInt(values[lengthIdx]),
+            seqs: values[seqIdx]
           });
         }
       }
@@ -274,17 +283,21 @@ export class Recount implements OnDestroy {
   }
 
   addFastaEntry(id: string, sequence: string): void {
-    // Parse ID format: "rank=1;read=20;RPU=200000"
-    const parts = id.split(';');
-    const rank = parts[0]?.split('=')[1] || '';
-    const reads = parts[1]?.split('=')[1] || '';
-    const rpm = parts[2]?.split('=')[1] || '';
+    // Parse ID format: "Rank=1;Reads=20;RPU=200000;U=1000000" by key, not position
+    const fields = new Map<string, string>();
+    id.split(';').forEach(part => {
+      const [key, value] = part.split('=', 2);
+      if (value !== undefined) fields.set(key.trim().toLowerCase(), value.trim());
+    });
+    const rank = fields.get(ColumnName.RANK.toLowerCase()) || '';
+    const reads = fields.get(ColumnName.READS.toLowerCase()) || '';
+    const rpm = fields.get(ColumnName.RPU.toLowerCase()) || '';
 
     this.tableData.push({
       id: id,
       rank: parseInt(rank),
       reads: parseInt(reads),
-      rpm: parseInt(rpm),
+      rpm: parseFloat(rpm),
       length: sequence.length,
       seqs: sequence
     });

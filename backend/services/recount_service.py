@@ -39,6 +39,7 @@ def run_recount(input_paths=None, output_path=None, output_format='fasta', scali
             countMerge[[f"{ColumnName.READS}_x", f"{ColumnName.READS}_y"]]
             .fillna(0)
             .sum(axis=1)
+            .astype(int)
         )
         countMerge = countMerge.drop(
             columns=[f"{ColumnName.READS}_x", f"{ColumnName.READS}_y"]
@@ -49,12 +50,9 @@ def run_recount(input_paths=None, output_path=None, output_format='fasta', scali
         drop=True
     )
     countMerge[ColumnName.RANK] = range(1, len(countMerge) + 1)
-    countMerge[ColumnName.RPU] = np.round(
-        countMerge[ColumnName.READS]
-        / (countMerge[ColumnName.READS].sum() / scaling_factor),
-        0,
-    ).astype(int)
+    countMerge[ColumnName.RPU] = file_service.compute_rpu(countMerge[ColumnName.READS], scaling_factor)
     countMerge[ColumnName.LENGTH] = countMerge[ColumnName.SEQUENCES].str.len()
+    countMerge[ColumnName.U] = file_service.format_scaling_factor(scaling_factor)
     countMerge[ColumnName.ID] = (
         ColumnName.RANK
         + "="
@@ -66,7 +64,11 @@ def run_recount(input_paths=None, output_path=None, output_format='fasta', scali
         + ";"
         + ColumnName.RPU
         + "="
-        + countMerge[ColumnName.RPU].astype(str)
+        + file_service.format_rpu(countMerge[ColumnName.RPU])
+        + ";"
+        + ColumnName.U
+        + "="
+        + countMerge[ColumnName.U]
     )
     countMerge = countMerge[
         [
@@ -74,6 +76,7 @@ def run_recount(input_paths=None, output_path=None, output_format='fasta', scali
             ColumnName.RANK,
             ColumnName.READS,
             ColumnName.RPU,
+            ColumnName.U,
             ColumnName.LENGTH,
             ColumnName.SEQUENCES,
         ]

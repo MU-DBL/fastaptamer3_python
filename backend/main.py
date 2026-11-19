@@ -28,7 +28,7 @@ class CancelMiddleware:
             path = scope.get("path", "")
             if method == "POST" and not any(path.startswith(p) for p in _NO_CANCEL_PREFIXES):
                 # Kill active subprocess (cutadapt, muscle, etc.)
-                if state.current_process is not None and state.current_process.poll() is None:
+                if state.process_running(state.current_process):
                     state.current_process.kill()
                     state.current_process = None
                 # Cancel active asyncio background task (preprocess, etc.)

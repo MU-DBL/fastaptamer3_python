@@ -1,12 +1,12 @@
 <div class="page-note">
-  Performs differential expression analysis between two experimental conditions (each with at least one counted FASTA files).
-  In contrast to the Sequence Enrichment module, which computes a simple RPU ratio between exactly one sample per condition, the Differential Analysis module supports multiple replicates per condition and performs formal statistical testing (via edgeR) to determine whether an observed change between conditions is likely real rather than due to random variation.
-  Sequences are compared using statistics: <strong>log₂FC</strong> log₂ fold change between conditions;
-  <strong>log₂CPM</strong> log₂ of average counts per million across all replicates from both conditions combined — a measure of overall abundance, not a comparison between conditions;
-  <strong>PValue</strong> — Benjamini-Hochberg FDR-adjusted p-value, which accounts for testing thousands of sequences simultaneously and is therefore more conservative than a standard p-value.
-  A value of 0.05 means there is a 5% chance the observed difference is due to random variation; values closer to 0 indicate stronger evidence of a real difference between conditions.
-  Requires ≥ 3 replicates per condition — otherwise shown as -.
-  Sequences are classified as significant by the |log₂FC| and log₂CPM cutoffs; the adjusted p-value cutoff is optional and only applies when ≥ 3 replicates per condition are provided.
+  Performs differential abundance analysis between two experimental conditions, each represented by one or more counted FASTA files (replicates).
+  In contrast to the Sequence Enrichment module, which computes an RPU ratio between single files, the Differential Analysis module supports replicates and tests each sequence with edgeR: low-abundance sequences are removed with filterByExpr, libraries are TMM-normalized, and a quasi-likelihood F-test is applied. A sequence missing from a file is counted as 0 reads in that file.
+  Reported statistics: <strong>log₂FC</strong> — log₂ fold change of condition 2 relative to condition 1;
+  <strong>log₂CPM</strong> — average log₂ counts per million across all samples, a measure of overall abundance, not a comparison between conditions;
+  <strong>PValue</strong> — Benjamini-Hochberg adjusted p-value (FDR), which accounts for testing thousands of sequences simultaneously.
+  At a cutoff of 0.05, about 5% of the sequences called significant are expected to be false positives.
+  Testing requires ≥ 2 replicates per condition (≥ 3 recommended); otherwise PValue is shown as - and sequences are classified by the |log₂FC| and log₂CPM cutoffs only.
+  Replicates should be independent selections; technical replicates (re-sequencing of the same library) underestimate variability.
 </div>
 <app-split-panel>
   <div left>
@@ -111,7 +111,7 @@
     <h3 class="section-title">
       Adjusted p-value (FDR) cutoff:
       <mat-icon class="info-icon"
-        matTooltip="Maximum adjusted p-value (Benjamini-Hochberg FDR) to classify a sequence as significant. Set to 1.0 to disable (p-value not used). Only applies when ≥ 3 replicates per condition are provided."
+        matTooltip="Maximum adjusted p-value (Benjamini-Hochberg FDR) to classify a sequence as significant. Set to 1.0 to disable (p-value not used). Only applies when ≥ 2 replicates per condition are provided."
         matTooltipPosition="right">help_outline</mat-icon>
     </h3>
     <div class="slider-group">
@@ -152,8 +152,8 @@
 
     <mat-divider class="section-divider"></mat-divider>
 
-    <!-- EDGER PLOT CUSTOMIZATION -->
-    <h3 class="section-title">Adjust default edgeR plot?</h3>
+    <!-- MA PLOT CUSTOMIZATION -->
+    <h3 class="section-title">Adjust default MA plot?</h3>
     <mat-radio-group [(ngModel)]="adjustEdgeRPlot" (change)="onAdjustEdgeRPlotChange()" class="radio-group">
       <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>
@@ -197,7 +197,7 @@
     <button mat-raised-button color="primary" class="plot-button"
       [disabled]="diffAnalysisData.length === 0" (click)="edgeRPlot()">
       <mat-icon>scatter_plot</mat-icon>
-      edgeR plot
+      MA plot
     </button>
 
   </div>

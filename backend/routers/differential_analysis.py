@@ -2,16 +2,18 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from pathlib import Path
 from typing import List
+import asyncio
+import tempfile
 import pandas as pd
 import numpy as np
-from scipy import stats
-from statsmodels.stats.multitest import multipletests
 import os
 from services.file_service import read_file, save_sequences
 from services.constants import ColumnName
+import state
 
 router = APIRouter()
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
+EDGER_SCRIPT = Path(__file__).parent.parent / "scripts" / "edger_qlf.R"
 
 class EdgeRPairTestInput(BaseModel):
     cond1_paths: List[str]  # Condition 1 FASTA file paths
@@ -29,7 +31,8 @@ class DifferentialExpressionResponse(BaseModel):
 async def differential_expression(params: EdgeRPairTestInput):
     """
     Perform differential expression analysis between two conditions.
-    Uses Mann-Whitney U test (or t-test) with Benjamini-Hochberg FDR correction.
+    Uses edgeR (scripts/edger_qlf.R): filterByExpr, TMM normalization, quasi-likelihood
+    F-test with Benjamini-Hochberg FDR correction (tested only with >= 2 replicates per condition).
     
     Args:
         params: Input parameters with condition file paths and p-value cutoff
@@ -87,23 +90,10 @@ async def differential_expression(params: EdgeRPairTestInput):
     # -----------------------
     # MERGE ALL FILES
     # -----------------------
-    cond1_merged = fadf_cond1[0]
-    for df in fadf_cond1[1:]:
-        cond1_merged = cond1_merged.merge(df, on=ColumnName.SEQUENCES, how="inner")
-
-    cond2_merged = fadf_cond2[0]
-    for df in fadf_cond2[1:]:
-        cond2_merged = cond2_merged.merge(df, on=ColumnName.SEQUENCES, how="inner")
-
-    cond_merged = cond1_merged.merge(cond2_merged, on=ColumnName.SEQUENCES, how="inner")
-
-    if len(cond_merged) < 10:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Too few sequences present in ALL files for DE analysis (found {len(cond_merged)}). "
-                   "edgeR requires sequences to be present in all replicates. "
-                   "This is normal if your replicates have different sequence compositions."
-        )
+    # Outer join: a sequence missing from a file has 0 reads there (edgeR models zero counts)
+    cond_merged = fadf_cond1[0]
+    for df in fadf_cond1[1:] + fadf_cond2:
+        cond_merged = cond_merged.merge(df, on=ColumnName.SEQUENCES, how="outer")
 
     # -----------------------
     # BUILD COUNT MATRIX
@@ -111,88 +101,78 @@ async def differential_expression(params: EdgeRPairTestInput):
     cond1_cols = [c for c in cond_merged.columns if c.startswith("Reads.") and c[6].isupper()]
     cond2_cols = [c for c in cond_merged.columns if c.startswith("Reads.") and c[6].islower()]
 
-    count_matrix = cond_merged[cond1_cols + cond2_cols].to_numpy(dtype=float)
+    count_matrix = cond_merged[cond1_cols + cond2_cols].fillna(0).to_numpy(dtype=np.int32)
     sequences = cond_merged[ColumnName.SEQUENCES].to_numpy()
+    del cond_merged
 
-    # -----------------------
-    # CPM NORMALIZATION (SAFE)
-    # -----------------------
-    lib_sizes = np.asarray(original_lib_sizes_cond1 + original_lib_sizes_cond2, dtype=float)
-
-    cpm_matrix = np.divide(
-        count_matrix,
-        lib_sizes,
-        out=np.zeros_like(count_matrix),
-        where=lib_sizes != 0,
-    ) * 1e6
-
-    # -----------------------
-    # FILTER LOW-COUNT SEQUENCES (CRITICAL)
-    # -----------------------
-    min_count = 5
-    min_samples = 2
-    
+    # filterByExpr always drops sequences with < 15 total reads; dropping them here only
+    # shrinks what is passed to R (library sizes are passed separately, so results are unchanged)
     sequences_before_filter = len(sequences)
+    prefilter = count_matrix.sum(axis=1) >= 15
+    count_matrix = count_matrix[prefilter]
+    sequences = sequences[prefilter]
 
-    keep = (count_matrix >= min_count).sum(axis=1) >= min_samples
-
-    count_matrix = count_matrix[keep]
-    cpm_matrix = cpm_matrix[keep]
-    sequences = sequences[keep]
-
-    # NEW: Check if filtering left any sequences
-    if len(count_matrix) == 0:
+    if len(sequences) < 10:
         raise HTTPException(
-            status_code=400, 
-            detail=f"No sequences passed filtering criteria (min_count={min_count} reads in at least {min_samples} samples). "
-                f"Your files contained {sequences_before_filter} unique sequences before filtering. "
-                "This suggests your FASTA files have low read counts. Please check your input files."
+            status_code=400,
+            detail=f"Too few sequences with >= 15 total reads (found {len(sequences)} of "
+                   f"{sequences_before_filter} unique sequences). Your FASTA files may have low read counts."
         )
-    
-    # -----------------------
-    # LOGFC & LOGCPM
-    # -----------------------
-    n_cond1 = len(cond1_cols)
-    pseudocount = 1.0
 
-    cond1_cpm = cpm_matrix[:, :n_cond1]
-    cond2_cpm = cpm_matrix[:, n_cond1:]
-
-    mean1 = cond1_cpm.mean(axis=1) + pseudocount
-    mean2 = cond2_cpm.mean(axis=1) + pseudocount
-
-    log_fc = np.log2(mean2 / mean1)
-    # logCPM: average log2 CPM across ALL samples (matching edgeR behavior)
-    log_cpm = np.log2(cpm_matrix.mean(axis=1) + pseudocount)
+    lib_sizes = original_lib_sizes_cond1 + original_lib_sizes_cond2
+    n_cond1, n_cond2 = len(cond1_cols), len(cond2_cols)
 
     # -----------------------
-    # STATISTICAL TESTING (CPM-NORMALIZED)
+    # EDGER (filterByExpr, TMM, quasi-likelihood F-test, BH)
     # -----------------------
-    insufficient_replicates = n_cond1 < 3 or len(params.cond2_paths) < 3
+    with tempfile.TemporaryDirectory() as tmp:
+        counts_file = Path(tmp) / "counts.bin"
+        out_file = Path(tmp) / "edger.bin"
+        np.ascontiguousarray(count_matrix.T).tofile(counts_file)  # column-major for R
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                "Rscript", str(EDGER_SCRIPT), str(counts_file), str(len(count_matrix)),
+                str(n_cond1), str(n_cond2), ",".join(str(int(s)) for s in lib_sizes), str(out_file),
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+        except FileNotFoundError:
+            raise HTTPException(status_code=500, detail="Rscript not found: R and edgeR must be installed to run differential analysis")
+        # Register so /cancel (or the next request) can kill R
+        state.current_process = proc
+        try:
+            _, stderr = await proc.communicate()
+        finally:
+            if state.current_process is proc:
+                state.current_process = None
+        if proc.returncode < 0:
+            raise HTTPException(status_code=500, detail="edgeR was cancelled")
+        if proc.returncode != 0:
+            raise HTTPException(status_code=500, detail=f"edgeR failed: {stderr.decode(errors='replace')[-1000:]}")
+        edger_out = np.fromfile(out_file, dtype=np.float64).reshape(4, len(count_matrix))
 
+    kept = edger_out[0] == 1
+    log_fc, log_cpm, fdr = edger_out[1][kept], edger_out[2][kept], edger_out[3][kept]
+    sequences = sequences[kept]
+
+    if len(sequences) < 10:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too few sequences passed edgeR's filterByExpr (found {len(sequences)} of "
+                   f"{sequences_before_filter} unique sequences). Your FASTA files may have low read counts."
+        )
+
+    # -----------------------
+    # CLASSIFY
+    # -----------------------
     lfc_sig = (np.abs(log_fc) >= params.lfc_cutoff) & (log_cpm >= params.logcpm_cutoff)
 
-    if insufficient_replicates:
-        # Statistical testing requires at least 3 replicates per condition.
-        # Classify by logFC threshold only.
-        p_col = np.full(len(count_matrix), np.nan)
+    if min(n_cond1, n_cond2) < 2:
+        # No test without replicates; classify by logFC/logCPM thresholds only
+        p_col = np.full(len(sequences), np.nan)
         p_class = np.where(lfc_sig, "Sig.", "Not Sig.")
     else:
-        # Use CPM for testing so that replicate library-size differences don't
-        # inflate variance and wash out real signal.
-        cond1_cpm = cpm_matrix[:, :n_cond1]
-        cond2_cpm = cpm_matrix[:, n_cond1:]
-
-        p_values = []
-        for i in range(len(count_matrix)):
-            _, p = stats.ttest_ind(cond1_cpm[i], cond2_cpm[i], equal_var=False)
-            if np.isnan(p):
-                p = 0.0 if cond1_cpm[i].mean() != cond2_cpm[i].mean() else 1.0
-            p_values.append(p)
-
-        p_values = np.array(p_values)
-        _, p_adj, _, _ = multipletests(p_values, alpha=0.05, method="fdr_bh")
-        p_col = np.round(p_adj, 6)
+        # PValue column holds the BH-adjusted p-value (FDR)
+        p_col = np.round(fdr, 6)
         pvalue_sig = p_col <= params.pvalue_cutoff
         p_class = np.where(lfc_sig & pvalue_sig, "Sig.", "Not Sig.")
 

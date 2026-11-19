@@ -2,10 +2,13 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from pathlib import Path
 from typing import Optional
+import numpy as np
 import pandas as pd
 from Levenshtein import distance as levenshtein_distance
+from rapidfuzz import process
+from rapidfuzz.distance import Levenshtein
 import os
-from services.file_service import read_file, save_sequences
+from services.file_service import read_file, save_sequences, format_rpu, scaling_factor_of
 from services.constants import ColumnName
 
 router = APIRouter()
@@ -42,18 +45,26 @@ async def sequence_distance(params: DistanceInput):
     # Normalize sequences to uppercase
     query_upper = params.query_sequence.upper()
     
-    # Calculate edit distance for each sequence
-    fa_df[ColumnName.DISTANCE] = fa_df[ColumnName.SEQUENCES].apply(
-        lambda seq: levenshtein_distance(seq.upper(), query_upper)
-    )
-    
+    # Calculate edit distance for each sequence in one multithreaded call
+    # (cdist splits work across threads by query row, so the sequences are the queries)
+    fa_df[ColumnName.DISTANCE] = process.cdist(
+        fa_df[ColumnName.SEQUENCES].str.upper().tolist(), [query_upper],
+        scorer=Levenshtein.distance, workers=-1
+    )[:, 0].astype(np.int64)
+
     # Sort by distance (ascending)
     result_df = fa_df.sort_values(by=ColumnName.DISTANCE).reset_index(drop=True)
-    
-    # Build ID column with all metadata including Distance
-    result_df[ColumnName.ID] = result_df.apply(
-        lambda row: f"{ColumnName.RANK}={int(row[ColumnName.RANK])};{ColumnName.READS}={int(row[ColumnName.READS])};{ColumnName.RPU}={row[ColumnName.RPU]};{ColumnName.DISTANCE}={int(row[ColumnName.DISTANCE])}", 
-        axis=1
+
+    # U of the input's RPU, kept in the IDs (None for inputs that do not record it)
+    u = scaling_factor_of(result_df[ColumnName.U]) if ColumnName.U in result_df.columns else None
+
+    # Build ID column with all metadata including Distance (column-wise; a row-wise apply is slow)
+    result_df[ColumnName.ID] = (
+        f"{ColumnName.RANK}=" + result_df[ColumnName.RANK].astype(np.int64).astype(str)
+        + f";{ColumnName.READS}=" + result_df[ColumnName.READS].astype(np.int64).astype(str)
+        + f";{ColumnName.RPU}=" + format_rpu(result_df[ColumnName.RPU])
+        + (f";{ColumnName.U}={u}" if u is not None else "")
+        + f";{ColumnName.DISTANCE}=" + result_df[ColumnName.DISTANCE].astype(str)
     )
     
     # Select and reorder columns

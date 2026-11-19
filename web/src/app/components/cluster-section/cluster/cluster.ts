@@ -169,7 +169,8 @@ export class Cluster implements OnDestroy {
 
     const lines: string[] = [];
     filtered.forEach(r => {
-      const header = `rank=${r[ColumnName.RANK]};read=${r[ColumnName.READS]};RPU=${r[ColumnName.RPU]};cluster=${r[ColumnName.CLUSTER]};RankInCluster=${r[ColumnName.RANK_IN_CLUSTER]};LED=${r[ColumnName.LED]}`;
+      const u = r[ColumnName.U] !== undefined ? `;${ColumnName.U}=${r[ColumnName.U]}` : '';
+      const header = `${ColumnName.RANK}=${r[ColumnName.RANK]};${ColumnName.READS}=${r[ColumnName.READS]};${ColumnName.RPU}=${r[ColumnName.RPU]}${u};${ColumnName.CLUSTER}=${r[ColumnName.CLUSTER]};${ColumnName.RANK_IN_CLUSTER}=${r[ColumnName.RANK_IN_CLUSTER]};${ColumnName.LED}=${r[ColumnName.LED]}`;
       lines.push(`>${header}`);
       lines.push(r[ColumnName.SEQUENCES]);
     });

@@ -29,6 +29,56 @@
   color: #333;
 }
 
+.column-toggle {
+  position: relative;
+  font-size: 14px;
+  color: #333;
+}
+
+.column-toggle-button {
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  list-style: none;
+  user-select: none;
+}
+
+.column-toggle-button::-webkit-details-marker {
+  display: none;
+}
+
+.column-toggle-menu {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 220px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.column-toggle-actions {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.column-toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
 .search-input {
   margin-left: 5px;
   padding: 5px 10px;

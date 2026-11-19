@@ -15,6 +15,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Nucleotide code in k-mer column order (A, T, G, C); any other character is invalid (-1)
+_NT_CODE = np.full(256, -1, dtype=np.int64)
+for _code, _nt in enumerate('ATGC'):
+    _NT_CODE[ord(_nt)] = _code
+
 def generate_kmer_counts(sequences, k=4):
     """
     Generate k-mer counts for a list of sequences.
@@ -39,25 +44,27 @@ def generate_kmer_counts(sequences, k=4):
             return [kmer + nucleotide for kmer in smaller_kmers for nucleotide in nucleotides]
     
     all_kmers = generate_all_kmers(k)
-    
-    # Initialize k-mer count matrix
-    kmer_matrix = []
-    
-    for sequence in sequences:
-        sequence = sequence.upper()
-        kmer_counts = Counter()
-        
-        # Count k-mers in this sequence
-        for i in range(len(sequence) - k + 1):
-            kmer = sequence[i:i + k]
-            if all(nucleotide in nucleotides for nucleotide in kmer):  # Valid DNA k-mer
-                kmer_counts[kmer] += 1
-        
-        # Create row with counts for all possible k-mers
-        row = [kmer_counts.get(kmer, 0) for kmer in all_kmers]
-        kmer_matrix.append(row)
-    
-    return pd.DataFrame(kmer_matrix, columns=all_kmers)
+
+    if len(sequences) == 0:
+        return pd.DataFrame([], columns=all_kmers)
+
+    # Encode all sequences into one array, joined by an invalid character so no k-mer spans two sequences
+    codes = _NT_CODE[np.frombuffer('\x00'.join(sequences).upper().encode('ascii', errors='replace'), dtype=np.uint8)]
+
+    # Count every valid k-mer (no invalid character) per sequence in one pass; the k-mer's
+    # index in all_kmers is its codes read as a base-4 number
+    n_kmers = 4 ** k
+    counts = np.zeros(len(sequences) * n_kmers, dtype=np.int64)
+    if len(codes) >= k:
+        windows = np.lib.stride_tricks.sliding_window_view(codes, k)
+        valid = (windows >= 0).all(axis=1)
+        kmer_index = windows @ (4 ** np.arange(k - 1, -1, -1))
+        # Sequence each window starts in (each sequence plus its trailing separator)
+        lengths = np.fromiter((len(s) + 1 for s in sequences), dtype=np.int64, count=len(sequences))
+        seq_id = np.repeat(np.arange(len(sequences)), lengths)[:len(windows)]
+        counts = np.bincount(seq_id[valid] * n_kmers + kmer_index[valid], minlength=len(sequences) * n_kmers)
+
+    return pd.DataFrame(counts.reshape(len(sequences), n_kmers), columns=all_kmers)
 
 def apply_pca(kmer_matrix, n_components=2):
     """

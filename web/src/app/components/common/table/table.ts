@@ -9,12 +9,14 @@ export interface ColumnDefinition {
   width?: string;
   exact_match?:boolean;
   filterable?: boolean;
+  hidden?: boolean;  // starts hidden; only used when the table has columnToggle
 }
 
 export interface TableConfig {
   columns: ColumnDefinition[];
   initialPageSize?: number;
   pageSizeOptions?: number[];
+  columnToggle?: boolean;  // show a "Columns" menu to show/hide columns
 }
 
 
@@ -46,20 +48,79 @@ export class Table implements OnInit, OnChanges {
   searchText: string = '';
   columnFilters: { [key: string]: string } = {};
 
+  // Column visibility (columnToggle tables); kept across data reloads, reset when the config changes
+  hiddenColumns = new Set<string>();
+
   ngOnInit(): void {
+    this.resetColumnVisibility();
     this.initialize();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['config']) {
+      this.resetColumnVisibility();
+    }
     if (changes['data'] || changes['config']) {
       this.initialize();
     }
   }
 
+  private resetColumnVisibility(): void {
+    this.hiddenColumns = new Set(
+      this.config.columnToggle ? this.config.columns.filter(col => col.hidden).map(col => col.key) : []
+    );
+  }
+
+  private updateDisplayedColumns(): void {
+    this.displayedColumns = this.config.columns
+      .map(col => col.key)
+      .filter(key => !this.hiddenColumns.has(key));
+  }
+
+  // "Reset" only differs from "Show all" when some columns start hidden
+  hasDefaultHiddenColumns(): boolean {
+    return this.config.columns.some(col => col.hidden);
+  }
+
+  isColumnVisible(columnKey: string): boolean {
+    return !this.hiddenColumns.has(columnKey);
+  }
+
+  toggleColumn(columnKey: string): void {
+    if (this.hiddenColumns.has(columnKey)) {
+      this.hiddenColumns.delete(columnKey);
+    } else {
+      // Keep at least one column, and drop the filter of a column the user can no longer see
+      if (this.displayedColumns.length <= 1) return;
+      this.hiddenColumns.add(columnKey);
+      if (this.columnFilters[columnKey]) {
+        this.columnFilters[columnKey] = '';
+        this.applyFilters();
+      }
+    }
+    this.updateDisplayedColumns();
+  }
+
+  showAllColumns(): void {
+    this.hiddenColumns.clear();
+    this.updateDisplayedColumns();
+  }
+
+  resetColumns(): void {
+    this.resetColumnVisibility();
+    this.config.columns.forEach(col => {
+      if (this.hiddenColumns.has(col.key) && this.columnFilters[col.key]) {
+        this.columnFilters[col.key] = '';
+      }
+    });
+    this.applyFilters();
+    this.updateDisplayedColumns();
+  }
+
   private initialize(): void {
     // Set up columns
-    this.displayedColumns = this.config.columns.map(col => col.key);
-    
+    this.updateDisplayedColumns();
+
     // Initialize column filters
     this.columnFilters = {};
     this.config.columns.forEach(col => {

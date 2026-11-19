@@ -45,7 +45,7 @@ export class Preprocess implements OnDestroy {
   sequenceLengthMin: number = 10;
   sequenceLengthMax: number = 100;
   sequenceLengthRange: number = 500;
-  maxAllowedError: number = 0.005;
+  maxAllowedError: number = 0.05;
   maxErrorRange: number = 1;
   maxPositionError: number | null = null;
   adapterErrorRate: number = 0.1;

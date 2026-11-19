@@ -9,7 +9,7 @@ router = APIRouter()
 async def cancel():
     cancelled = []
 
-    if state.current_process is not None and state.current_process.poll() is None:
+    if state.process_running(state.current_process):
         state.current_process.kill()
         state.current_process = None
         cancelled.append("process")

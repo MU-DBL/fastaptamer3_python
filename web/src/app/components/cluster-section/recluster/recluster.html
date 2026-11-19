@@ -1,17 +1,29 @@
 <div class="page-note">
   Unify related aptamer families across multiple selection rounds. This module compares the seed sequences of clusters
-  from separately clustered FASTA files using pairwise Levenshtein Edit Distance. Cluster families whose seeds fall
-  within your chosen edit distance threshold are merged into a single super-cluster, making it easier to track
-  dominant aptamer families across populations. Use <strong>Multi-round</strong> mode to track cluster family
-  convergence across 3 selection rounds.
+  from separately clustered FASTA files using pairwise Levenshtein Edit Distance. Each Population 2 cluster is merged
+  into the Population 1 cluster whose seed is closest to its own seed, provided that distance is at most your chosen
+  edit distance threshold; a Population 1 cluster can therefore absorb several Population 2 clusters. Non-clustered
+  sequences (Cluster 0) are never merged. This makes it easier to track dominant aptamer families across populations.
+  Use <strong>Multi-round</strong> mode to track cluster family convergence across 3 selection rounds: the same rule
+  links each Round 2 cluster to a Round 1 cluster and each Round 3 cluster to a Round 2 cluster, and each super-cluster
+  takes its seed from the round in which it first appears.
+
+  <p><strong>Merge quality</strong> — <strong>Seed LED</strong>: edit distance between the merged seeds (the largest one
+    when several Population 2 clusters were merged). <strong>Median / Max LED to seed</strong>: distance of the
+    super-cluster's members to its reference seed (the Population 1 seed, or the Population 2 seed for clusters found
+    only in Population 2). <strong>Diameter</strong>: largest edit distance between any two members.
+  </p>
   
-  <p><strong>Avg RPU</strong> — mean RPU across <em>all sequences</em> assigned to the super-cluster in that population.
-    Reflects the overall abundance of the cluster family, but is pulled down by low-read peripheral variants.
-    <strong>Seed RPU</strong> — RPU of the original cluster seed (rank 1 sequence in the original cluster file, i.e.
-    the most abundant sequence in that cluster). More robust than Avg RPU as it represents the dominant variant,
-    unaffected by rare sequences at the cluster periphery.
-    <strong>When to use each:</strong> Use Seed RPU to compare the dominant aptamer between rounds. Use Avg RPU to
-    capture the overall enrichment of the entire cluster family.
+  <p><strong>Total RPU</strong> (default) — sum of RPU over <em>all sequences</em> of the super-cluster in that
+    population, i.e. the family's share of the population. Its change between populations is the family's enrichment.
+    <strong>Avg RPU</strong> — Total RPU divided by the number of member sequences in that population (mean RPU per
+    member). It changes with the member count as well as with abundance, so it is pulled down when many low-read
+    variants are detected.
+    <strong>Seed RPU</strong> — highest RPU among the super-cluster's sequences in that population, normally the
+    original cluster seed (the most abundant sequence). It follows the dominant variant only.
+    <strong>When to use each:</strong> Use Total RPU for the enrichment of the whole family, Seed RPU to compare the
+    dominant aptamer between rounds, and Avg RPU to see whether the typical member became more abundant.
+    The status column and the RPU, enrichment and scatter plots use the metric selected below.
   </p>
 
 </div>
@@ -82,16 +94,16 @@
     <!-- LED THRESHOLD -->
     <label class="section-label">Max. LED:
       <mat-icon class="info-icon"
-        matTooltip="Max. edit distance between seeds for merging clusters">help_outline</mat-icon>
+        matTooltip="Max. edit distance between seeds for merging clusters. 0 merges only clusters with identical seeds.">help_outline</mat-icon>
     </label>
     <div class="slider-group">
       <div class="slider-header">
-        <span class="value-chip range-min">1</span>
-        <input type="number" [min]="1" [max]="20" [step]="1" [(ngModel)]="ledThreshold">
+        <span class="value-chip range-min">0</span>
+        <input type="number" [min]="0" [max]="20" [step]="1" [(ngModel)]="ledThreshold">
         <span class="value-chip range-max">20</span>
       </div>
       <div class="dual-range-container">
-        <mat-slider [min]="1" [max]="20" [step]="1" discrete class="range-slider">
+        <mat-slider [min]="0" [max]="20" [step]="1" discrete class="range-slider">
           <input matSliderThumb [(ngModel)]="ledThreshold">
         </mat-slider>
       </div>
@@ -106,8 +118,9 @@
         matTooltip="Choose which enrichment value is used to assign cluster status (enriched / depleted / inherited)">help_outline</mat-icon>
     </label>
     <mat-radio-group [(ngModel)]="enrichmentType" class="radio-group">
-      <mat-radio-button value="avg">Avg RPU enrichment</mat-radio-button>
+      <mat-radio-button value="total">Total RPU enrichment</mat-radio-button>
       <mat-radio-button value="seed">Seed RPU enrichment</mat-radio-button>
+      <mat-radio-button value="avg">Avg RPU enrichment</mat-radio-button>
     </mat-radio-group>
 
     <label class="section-label">|log2E| threshold:
@@ -258,7 +271,7 @@
     <hr class="section-divider">
 
     <!-- RPU PLOT -->
-    <h3 class="section-title">Adjust default avg. RPU plot?</h3>
+    <h3 class="section-title">Adjust default RPU plot?</h3>
     <mat-radio-group [(ngModel)]="adjustRPU" class="radio-group">
       <mat-radio-button value="yes">Yes</mat-radio-button>
       <mat-radio-button value="no">No</mat-radio-button>

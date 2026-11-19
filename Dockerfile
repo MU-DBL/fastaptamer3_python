@@ -72,7 +72,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     liblzma5 \
     libgomp1 \
     nginx \
-    supervisor
+    supervisor \
+    r-base-core \
+    r-bioc-edger
 
 # Copy virtual environment from backend-builder
 COPY --from=backend-builder /opt/venv /opt/venv

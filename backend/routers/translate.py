@@ -7,12 +7,18 @@ import numpy as np
 import os
 import re
 import json
-from services.file_service import read_file, save_sequences
+from services.file_service import read_file, save_sequences, scaling_factor_of, format_rpu, RPU_DECIMALS
 from services.constants import ColumnName
 
 router = APIRouter()
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "files"))
 TRANSLATIONS_FILE = Path(__file__).parent.parent / "data" / "translations.json"
+
+# Nucleotide codes for vectorized codon lookup (codon index = base-4 number); other characters are -1
+_NT_CODE = np.full(256, -1, dtype=np.int64)
+for _code, _nt in enumerate('ACGT'):
+    _NT_CODE[ord(_nt)] = _code
+_ACGT_CODONS = [a + b + c for a in 'ACGT' for b in 'ACGT' for c in 'ACGT']
 
 class CodonChange(BaseModel):
     Codon: str
@@ -147,6 +153,32 @@ def translate_sequence(sequence: str, translation_map: Dict[str, str], orf: int 
     
     return ''.join(amino_acids)
 
+def translate_sequence_list(sequences: List[str], translation_map: Dict[str, str], orf: int = 1) -> List[str]:
+    """Translate many sequences at once; same rules and output as translate_sequence on each."""
+    # Uppercase, apply ORF, drop trailing bases that do not complete a codon
+    seqs = [s.upper()[orf - 1:] for s in sequences]
+    seqs = [s[:len(s) - len(s) % 3] for s in seqs]
+    n_codons = np.fromiter((len(s) // 3 for s in seqs), dtype=np.int64, count=len(seqs))
+    if n_codons.sum() == 0:
+        return [''] * len(seqs)
+
+    # Every codon of every sequence as a row of nucleotide codes
+    joined = ''.join(seqs)
+    codes = _NT_CODE[np.frombuffer(joined.encode('ascii', errors='replace'), dtype=np.uint8)].reshape(-1, 3)
+    acgt = (codes >= 0).all(axis=1)
+
+    # ACGT codons: look up through a 64-entry table; any other codon: the map itself (default 'X')
+    table = np.array([translation_map.get(c, 'X') for c in _ACGT_CODONS], dtype=object)
+    amino_acids = np.empty(len(codes), dtype=object)
+    amino_acids[acgt] = table[codes[acgt] @ np.array([16, 4, 1])]
+    for i in np.flatnonzero(~acgt):
+        amino_acids[i] = translation_map.get(joined[3 * i:3 * i + 3], 'X')
+
+    # Split the codon translations back into one protein per sequence
+    ends = np.cumsum(n_codons)
+    starts = ends - n_codons
+    return [''.join(amino_acids[a:b]) for a, b in zip(starts, ends)]
+
 @router.post("/translate")
 async def translate_sequences(params: TranslateInput):
     if not params.input_path:
@@ -184,22 +216,21 @@ async def translate_sequences(params: TranslateInput):
             translation_df['Translation']
         ))
         
-        # Step 3: Translate sequences
-        translated_sequences = []
-        
-        for idx, row in fa_df.iterrows():
-            sequence = str(row[ColumnName.SEQUENCES])
-            translated_seq = translate_sequence(
-                sequence,
-                translation_map,
-                params.orf
-            )
-            translated_sequences.append(translated_seq)
+        # Step 3: Translate sequences (all at once; a per-row loop is slow on large files)
+        translated_sequences = translate_sequence_list(
+            fa_df[ColumnName.SEQUENCES].astype(str).tolist(),
+            translation_map,
+            params.orf
+        )
         
         # Create result DataFrame
         translate_df = fa_df.copy()
         translate_df[ColumnName.SEQUENCES] = translated_sequences
-        
+
+        # U of the input's RPU, carried into the output IDs (None for inputs that do not record it)
+        u = scaling_factor_of(translate_df[ColumnName.U]) if ColumnName.U in translate_df.columns else None
+        u_suffix = f';{ColumnName.U}={u}' if u is not None else ''
+
         # Step 4: Optionally converge (merge non-unique amino acid sequences)
         if params.converge:
             # Group by sequences and sum reads/RPU
@@ -217,7 +248,9 @@ async def translate_sequences(params: TranslateInput):
                 ColumnName.READS,
                 ascending=False
             ).reset_index(drop=True)
-            
+            # Summed RPU picks up float noise (e.g. 0.30000000000000004); keep the usual decimals
+            converged_df[ColumnName.RPU] = converged_df[ColumnName.RPU].round(RPU_DECIMALS)
+
             converged_df[ColumnName.RANK] = range(1, len(converged_df) + 1)
             
             # Count unique nucleotide sequences for each amino acid sequence
@@ -235,24 +268,21 @@ async def translate_sequences(params: TranslateInput):
             converged_df[ColumnName.ID] = (
                 'Rank=' + converged_df[ColumnName.RANK].astype(str) + ';' +
                 'Reads=' + converged_df[ColumnName.READS].astype(str) + ';' +
-                'RPU=' + converged_df[ColumnName.RPU].astype(str)
+                'RPU=' + format_rpu(converged_df[ColumnName.RPU]) + u_suffix
             )
-            
-            translate_df = converged_df[[
-                ColumnName.ID,
-                ColumnName.RANK,
-                ColumnName.READS,
-                ColumnName.RPU,
-                'Unique_Nts',
-                ColumnName.SEQUENCES
-            ]].copy()
+
+            output_cols = [ColumnName.ID, ColumnName.RANK, ColumnName.READS, ColumnName.RPU]
+            if u is not None:
+                converged_df[ColumnName.U] = u
+                output_cols.append(ColumnName.U)
+            translate_df = converged_df[output_cols + ['Unique_Nts', ColumnName.SEQUENCES]].copy()
         else:
             # When not converging, update ID to maintain consistent format
             translate_df = translate_df.copy()
             translate_df[ColumnName.ID] = (
                 'Rank=' + translate_df[ColumnName.RANK].astype(str) + ';' +
                 'Reads=' + translate_df[ColumnName.READS].astype(str) + ';' +
-                'RPU=' + translate_df[ColumnName.RPU].astype(str)
+                'RPU=' + format_rpu(translate_df[ColumnName.RPU]) + u_suffix
             )
         
         # Step 5: Add sequence length column

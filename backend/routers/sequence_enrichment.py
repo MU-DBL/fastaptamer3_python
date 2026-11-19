@@ -1,5 +1,5 @@
 from ast import Dict
-from services.file_service import read_file, save_sequences
+from services.file_service import read_file, save_sequences, check_same_scaling_factor
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from pathlib import Path
@@ -47,6 +47,7 @@ async def fa_enrich_endpoint(params: EnrichInput):
         # Read clustered data from both populations
         fadf1 = read_file(filepath1)
         fadf2 = read_file(filepath2)
+        check_same_scaling_factor([fadf1, fadf2], [params.fadf1_cluster_path, params.fadf2_cluster_path])
         
         # Perform enrichment analysis
         result_df = fa_enrich(
@@ -98,6 +99,7 @@ def fa_enrich(
         ColumnName.RANK: "Rank.a",
         ColumnName.READS: "Reads.a",
         ColumnName.RPU: "RPU.a",
+        ColumnName.U: "U.a",
         ColumnName.CLUSTER: "Cluster.a",
         ColumnName.RANK_IN_CLUSTER: "RankInCluster.a",
         ColumnName.LED: "LED.a"
@@ -112,6 +114,7 @@ def fa_enrich(
         ColumnName.RANK: "Rank.b",
         ColumnName.READS: "Reads.b",
         ColumnName.RPU: "RPU.b",
+        ColumnName.U: "U.b",
         ColumnName.CLUSTER: "Cluster.b",
         ColumnName.RANK_IN_CLUSTER: "RankInCluster.b",
         ColumnName.LED: "LED.b"
